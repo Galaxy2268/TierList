@@ -9,7 +9,6 @@ data class TierlistDto(
     val userId: Int,
     val ownerUsername: String,
     val title: String,
-    val description: String?,
     val isPublic: Boolean,
     val createdAt: Instant,
     val itemCount: Int,
@@ -18,14 +17,12 @@ data class TierlistDto(
 @Serializable
 data class CreateTierlistRequest(
     val title: String,
-    val description: String? = null,
     val isPublic: Boolean = false,
 )
 
 @Serializable
 data class UpdateTierlistRequest(
     val title: String,
-    val description: String? = null,
 )
 
 @Serializable
