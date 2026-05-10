@@ -2,6 +2,8 @@ package com.ulyup.tierlist
 
 import com.ulyup.tierlist.auth.UserSession
 import com.ulyup.tierlist.data.db.DatabaseFactory
+import com.ulyup.tierlist.data.repository.UserRepositoryImpl
+import com.ulyup.tierlist.routes.authRoutes
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -66,5 +68,9 @@ fun Application.module() {
 
     DatabaseFactory.init()
 
-    routing { }
+    val userRepo = UserRepositoryImpl()
+
+    routing {
+        authRoutes(userRepo)
+    }
 }
