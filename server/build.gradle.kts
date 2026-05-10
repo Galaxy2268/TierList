@@ -7,11 +7,22 @@ plugins {
 
 group = "com.ulyup.tierlist"
 version = "1.0.0"
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+    }
+}
+
+tasks.withType<JavaCompile> {
+    sourceCompatibility = "21"
+    targetCompatibility = "21"
+}
 application {
     mainClass.set("com.ulyup.tierlist.ApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment", "--enable-native-access=ALL-UNNAMED")
 }
 
 dependencies {
