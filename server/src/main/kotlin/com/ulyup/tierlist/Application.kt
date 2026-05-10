@@ -1,6 +1,6 @@
 package com.ulyup.tierlist
 
-import com.ulyup.tierlist.db.DatabaseFactory
+import com.ulyup.tierlist.data.db.DatabaseFactory
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
