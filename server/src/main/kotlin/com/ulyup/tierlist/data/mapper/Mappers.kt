@@ -1,4 +1,4 @@
-package com.ulyup.tierlist.routes
+package com.ulyup.tierlist.data.mapper
 
 import com.ulyup.tierlist.domain.model.Tierlist
 import com.ulyup.tierlist.domain.model.TierlistItem
