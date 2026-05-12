@@ -26,11 +26,7 @@ class TierlistRepositoryImpl : TierlistRepository {
         Tierlist(newId, userId, title, isPublic, now)
     }
 
-    override suspend fun findById(id: Int): Tierlist? = dbQuery {
-        TierlistsTable.selectAll()
-            .where { TierlistsTable.id eq id }
-            .singleOrNull()?.toTierlist()
-    }
+    override suspend fun findById(id: Int): Tierlist? = dbQuery { fetchById(id) }
 
     override suspend fun findByUserId(userId: Int): List<Tierlist> = dbQuery {
         TierlistsTable.selectAll()
@@ -48,23 +44,13 @@ class TierlistRepositoryImpl : TierlistRepository {
     }
 
     override suspend fun update(id: Int, title: String): Tierlist? = dbQuery {
-        val updated = TierlistsTable.update({ TierlistsTable.id eq id }) {
-            it[TierlistsTable.title] = title
-        }
-        if (updated == 0) null
-        else TierlistsTable.selectAll()
-            .where { TierlistsTable.id eq id }
-            .singleOrNull()?.toTierlist()
+        val count = TierlistsTable.update({ TierlistsTable.id eq id }) { it[TierlistsTable.title] = title }
+        if (count == 0) null else fetchById(id)
     }
 
     override suspend fun setVisibility(id: Int, isPublic: Boolean): Tierlist? = dbQuery {
-        val updated = TierlistsTable.update({ TierlistsTable.id eq id }) {
-            it[TierlistsTable.isPublic] = isPublic
-        }
-        if (updated == 0) null
-        else TierlistsTable.selectAll()
-            .where { TierlistsTable.id eq id }
-            .singleOrNull()?.toTierlist()
+        val count = TierlistsTable.update({ TierlistsTable.id eq id }) { it[TierlistsTable.isPublic] = isPublic }
+        if (count == 0) null else fetchById(id)
     }
 
     override suspend fun delete(id: Int): Boolean = dbQuery {
@@ -76,6 +62,9 @@ class TierlistRepositoryImpl : TierlistRepository {
             .where { TierlistsTable.userId eq userId }
             .count()
     }
+
+    private fun fetchById(id: Int): Tierlist? =
+        TierlistsTable.selectAll().where { TierlistsTable.id eq id }.singleOrNull()?.toTierlist()
 
     private fun ResultRow.toTierlist(): Tierlist = Tierlist(
         id = this[TierlistsTable.id],

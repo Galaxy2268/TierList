@@ -12,6 +12,8 @@ import com.ulyup.tierlist.dto.UpdateTierlistRequest
 import com.ulyup.tierlist.dto.UpdateVisibilityRequest
 import com.ulyup.tierlist.model.UserRole
 import com.ulyup.tierlist.data.mapper.toDto
+import com.ulyup.tierlist.utils.findOrThrow
+import com.ulyup.tierlist.utils.requireOwnership
 
 class TierlistServiceImpl(
     private val tierlistRepo: TierlistRepository,
@@ -23,7 +25,7 @@ class TierlistServiceImpl(
         tierlistRepo.listPublic().map { tierlist -> tierlist.enrich() }
 
     override suspend fun getTierlist(session: UserSession?, id: Int): TierlistDto {
-        val tierlist = tierlistRepo.findById(id) ?: throw NoSuchElementException("Tierlist not found")
+        val tierlist = findOrThrow("Tierlist") { tierlistRepo.findById(id) }
         if (!tierlist.isPublic && (session == null || session.userId != tierlist.userId)) {
             throw NoSuchElementException("Tierlist not found")
         }
@@ -37,34 +39,30 @@ class TierlistServiceImpl(
 
     override suspend fun createTierlist(session: UserSession, request: CreateTierlistRequest): TierlistDto {
         if (session.role == UserRole.USER && tierlistRepo.countByUser(session.userId) >= 5) {
-            throw IllegalStateException("Tierlist limit of 5 reached. Upgrade to Premium for unlimited lists.")
+            throw SecurityException("Tierlist limit of 5 reached. Upgrade to Premium for unlimited lists.")
         }
         val tierlist = tierlistRepo.create(session.userId, request.title, request.isPublic)
         return tierlist.enrich(knownUsername = session.username)
     }
 
     override suspend fun updateTierlist(session: UserSession, id: Int, request: UpdateTierlistRequest): TierlistDto {
-        val tierlist = tierlistRepo.findById(id) ?: throw NoSuchElementException("Tierlist not found")
-        requireOwnership(session, tierlist)
+        val tierlist = findOrThrow("Tierlist") { tierlistRepo.findById(id) }
+        session.requireOwnership(tierlist)
         val updated = tierlistRepo.update(id, request.title) ?: throw NoSuchElementException("Tierlist not found")
         return updated.enrich(knownUsername = session.username)
     }
 
     override suspend fun setVisibility(session: UserSession, id: Int, request: UpdateVisibilityRequest): TierlistDto {
-        val tierlist = tierlistRepo.findById(id) ?: throw NoSuchElementException("Tierlist not found")
-        requireOwnership(session, tierlist)
+        val tierlist = findOrThrow("Tierlist") { tierlistRepo.findById(id) }
+        session.requireOwnership(tierlist)
         val updated = tierlistRepo.setVisibility(id, request.isPublic) ?: throw NoSuchElementException("Tierlist not found")
         return updated.enrich(knownUsername = session.username)
     }
 
     override suspend fun deleteTierlist(session: UserSession, id: Int) {
-        val tierlist = tierlistRepo.findById(id) ?: throw NoSuchElementException("Tierlist not found")
-        requireOwnership(session, tierlist)
-        tierlistRepo.delete(id)
-    }
-
-    private fun requireOwnership(session: UserSession, tierlist: Tierlist) {
-        if (session.userId != tierlist.userId) throw SecurityException("You do not own this tierlist")
+        val tierlist = findOrThrow("Tierlist") { tierlistRepo.findById(id) }
+        session.requireOwnership(tierlist)
+        if (!tierlistRepo.delete(id)) throw NoSuchElementException("Tierlist not found")
     }
 
     private suspend fun Tierlist.enrich(knownUsername: String? = null): TierlistDto {

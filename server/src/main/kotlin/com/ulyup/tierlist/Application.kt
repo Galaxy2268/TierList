@@ -6,8 +6,10 @@ import com.ulyup.tierlist.data.repository.ItemRepositoryImpl
 import com.ulyup.tierlist.data.repository.TierlistRepositoryImpl
 import com.ulyup.tierlist.data.repository.UserRepositoryImpl
 import com.ulyup.tierlist.data.service.AuthServiceImpl
+import com.ulyup.tierlist.data.service.ItemServiceImpl
 import com.ulyup.tierlist.data.service.TierlistServiceImpl
 import com.ulyup.tierlist.routes.authRoutes
+import com.ulyup.tierlist.routes.itemRoutes
 import com.ulyup.tierlist.routes.tierlistRoutes
 import com.ulyup.tierlist.utils.ConflictException
 import com.ulyup.tierlist.utils.UnauthorizedException
@@ -41,9 +43,6 @@ fun Application.module() {
             call.respondText(cause.message ?: "Not found", status = HttpStatusCode.NotFound)
         }
         exception<SecurityException> { call, cause ->
-            call.respondText(cause.message ?: "Forbidden", status = HttpStatusCode.Forbidden)
-        }
-        exception<IllegalStateException> { call, cause ->
             call.respondText(cause.message ?: "Forbidden", status = HttpStatusCode.Forbidden)
         }
         exception<ConflictException> { call, cause ->
@@ -90,9 +89,11 @@ fun Application.module() {
 
     val authService = AuthServiceImpl(userRepo)
     val tierlistService = TierlistServiceImpl(tierlistRepo, userRepo, itemRepo)
+    val itemService = ItemServiceImpl(itemRepo, tierlistRepo)
 
     routing {
         authRoutes(authService)
         tierlistRoutes(tierlistService)
+        itemRoutes(itemService)
     }
 }

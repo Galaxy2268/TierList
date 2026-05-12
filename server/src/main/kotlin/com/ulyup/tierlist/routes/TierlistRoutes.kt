@@ -6,6 +6,8 @@ import com.ulyup.tierlist.domain.service.TierlistService
 import com.ulyup.tierlist.dto.CreateTierlistRequest
 import com.ulyup.tierlist.dto.UpdateTierlistRequest
 import com.ulyup.tierlist.dto.UpdateVisibilityRequest
+import com.ulyup.tierlist.utils.requireInt
+import com.ulyup.tierlist.utils.userSession
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -19,45 +21,36 @@ fun Route.tierlistRoutes(tierlistService: TierlistService) {
         }
 
         get("/tierlists/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-                ?: throw IllegalArgumentException("Invalid id")
+            val id = call.parameters.requireInt("id")
             val session = call.sessions.get<UserSession>()
             call.respond(tierlistService.getTierlist(session, id))
         }
 
         authenticated {
             get("/users/me/tierlists") {
-                val session = call.sessions.get<UserSession>()!!
-                call.respond(tierlistService.getUserTierlists(session))
+                call.respond(tierlistService.getUserTierlists(call.userSession))
             }
 
             post("/tierlists") {
-                val session = call.sessions.get<UserSession>()!!
                 val request = call.receive<CreateTierlistRequest>()
-                call.respond(HttpStatusCode.Created, tierlistService.createTierlist(session, request))
+                call.respond(HttpStatusCode.Created, tierlistService.createTierlist(call.userSession, request))
             }
 
             put("/tierlists/{id}") {
-                val id = call.parameters["id"]?.toIntOrNull()
-                    ?: throw IllegalArgumentException("Invalid id")
-                val session = call.sessions.get<UserSession>()!!
+                val id = call.parameters.requireInt("id")
                 val request = call.receive<UpdateTierlistRequest>()
-                call.respond(tierlistService.updateTierlist(session, id, request))
+                call.respond(tierlistService.updateTierlist(call.userSession, id, request))
             }
 
             patch("/tierlists/{id}/visibility") {
-                val id = call.parameters["id"]?.toIntOrNull()
-                    ?: throw IllegalArgumentException("Invalid id")
-                val session = call.sessions.get<UserSession>()!!
+                val id = call.parameters.requireInt("id")
                 val request = call.receive<UpdateVisibilityRequest>()
-                call.respond(tierlistService.setVisibility(session, id, request))
+                call.respond(tierlistService.setVisibility(call.userSession, id, request))
             }
 
             delete("/tierlists/{id}") {
-                val id = call.parameters["id"]?.toIntOrNull()
-                    ?: throw IllegalArgumentException("Invalid id")
-                val session = call.sessions.get<UserSession>()!!
-                tierlistService.deleteTierlist(session, id)
+                val id = call.parameters.requireInt("id")
+                tierlistService.deleteTierlist(call.userSession, id)
                 call.respond(HttpStatusCode.NoContent)
             }
         }

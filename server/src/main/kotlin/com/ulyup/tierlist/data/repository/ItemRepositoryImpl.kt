@@ -7,6 +7,7 @@ import com.ulyup.tierlist.domain.repository.ItemRepository
 import com.ulyup.tierlist.model.Tier
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SortOrder
+import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insert
@@ -25,11 +26,7 @@ class ItemRepositoryImpl : ItemRepository {
         TierlistItem(newId, tierlistId, imageUrl, tier, position)
     }
 
-    override suspend fun findById(id: Int): TierlistItem? = dbQuery {
-        TierlistItemsTable.selectAll()
-            .where { TierlistItemsTable.id eq id }
-            .singleOrNull()?.toItem()
-    }
+    override suspend fun findById(id: Int): TierlistItem? = dbQuery { fetchById(id) }
 
     override suspend fun findByTierlistId(tierlistId: Int): List<TierlistItem> = dbQuery {
         TierlistItemsTable.selectAll()
@@ -38,21 +35,25 @@ class ItemRepositoryImpl : ItemRepository {
             .map { it.toItem() }
     }
 
-    override suspend fun update(id: Int, imageUrl: String, tier: Tier?, position: Int): TierlistItem? = dbQuery {
-        val updated = TierlistItemsTable.update({ TierlistItemsTable.id eq id }) {
+    override suspend fun update(id: Int, tierlistId: Int, imageUrl: String, tier: Tier?, position: Int): TierlistItem? = dbQuery {
+        val count = TierlistItemsTable.update({
+            (TierlistItemsTable.id eq id) and (TierlistItemsTable.tierlistId eq tierlistId)
+        }) {
             it[TierlistItemsTable.imageUrl] = imageUrl
             it[TierlistItemsTable.tier] = tier
             it[TierlistItemsTable.position] = position
         }
-        if (updated == 0) null
-        else TierlistItemsTable.selectAll()
-            .where { TierlistItemsTable.id eq id }
-            .singleOrNull()?.toItem()
+        if (count == 0) null else fetchById(id)
     }
 
-    override suspend fun delete(id: Int): Boolean = dbQuery {
-        TierlistItemsTable.deleteWhere { TierlistItemsTable.id eq id } > 0
+    override suspend fun delete(id: Int, tierlistId: Int): Boolean = dbQuery {
+        TierlistItemsTable.deleteWhere {
+            (TierlistItemsTable.id eq id) and (TierlistItemsTable.tierlistId eq tierlistId)
+        } > 0
     }
+
+    private fun fetchById(id: Int): TierlistItem? =
+        TierlistItemsTable.selectAll().where { TierlistItemsTable.id eq id }.singleOrNull()?.toItem()
 
     private fun ResultRow.toItem(): TierlistItem = TierlistItem(
         id = this[TierlistItemsTable.id],

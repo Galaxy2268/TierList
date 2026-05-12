@@ -28,15 +28,11 @@ class UserRepositoryImpl : UserRepository {
     }
 
     override suspend fun findByUsername(username: String): User? = dbQuery {
-        UsersTable.selectAll()
-            .where { UsersTable.username eq username }
-            .singleOrNull()?.toUser()
+        UsersTable.selectAll().where { UsersTable.username eq username }.singleOrNull()?.toUser()
     }
 
     override suspend fun findByEmail(email: String): User? = dbQuery {
-        UsersTable.selectAll()
-            .where { UsersTable.email eq email }
-            .singleOrNull()?.toUser()
+        UsersTable.selectAll().where { UsersTable.email eq email }.singleOrNull()?.toUser()
     }
 
     override suspend fun findByUsernameOrEmail(value: String): User? = dbQuery {
@@ -45,19 +41,15 @@ class UserRepositoryImpl : UserRepository {
             .singleOrNull()?.toUser()
     }
 
-    override suspend fun findById(id: Int): User? = dbQuery {
-        UsersTable.selectAll()
-            .where { UsersTable.id eq id }
-            .singleOrNull()?.toUser()
-    }
+    override suspend fun findById(id: Int): User? = dbQuery { fetchById(id) }
 
     override suspend fun setRole(id: Int, role: UserRole): User? = dbQuery {
-        val updated = UsersTable.update({ UsersTable.id eq id }) { it[UsersTable.role] = role }
-        if (updated == 0) null
-        else UsersTable.selectAll()
-            .where { UsersTable.id eq id }
-            .singleOrNull()?.toUser()
+        val count = UsersTable.update({ UsersTable.id eq id }) { it[UsersTable.role] = role }
+        if (count == 0) null else fetchById(id)
     }
+
+    private fun fetchById(id: Int): User? =
+        UsersTable.selectAll().where { UsersTable.id eq id }.singleOrNull()?.toUser()
 
     private fun ResultRow.toUser(): User = User(
         id = this[UsersTable.id],

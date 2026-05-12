@@ -7,6 +7,7 @@ import com.ulyup.tierlist.domain.service.AuthService
 import com.ulyup.tierlist.dto.UserDto
 import com.ulyup.tierlist.utils.ConflictException
 import com.ulyup.tierlist.utils.UnauthorizedException
+import com.ulyup.tierlist.utils.findOrThrow
 
 class AuthServiceImpl(private val userRepo: UserRepository) : AuthService {
 
@@ -26,7 +27,6 @@ class AuthServiceImpl(private val userRepo: UserRepository) : AuthService {
         return user.toDto()
     }
 
-    override suspend fun getUser(id: Int): UserDto {
-        return userRepo.findById(id)?.toDto() ?: throw NoSuchElementException("User not found")
-    }
+    override suspend fun getUser(id: Int): UserDto =
+        findOrThrow("User") { userRepo.findById(id) }.toDto()
 }
