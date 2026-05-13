@@ -27,14 +27,14 @@ class ItemServiceImpl(
     override suspend fun createItem(session: UserSession, tierlistId: Int, request: CreateItemRequest): ItemDto {
         val tierlist = findOrThrow("Tierlist") { tierlistRepo.findById(tierlistId) }
         session.requireOwnership(tierlist)
-        val position = request.position ?: itemRepo.findByTierlistId(tierlistId).size
+        val position = itemRepo.nextPosition(tierlistId, request.tier)
         return itemRepo.create(tierlistId, request.imageUrl, request.tier, position).toDto()
     }
 
     override suspend fun updateItem(session: UserSession, tierlistId: Int, itemId: Int, request: UpdateItemRequest): ItemDto {
         val tierlist = findOrThrow("Tierlist") { tierlistRepo.findById(tierlistId) }
         session.requireOwnership(tierlist)
-        return itemRepo.update(itemId, tierlistId, request.imageUrl, request.tier, request.position)?.toDto()
+        return itemRepo.update(itemId, tierlistId, request.imageUrl)?.toDto()
             ?: throw NoSuchElementException("Item not found")
     }
 

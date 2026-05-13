@@ -1,5 +1,6 @@
 package com.ulyup.tierlist
 
+import com.ulyup.tierlist.auth.SessionKey
 import com.ulyup.tierlist.auth.UserSession
 import com.ulyup.tierlist.data.db.DatabaseFactory
 import com.ulyup.tierlist.data.repository.ItemRepositoryImpl
@@ -8,9 +9,13 @@ import com.ulyup.tierlist.data.repository.UserRepositoryImpl
 import com.ulyup.tierlist.data.service.AuthServiceImpl
 import com.ulyup.tierlist.data.service.ItemServiceImpl
 import com.ulyup.tierlist.data.service.TierlistServiceImpl
+import com.ulyup.tierlist.data.service.UserServiceImpl
+import com.ulyup.tierlist.dto.ErrorResponse
 import com.ulyup.tierlist.routes.authRoutes
 import com.ulyup.tierlist.routes.itemRoutes
 import com.ulyup.tierlist.routes.tierlistRoutes
+import com.ulyup.tierlist.routes.userRoutes
+import com.ulyup.tierlist.utils.CapReachedException
 import com.ulyup.tierlist.utils.ConflictException
 import com.ulyup.tierlist.utils.UnauthorizedException
 import io.ktor.http.*
@@ -37,22 +42,25 @@ fun Application.module() {
 
     install(StatusPages) {
         exception<IllegalArgumentException> { call, cause ->
-            call.respondText(cause.message ?: "Bad request", status = HttpStatusCode.BadRequest)
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse(cause.message ?: "Bad request"))
         }
         exception<NoSuchElementException> { call, cause ->
-            call.respondText(cause.message ?: "Not found", status = HttpStatusCode.NotFound)
+            call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: "Not found"))
         }
         exception<SecurityException> { call, cause ->
-            call.respondText(cause.message ?: "Forbidden", status = HttpStatusCode.Forbidden)
+            call.respond(HttpStatusCode.Forbidden, ErrorResponse(cause.message ?: "Forbidden"))
+        }
+        exception<CapReachedException> { call, cause ->
+            call.respond(HttpStatusCode.Forbidden, ErrorResponse(cause.message ?: "Plan limit reached"))
         }
         exception<ConflictException> { call, cause ->
-            call.respondText(cause.message ?: "Conflict", status = HttpStatusCode.Conflict)
+            call.respond(HttpStatusCode.Conflict, ErrorResponse(cause.message ?: "Conflict"))
         }
         exception<UnauthorizedException> { call, cause ->
-            call.respondText(cause.message ?: "Unauthorized", status = HttpStatusCode.Unauthorized)
+            call.respond(HttpStatusCode.Unauthorized, ErrorResponse(cause.message ?: "Unauthorized"))
         }
         exception<Throwable> { call, cause ->
-            call.respondText(cause.message ?: "Internal server error", status = HttpStatusCode.InternalServerError)
+            call.respond(HttpStatusCode.InternalServerError, ErrorResponse(cause.message ?: "Internal server error"))
         }
     }
 
@@ -68,6 +76,7 @@ fun Application.module() {
             cookie.path = "/"
             cookie.httpOnly = true
             cookie.maxAgeInSeconds = 60L * 60 * 24 * 7
+            transform(SessionTransportTransformerMessageAuthentication(SessionKey.loadOrCreate()))
         }
     }
 
@@ -90,10 +99,12 @@ fun Application.module() {
     val authService = AuthServiceImpl(userRepo)
     val tierlistService = TierlistServiceImpl(tierlistRepo, userRepo, itemRepo)
     val itemService = ItemServiceImpl(itemRepo, tierlistRepo)
+    val userService = UserServiceImpl(userRepo)
 
     routing {
         authRoutes(authService)
         tierlistRoutes(tierlistService)
         itemRoutes(itemService)
+        userRoutes(userService)
     }
 }

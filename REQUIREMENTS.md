@@ -37,6 +37,8 @@ Tier List is a web application for entertainment and personal information saving
 
 ### Models
 - **User** — id, username, email, password, role (USER / PREMIUM)
+  - USER: up to 5 tier lists
+  - PREMIUM: unlimited tier lists
 - **Tierlist** — id, userId, title, isPublic, createdAt
 - **TierlistItem** — id, tierlistId, imageUrl, tier (S/A/B/C/D/F), position
   - *Note: approved spec includes a `name` field; this implementation drops it (items are plain images).*

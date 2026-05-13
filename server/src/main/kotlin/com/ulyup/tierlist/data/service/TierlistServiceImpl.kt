@@ -12,6 +12,7 @@ import com.ulyup.tierlist.dto.UpdateTierlistRequest
 import com.ulyup.tierlist.dto.UpdateVisibilityRequest
 import com.ulyup.tierlist.model.UserRole
 import com.ulyup.tierlist.data.mapper.toDto
+import com.ulyup.tierlist.utils.CapReachedException
 import com.ulyup.tierlist.utils.findOrThrow
 import com.ulyup.tierlist.utils.requireOwnership
 
@@ -39,7 +40,7 @@ class TierlistServiceImpl(
 
     override suspend fun createTierlist(session: UserSession, request: CreateTierlistRequest): TierlistDto {
         if (session.role == UserRole.USER && tierlistRepo.countByUser(session.userId) >= 5) {
-            throw SecurityException("Tierlist limit of 5 reached. Upgrade to Premium for unlimited lists.")
+            throw CapReachedException("Tierlist limit of 5 reached. Upgrade to Premium for unlimited lists.")
         }
         val tierlist = tierlistRepo.create(session.userId, request.title, request.isPublic)
         return tierlist.enrich(knownUsername = session.username)

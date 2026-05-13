@@ -8,6 +8,7 @@ import com.ulyup.tierlist.dto.UserDto
 import com.ulyup.tierlist.utils.ConflictException
 import com.ulyup.tierlist.utils.UnauthorizedException
 import com.ulyup.tierlist.utils.findOrThrow
+import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
 
 class AuthServiceImpl(private val userRepo: UserRepository) : AuthService {
 
@@ -16,7 +17,11 @@ class AuthServiceImpl(private val userRepo: UserRepository) : AuthService {
         if (userRepo.findByUsername(username) != null || userRepo.findByEmail(email) != null) {
             throw ConflictException("Username or email already taken")
         }
-        return userRepo.create(username, email, Passwords.hash(password)).toDto()
+        return try {
+            userRepo.create(username, email, Passwords.hash(password)).toDto()
+        } catch (_: ExposedSQLException) {
+            throw ConflictException("Username or email already taken")
+        }
     }
 
     override suspend fun login(usernameOrEmail: String, password: String): UserDto {

@@ -16,12 +16,9 @@ data class ItemDto(
 data class CreateItemRequest(
     val imageUrl: String,
     val tier: Tier? = null,
-    val position: Int? = null,
 )
 
 @Serializable
 data class UpdateItemRequest(
     val imageUrl: String,
-    val tier: Tier?,
-    val position: Int,
 )
