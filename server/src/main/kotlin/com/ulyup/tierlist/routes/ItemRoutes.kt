@@ -4,6 +4,7 @@ import com.ulyup.tierlist.auth.UserSession
 import com.ulyup.tierlist.auth.authenticated
 import com.ulyup.tierlist.domain.service.ItemService
 import com.ulyup.tierlist.dto.CreateItemRequest
+import com.ulyup.tierlist.dto.MoveItemRequest
 import com.ulyup.tierlist.dto.UpdateItemRequest
 import com.ulyup.tierlist.utils.requireInt
 import com.ulyup.tierlist.utils.userSession
@@ -33,6 +34,13 @@ fun Route.itemRoutes(itemService: ItemService) {
                 val itemId = call.parameters.requireInt("itemId")
                 val request = call.receive<UpdateItemRequest>()
                 call.respond(itemService.updateItem(call.userSession, tierlistId, itemId, request))
+            }
+
+            patch("/{itemId}/move") {
+                val tierlistId = call.parameters.requireInt("id")
+                val itemId = call.parameters.requireInt("itemId")
+                val request = call.receive<MoveItemRequest>()
+                call.respond(itemService.moveItem(call.userSession, tierlistId, itemId, request))
             }
 
             delete("/{itemId}") {

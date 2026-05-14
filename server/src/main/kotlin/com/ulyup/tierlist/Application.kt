@@ -97,7 +97,7 @@ fun Application.module() {
     val itemRepo = ItemRepositoryImpl()
 
     val authService = AuthServiceImpl(userRepo)
-    val tierlistService = TierlistServiceImpl(tierlistRepo, userRepo, itemRepo)
+    val tierlistService = TierlistServiceImpl(tierlistRepo, itemRepo)
     val itemService = ItemServiceImpl(itemRepo, tierlistRepo)
     val userService = UserServiceImpl(userRepo)
 

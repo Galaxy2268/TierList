@@ -7,11 +7,19 @@ import kotlin.time.Instant
 data class TierlistDto(
     val id: Int,
     val userId: Int,
-    val ownerUsername: String,
     val title: String,
     val isPublic: Boolean,
     val createdAt: Instant,
-    val itemCount: Int,
+)
+
+@Serializable
+data class TierlistDetailDto(
+    val id: Int,
+    val userId: Int,
+    val title: String,
+    val isPublic: Boolean,
+    val createdAt: Instant,
+    val items: List<ItemDto>,
 )
 
 @Serializable

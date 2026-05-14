@@ -22,3 +22,9 @@ data class CreateItemRequest(
 data class UpdateItemRequest(
     val imageUrl: String,
 )
+
+@Serializable
+data class MoveItemRequest(
+    val tier: Tier?,
+    val position: Int,
+)

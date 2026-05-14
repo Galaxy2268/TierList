@@ -7,6 +7,7 @@ import com.ulyup.tierlist.domain.repository.TierlistRepository
 import com.ulyup.tierlist.domain.service.ItemService
 import com.ulyup.tierlist.dto.CreateItemRequest
 import com.ulyup.tierlist.dto.ItemDto
+import com.ulyup.tierlist.dto.MoveItemRequest
 import com.ulyup.tierlist.dto.UpdateItemRequest
 import com.ulyup.tierlist.utils.findOrThrow
 import com.ulyup.tierlist.utils.requireOwnership
@@ -35,6 +36,14 @@ class ItemServiceImpl(
         val tierlist = findOrThrow("Tierlist") { tierlistRepo.findById(tierlistId) }
         session.requireOwnership(tierlist)
         return itemRepo.update(itemId, tierlistId, request.imageUrl)?.toDto()
+            ?: throw NoSuchElementException("Item not found")
+    }
+
+    override suspend fun moveItem(session: UserSession, tierlistId: Int, itemId: Int, request: MoveItemRequest): ItemDto {
+        require(request.position >= 0) { "position must be >= 0" }
+        val tierlist = findOrThrow("Tierlist") { tierlistRepo.findById(tierlistId) }
+        session.requireOwnership(tierlist)
+        return itemRepo.move(itemId, tierlistId, request.tier, request.position)?.toDto()
             ?: throw NoSuchElementException("Item not found")
     }
 

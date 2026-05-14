@@ -53,10 +53,40 @@ class ItemRepositoryImpl : ItemRepository {
         true
     }
 
+    override suspend fun move(id: Int, tierlistId: Int, newTier: Tier?, newPosition: Int): TierlistItem? = dbQuery {
+        val item = fetchById(id) ?: return@dbQuery null
+        if (item.tierlistId != tierlistId) return@dbQuery null
+        val oldTier = item.tier
+
+        // Double existing positions so the moved item can slot in at an odd number between them.
+        // Setting position = newPosition*2 - 1 makes the moved item sort just before whoever was at newPosition,
+        // which avoids the undefined tie-break that a plain "update + reindex" would hit.
+        doublePositions(tierlistId, newTier)
+        TierlistItemsTable.update({ TierlistItemsTable.id eq id }) {
+            it[TierlistItemsTable.tier] = newTier
+            it[TierlistItemsTable.position] = newPosition * 2 - 1
+        }
+        reindexTier(tierlistId, newTier)
+        if (oldTier != newTier) reindexTier(tierlistId, oldTier)
+
+        fetchById(id)
+    }
+
     override suspend fun nextPosition(tierlistId: Int, tier: Tier?): Int = dbQuery {
         TierlistItemsTable.selectAll()
             .where { (TierlistItemsTable.tierlistId eq tierlistId) and tierMatches(tier) }
             .count().toInt()
+    }
+
+    private fun doublePositions(tierlistId: Int, tier: Tier?) {
+        TierlistItemsTable.selectAll()
+            .where { (TierlistItemsTable.tierlistId eq tierlistId) and tierMatches(tier) }
+            .map { it[TierlistItemsTable.id] to it[TierlistItemsTable.position] }
+            .forEach { (itemId, position) ->
+                TierlistItemsTable.update({ TierlistItemsTable.id eq itemId }) {
+                    it[TierlistItemsTable.position] = position * 2
+                }
+            }
     }
 
     private fun reindexTier(tierlistId: Int, tier: Tier?) {
