@@ -13,7 +13,7 @@ fun User.toDto() = UserDto(id, username, email, role, createdAt)
 fun Tierlist.toDto() =
     TierlistDto(id, userId, title, isPublic, createdAt)
 
-fun Tierlist.toDetailDto(items: List<ItemDto>) =
-    TierlistDetailDto(id, userId, title, isPublic, createdAt, items)
+fun Tierlist.toDetailDto(items: List<TierlistItem>) =
+    TierlistDetailDto(id, userId, title, isPublic, createdAt, items.map { it.toDto() })
 
 fun TierlistItem.toDto() = ItemDto(id, tierlistId, imageUrl, tier, position)

@@ -3,8 +3,6 @@ package com.ulyup.tierlist.data.db
 import com.ulyup.tierlist.data.db.tables.TierlistItemsTable
 import com.ulyup.tierlist.data.db.tables.TierlistsTable
 import com.ulyup.tierlist.data.db.tables.UsersTable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.transactions.suspendTransaction
@@ -21,5 +19,5 @@ object DatabaseFactory {
     }
 
     suspend fun <T> dbQuery(block: suspend () -> T): T =
-        withContext(Dispatchers.IO) { suspendTransaction { block() } }
+        suspendTransaction { block() }
 }

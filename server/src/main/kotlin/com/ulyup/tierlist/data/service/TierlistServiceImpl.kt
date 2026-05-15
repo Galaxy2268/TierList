@@ -29,8 +29,7 @@ class TierlistServiceImpl(
         if (!tierlist.isPublic && (caller == null || caller.userId != tierlist.userId)) {
             throw NotFoundException("Tierlist not found")
         }
-        val items = itemRepo.findByTierlistId(id).map { it.toDto() }
-        return tierlist.toDetailDto(items)
+        return tierlist.toDetailDto(itemRepo.findByTierlistId(id))
     }
 
     override suspend fun getUserTierlists(caller: Caller): List<TierlistDto> =

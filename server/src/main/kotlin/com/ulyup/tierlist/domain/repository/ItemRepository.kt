@@ -4,7 +4,7 @@ import com.ulyup.tierlist.domain.model.TierlistItem
 import com.ulyup.tierlist.model.Tier
 
 interface ItemRepository {
-    suspend fun create(tierlistId: Int, userId: Int, imageUrl: String, tier: Tier?): TierlistItem?
+    suspend fun create(tierlistId: Int, userId: Int, imageUrl: String): TierlistItem?
     suspend fun findById(id: Int): TierlistItem?
     suspend fun findByTierlistId(tierlistId: Int): List<TierlistItem>
     suspend fun update(id: Int, tierlistId: Int, userId: Int, imageUrl: String): TierlistItem?

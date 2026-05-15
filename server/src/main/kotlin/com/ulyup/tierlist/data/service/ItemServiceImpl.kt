@@ -27,7 +27,7 @@ class ItemServiceImpl(
     }
 
     override suspend fun createItem(caller: Caller, tierlistId: Int, request: CreateItemRequest): ItemDto =
-        itemRepo.create(tierlistId, caller.userId, request.imageUrl, request.tier)?.toDto()
+        itemRepo.create(tierlistId, caller.userId, request.imageUrl)?.toDto()
             ?: throw NotFoundException("Tierlist not found")
 
     override suspend fun updateItem(caller: Caller, tierlistId: Int, itemId: Int, request: UpdateItemRequest): ItemDto =

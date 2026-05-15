@@ -18,18 +18,16 @@ import org.jetbrains.exposed.v1.jdbc.update
 
 class ItemRepositoryImpl : ItemRepository {
 
-    override suspend fun create(tierlistId: Int, userId: Int, imageUrl: String, tier: Tier?): TierlistItem? = dbQuery {
+    override suspend fun create(tierlistId: Int, userId: Int, imageUrl: String): TierlistItem? = dbQuery {
         if (!ownsParent(tierlistId, userId)) return@dbQuery null
-        val position = TierlistItemsTable.selectAll()
-            .where { (TierlistItemsTable.tierlistId eq tierlistId) and tierMatches(tier) }
-            .count().toInt()
+        val position = loadTier(tierlistId, tier = null).size
         val newId = TierlistItemsTable.insert {
             it[TierlistItemsTable.tierlistId] = tierlistId
             it[TierlistItemsTable.imageUrl] = imageUrl
-            it[TierlistItemsTable.tier] = tier
+            it[TierlistItemsTable.tier] = null
             it[TierlistItemsTable.position] = position
         } get TierlistItemsTable.id
-        TierlistItem(newId, tierlistId, imageUrl, tier, position)
+        TierlistItem(newId, tierlistId, imageUrl, tier = null, position = position)
     }
 
     override suspend fun findById(id: Int): TierlistItem? = dbQuery { fetchById(id) }
@@ -56,7 +54,7 @@ class ItemRepositoryImpl : ItemRepository {
         val item = fetchById(id) ?: return@dbQuery false
         if (item.tierlistId != tierlistId) return@dbQuery false
         TierlistItemsTable.deleteWhere { TierlistItemsTable.id eq id }
-        reindexTier(tierlistId, item.tier)
+        compactTier(tierlistId, item.tier)
         true
     }
 
@@ -64,18 +62,16 @@ class ItemRepositoryImpl : ItemRepository {
         if (!ownsParent(tierlistId, userId)) return@dbQuery null
         val item = fetchById(id) ?: return@dbQuery null
         if (item.tierlistId != tierlistId) return@dbQuery null
-        val oldTier = item.tier
 
-        // Double existing positions so the moved item can slot in at an odd number between them.
-        // Setting position = newPosition*2 - 1 makes the moved item sort just before whoever was at newPosition,
-        // which avoids the undefined tie-break that a plain "update + reindex" would hit.
-        doublePositions(tierlistId, newTier)
-        TierlistItemsTable.update({ TierlistItemsTable.id eq id }) {
-            it[TierlistItemsTable.tier] = newTier
-            it[TierlistItemsTable.position] = newPosition * 2 - 1
-        }
-        reindexTier(tierlistId, newTier)
-        if (oldTier != newTier) reindexTier(tierlistId, oldTier)
+        val oldTier = item.tier
+        // Build the new ordering of the destination tier: take everyone currently there,
+        // pull out the moved item if it was already in this tier, then insert at newPosition.
+        val destination = loadTier(tierlistId, newTier)
+            .filter { it.id != id }
+            .toMutableList()
+            .also { it.add(newPosition.coerceIn(0, it.size), item) }
+        assignPositions(newTier, destination)
+        if (oldTier != newTier) compactTier(tierlistId, oldTier)
 
         fetchById(id)
     }
@@ -85,25 +81,25 @@ class ItemRepositoryImpl : ItemRepository {
             .where { (TierlistsTable.id eq tierlistId) and (TierlistsTable.userId eq userId) }
             .count() > 0
 
-    private fun doublePositions(tierlistId: Int, tier: Tier?) {
+    private fun loadTier(tierlistId: Int, tier: Tier?): List<TierlistItem> =
         TierlistItemsTable.selectAll()
             .where { (TierlistItemsTable.tierlistId eq tierlistId) and tierMatches(tier) }
-            .map { it[TierlistItemsTable.id] to it[TierlistItemsTable.position] }
-            .forEach { (itemId, position) ->
-                TierlistItemsTable.update({ TierlistItemsTable.id eq itemId }) {
-                    it[TierlistItemsTable.position] = position * 2
-                }
+            .orderBy(TierlistItemsTable.position to SortOrder.ASC)
+            .map { it.toItem() }
+
+    private fun assignPositions(tier: Tier?, items: List<TierlistItem>) {
+        items.forEachIndexed { index, currentItem ->
+            TierlistItemsTable.update({ TierlistItemsTable.id eq currentItem.id }) {
+                it[TierlistItemsTable.tier] = tier
+                it[TierlistItemsTable.position] = index
             }
+        }
     }
 
-    private fun reindexTier(tierlistId: Int, tier: Tier?) {
-        val items = TierlistItemsTable.selectAll()
-            .where { (TierlistItemsTable.tierlistId eq tierlistId) and tierMatches(tier) }
-            .orderBy(TierlistItemsTable.position to SortOrder.ASC)
-            .map { it[TierlistItemsTable.id] to it[TierlistItemsTable.position] }
-        items.forEachIndexed { index, (itemId, currentPosition) ->
-            if (currentPosition != index) {
-                TierlistItemsTable.update({ TierlistItemsTable.id eq itemId }) {
+    private fun compactTier(tierlistId: Int, tier: Tier?) {
+        loadTier(tierlistId, tier).forEachIndexed { index, currentItem ->
+            if (currentItem.position != index) {
+                TierlistItemsTable.update({ TierlistItemsTable.id eq currentItem.id }) {
                     it[TierlistItemsTable.position] = index
                 }
             }

@@ -5,9 +5,11 @@ import com.ulyup.tierlist.data.db.tables.UsersTable
 import com.ulyup.tierlist.domain.model.User
 import com.ulyup.tierlist.domain.repository.UserRepository
 import com.ulyup.tierlist.model.UserRole
+import com.ulyup.tierlist.utils.ConflictException
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.or
+import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.update
@@ -17,13 +19,20 @@ class UserRepositoryImpl : UserRepository {
 
     override suspend fun create(username: String, email: String, passwordHash: String): User = dbQuery {
         val now = Clock.System.now()
-        val newId = UsersTable.insert {
-            it[UsersTable.username] = username
-            it[UsersTable.email] = email
-            it[UsersTable.passwordHash] = passwordHash
-            it[UsersTable.role] = UserRole.USER
-            it[UsersTable.createdAt] = now
-        } get UsersTable.id
+        val newId = try {
+            UsersTable.insert {
+                it[UsersTable.username] = username
+                it[UsersTable.email] = email
+                it[UsersTable.passwordHash] = passwordHash
+                it[UsersTable.role] = UserRole.USER
+                it[UsersTable.createdAt] = now
+            } get UsersTable.id
+        } catch (e: ExposedSQLException) {
+            if (e.message?.contains("UNIQUE constraint failed", ignoreCase = true) == true) {
+                throw ConflictException("Username or email already taken")
+            }
+            throw e
+        }
         User(newId, username, email, passwordHash, UserRole.USER, now)
     }
 

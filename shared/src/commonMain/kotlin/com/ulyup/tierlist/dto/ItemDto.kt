@@ -15,7 +15,6 @@ data class ItemDto(
 @Serializable
 data class CreateItemRequest(
     val imageUrl: String,
-    val tier: Tier? = null,
 )
 
 @Serializable

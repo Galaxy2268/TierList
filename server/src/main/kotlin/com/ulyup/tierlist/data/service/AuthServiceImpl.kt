@@ -6,23 +6,25 @@ import com.ulyup.tierlist.domain.repository.UserRepository
 import com.ulyup.tierlist.domain.service.AuthService
 import com.ulyup.tierlist.dto.UserDto
 import com.ulyup.tierlist.utils.BadRequestException
-import com.ulyup.tierlist.utils.ConflictException
 import com.ulyup.tierlist.utils.UnauthorizedException
 import com.ulyup.tierlist.utils.findOrThrow
-import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
+
+private val usernamePattern = Regex("^[a-zA-Z0-9_]{3,32}$")
+private val emailPattern = Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")
 
 class AuthServiceImpl(private val userRepo: UserRepository) : AuthService {
 
     override suspend fun register(username: String, email: String, password: String): UserDto {
-        if (password.length < 8) throw BadRequestException("Password must be at least 8 characters")
-        if (userRepo.findByUsername(username) != null || userRepo.findByEmail(email) != null) {
-            throw ConflictException("Username or email already taken")
+        if (!usernamePattern.matches(username)) {
+            throw BadRequestException("Username must be 3-32 characters: letters, digits, underscore")
         }
-        return try {
-            userRepo.create(username, email, Passwords.hash(password)).toDto()
-        } catch (_: ExposedSQLException) {
-            throw ConflictException("Username or email already taken")
+        if (email.length > 255 || !emailPattern.matches(email)) {
+            throw BadRequestException("Email must be a valid address up to 255 characters")
         }
+        if (password.length !in 8..128) {
+            throw BadRequestException("Password must be 8-128 characters")
+        }
+        return userRepo.create(username, email, Passwords.hash(password)).toDto()
     }
 
     override suspend fun login(usernameOrEmail: String, password: String): UserDto {
