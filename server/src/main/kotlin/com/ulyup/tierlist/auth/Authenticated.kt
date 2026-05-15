@@ -1,15 +1,14 @@
 package com.ulyup.tierlist.auth
 
-import io.ktor.http.*
+import com.ulyup.tierlist.utils.UnauthorizedException
 import io.ktor.server.application.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 
 private val AuthPlugin = createRouteScopedPlugin("AuthPlugin") {
     onCall { call ->
         if (call.sessions.get<UserSession>() == null) {
-            call.respond(HttpStatusCode.Unauthorized)
+            throw UnauthorizedException("Not authenticated")
         }
     }
 }

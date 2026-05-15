@@ -2,6 +2,7 @@ package com.ulyup.tierlist.data.repository
 
 import com.ulyup.tierlist.data.db.DatabaseFactory.dbQuery
 import com.ulyup.tierlist.data.db.tables.TierlistItemsTable
+import com.ulyup.tierlist.data.db.tables.TierlistsTable
 import com.ulyup.tierlist.domain.model.TierlistItem
 import com.ulyup.tierlist.domain.repository.ItemRepository
 import com.ulyup.tierlist.model.Tier
@@ -17,7 +18,11 @@ import org.jetbrains.exposed.v1.jdbc.update
 
 class ItemRepositoryImpl : ItemRepository {
 
-    override suspend fun create(tierlistId: Int, imageUrl: String, tier: Tier?, position: Int): TierlistItem = dbQuery {
+    override suspend fun create(tierlistId: Int, userId: Int, imageUrl: String, tier: Tier?): TierlistItem? = dbQuery {
+        if (!ownsParent(tierlistId, userId)) return@dbQuery null
+        val position = TierlistItemsTable.selectAll()
+            .where { (TierlistItemsTable.tierlistId eq tierlistId) and tierMatches(tier) }
+            .count().toInt()
         val newId = TierlistItemsTable.insert {
             it[TierlistItemsTable.tierlistId] = tierlistId
             it[TierlistItemsTable.imageUrl] = imageUrl
@@ -36,7 +41,8 @@ class ItemRepositoryImpl : ItemRepository {
             .map { it.toItem() }
     }
 
-    override suspend fun update(id: Int, tierlistId: Int, imageUrl: String): TierlistItem? = dbQuery {
+    override suspend fun update(id: Int, tierlistId: Int, userId: Int, imageUrl: String): TierlistItem? = dbQuery {
+        if (!ownsParent(tierlistId, userId)) return@dbQuery null
         val count = TierlistItemsTable.update({
             (TierlistItemsTable.id eq id) and (TierlistItemsTable.tierlistId eq tierlistId)
         }) {
@@ -45,7 +51,8 @@ class ItemRepositoryImpl : ItemRepository {
         if (count == 0) null else fetchById(id)
     }
 
-    override suspend fun delete(id: Int, tierlistId: Int): Boolean = dbQuery {
+    override suspend fun delete(id: Int, tierlistId: Int, userId: Int): Boolean = dbQuery {
+        if (!ownsParent(tierlistId, userId)) return@dbQuery false
         val item = fetchById(id) ?: return@dbQuery false
         if (item.tierlistId != tierlistId) return@dbQuery false
         TierlistItemsTable.deleteWhere { TierlistItemsTable.id eq id }
@@ -53,7 +60,8 @@ class ItemRepositoryImpl : ItemRepository {
         true
     }
 
-    override suspend fun move(id: Int, tierlistId: Int, newTier: Tier?, newPosition: Int): TierlistItem? = dbQuery {
+    override suspend fun move(id: Int, tierlistId: Int, userId: Int, newTier: Tier?, newPosition: Int): TierlistItem? = dbQuery {
+        if (!ownsParent(tierlistId, userId)) return@dbQuery null
         val item = fetchById(id) ?: return@dbQuery null
         if (item.tierlistId != tierlistId) return@dbQuery null
         val oldTier = item.tier
@@ -72,11 +80,10 @@ class ItemRepositoryImpl : ItemRepository {
         fetchById(id)
     }
 
-    override suspend fun nextPosition(tierlistId: Int, tier: Tier?): Int = dbQuery {
-        TierlistItemsTable.selectAll()
-            .where { (TierlistItemsTable.tierlistId eq tierlistId) and tierMatches(tier) }
-            .count().toInt()
-    }
+    private fun ownsParent(tierlistId: Int, userId: Int): Boolean =
+        TierlistsTable.selectAll()
+            .where { (TierlistsTable.id eq tierlistId) and (TierlistsTable.userId eq userId) }
+            .count() > 0
 
     private fun doublePositions(tierlistId: Int, tier: Tier?) {
         TierlistItemsTable.selectAll()

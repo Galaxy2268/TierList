@@ -5,7 +5,7 @@ import com.ulyup.tierlist.auth.authenticated
 import com.ulyup.tierlist.domain.service.AuthService
 import com.ulyup.tierlist.dto.LoginRequest
 import com.ulyup.tierlist.dto.RegisterRequest
-import com.ulyup.tierlist.utils.userSession
+import com.ulyup.tierlist.utils.caller
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -35,7 +35,7 @@ fun Route.authRoutes(authService: AuthService) {
             }
 
             get("/me") {
-                call.respond(authService.getUser(call.userSession.userId))
+                call.respond(authService.getUser(call.caller.userId))
             }
         }
     }

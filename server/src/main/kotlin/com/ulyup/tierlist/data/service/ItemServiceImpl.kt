@@ -1,7 +1,7 @@
 package com.ulyup.tierlist.data.service
 
-import com.ulyup.tierlist.auth.UserSession
 import com.ulyup.tierlist.data.mapper.toDto
+import com.ulyup.tierlist.domain.model.Caller
 import com.ulyup.tierlist.domain.repository.ItemRepository
 import com.ulyup.tierlist.domain.repository.TierlistRepository
 import com.ulyup.tierlist.domain.service.ItemService
@@ -9,47 +9,38 @@ import com.ulyup.tierlist.dto.CreateItemRequest
 import com.ulyup.tierlist.dto.ItemDto
 import com.ulyup.tierlist.dto.MoveItemRequest
 import com.ulyup.tierlist.dto.UpdateItemRequest
+import com.ulyup.tierlist.utils.BadRequestException
+import com.ulyup.tierlist.utils.NotFoundException
 import com.ulyup.tierlist.utils.findOrThrow
-import com.ulyup.tierlist.utils.requireOwnership
 
 class ItemServiceImpl(
     private val itemRepo: ItemRepository,
     private val tierlistRepo: TierlistRepository,
 ) : ItemService {
 
-    override suspend fun getItems(session: UserSession?, tierlistId: Int): List<ItemDto> {
+    override suspend fun getItems(caller: Caller?, tierlistId: Int): List<ItemDto> {
         val tierlist = findOrThrow("Tierlist") { tierlistRepo.findById(tierlistId) }
-        if (!tierlist.isPublic && (session == null || session.userId != tierlist.userId)) {
-            throw NoSuchElementException("Tierlist not found")
+        if (!tierlist.isPublic && (caller == null || caller.userId != tierlist.userId)) {
+            throw NotFoundException("Tierlist not found")
         }
         return itemRepo.findByTierlistId(tierlistId).map { it.toDto() }
     }
 
-    override suspend fun createItem(session: UserSession, tierlistId: Int, request: CreateItemRequest): ItemDto {
-        val tierlist = findOrThrow("Tierlist") { tierlistRepo.findById(tierlistId) }
-        session.requireOwnership(tierlist)
-        val position = itemRepo.nextPosition(tierlistId, request.tier)
-        return itemRepo.create(tierlistId, request.imageUrl, request.tier, position).toDto()
+    override suspend fun createItem(caller: Caller, tierlistId: Int, request: CreateItemRequest): ItemDto =
+        itemRepo.create(tierlistId, caller.userId, request.imageUrl, request.tier)?.toDto()
+            ?: throw NotFoundException("Tierlist not found")
+
+    override suspend fun updateItem(caller: Caller, tierlistId: Int, itemId: Int, request: UpdateItemRequest): ItemDto =
+        itemRepo.update(itemId, tierlistId, caller.userId, request.imageUrl)?.toDto()
+            ?: throw NotFoundException("Item not found")
+
+    override suspend fun moveItem(caller: Caller, tierlistId: Int, itemId: Int, request: MoveItemRequest): ItemDto {
+        if (request.position < 0) throw BadRequestException("position must be >= 0")
+        return itemRepo.move(itemId, tierlistId, caller.userId, request.tier, request.position)?.toDto()
+            ?: throw NotFoundException("Item not found")
     }
 
-    override suspend fun updateItem(session: UserSession, tierlistId: Int, itemId: Int, request: UpdateItemRequest): ItemDto {
-        val tierlist = findOrThrow("Tierlist") { tierlistRepo.findById(tierlistId) }
-        session.requireOwnership(tierlist)
-        return itemRepo.update(itemId, tierlistId, request.imageUrl)?.toDto()
-            ?: throw NoSuchElementException("Item not found")
-    }
-
-    override suspend fun moveItem(session: UserSession, tierlistId: Int, itemId: Int, request: MoveItemRequest): ItemDto {
-        require(request.position >= 0) { "position must be >= 0" }
-        val tierlist = findOrThrow("Tierlist") { tierlistRepo.findById(tierlistId) }
-        session.requireOwnership(tierlist)
-        return itemRepo.move(itemId, tierlistId, request.tier, request.position)?.toDto()
-            ?: throw NoSuchElementException("Item not found")
-    }
-
-    override suspend fun deleteItem(session: UserSession, tierlistId: Int, itemId: Int) {
-        val tierlist = findOrThrow("Tierlist") { tierlistRepo.findById(tierlistId) }
-        session.requireOwnership(tierlist)
-        if (!itemRepo.delete(itemId, tierlistId)) throw NoSuchElementException("Item not found")
+    override suspend fun deleteItem(caller: Caller, tierlistId: Int, itemId: Int) {
+        if (!itemRepo.delete(itemId, tierlistId, caller.userId)) throw NotFoundException("Item not found")
     }
 }

@@ -1,9 +1,9 @@
 package com.ulyup.tierlist.domain.service
 
-import com.ulyup.tierlist.auth.UserSession
+import com.ulyup.tierlist.domain.model.Caller
 import com.ulyup.tierlist.dto.UserDto
 
 interface UserService {
-    suspend fun getCurrentUser(session: UserSession): UserDto
-    suspend fun upgradeToPremium(session: UserSession): UserDto
+    suspend fun getCurrentUser(caller: Caller): UserDto
+    suspend fun upgradeToPremium(caller: Caller): UserDto
 }

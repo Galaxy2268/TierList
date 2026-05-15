@@ -6,6 +6,7 @@ import com.ulyup.tierlist.domain.model.Tierlist
 import com.ulyup.tierlist.domain.repository.TierlistRepository
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.SortOrder
+import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insert
@@ -43,18 +44,18 @@ class TierlistRepositoryImpl : TierlistRepository {
             .map { it.toTierlist() }
     }
 
-    override suspend fun update(id: Int, title: String): Tierlist? = dbQuery {
-        val count = TierlistsTable.update({ TierlistsTable.id eq id }) { it[TierlistsTable.title] = title }
+    override suspend fun update(id: Int, userId: Int, title: String): Tierlist? = dbQuery {
+        val count = TierlistsTable.update({ ownedBy(id, userId) }) { it[TierlistsTable.title] = title }
         if (count == 0) null else fetchById(id)
     }
 
-    override suspend fun setVisibility(id: Int, isPublic: Boolean): Tierlist? = dbQuery {
-        val count = TierlistsTable.update({ TierlistsTable.id eq id }) { it[TierlistsTable.isPublic] = isPublic }
+    override suspend fun setVisibility(id: Int, userId: Int, isPublic: Boolean): Tierlist? = dbQuery {
+        val count = TierlistsTable.update({ ownedBy(id, userId) }) { it[TierlistsTable.isPublic] = isPublic }
         if (count == 0) null else fetchById(id)
     }
 
-    override suspend fun delete(id: Int): Boolean = dbQuery {
-        TierlistsTable.deleteWhere { TierlistsTable.id eq id } > 0
+    override suspend fun delete(id: Int, userId: Int): Boolean = dbQuery {
+        TierlistsTable.deleteWhere { ownedBy(id, userId) } > 0
     }
 
     override suspend fun countByUser(userId: Int): Long = dbQuery {
@@ -62,6 +63,9 @@ class TierlistRepositoryImpl : TierlistRepository {
             .where { TierlistsTable.userId eq userId }
             .count()
     }
+
+    private fun ownedBy(id: Int, userId: Int) =
+        (TierlistsTable.id eq id) and (TierlistsTable.userId eq userId)
 
     private fun fetchById(id: Int): Tierlist? =
         TierlistsTable.selectAll().where { TierlistsTable.id eq id }.singleOrNull()?.toTierlist()

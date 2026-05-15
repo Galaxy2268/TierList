@@ -15,8 +15,11 @@ import com.ulyup.tierlist.routes.authRoutes
 import com.ulyup.tierlist.routes.itemRoutes
 import com.ulyup.tierlist.routes.tierlistRoutes
 import com.ulyup.tierlist.routes.userRoutes
+import com.ulyup.tierlist.utils.BadRequestException
 import com.ulyup.tierlist.utils.CapReachedException
 import com.ulyup.tierlist.utils.ConflictException
+import com.ulyup.tierlist.utils.ForbiddenException
+import com.ulyup.tierlist.utils.NotFoundException
 import com.ulyup.tierlist.utils.UnauthorizedException
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -41,23 +44,23 @@ fun Application.module() {
     install(CallLogging)
 
     install(StatusPages) {
-        exception<IllegalArgumentException> { call, cause ->
+        exception<BadRequestException> { call, cause ->
             call.respond(HttpStatusCode.BadRequest, ErrorResponse(cause.message ?: "Bad request"))
         }
-        exception<NoSuchElementException> { call, cause ->
-            call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: "Not found"))
+        exception<UnauthorizedException> { call, cause ->
+            call.respond(HttpStatusCode.Unauthorized, ErrorResponse(cause.message ?: "Unauthorized"))
         }
-        exception<SecurityException> { call, cause ->
+        exception<ForbiddenException> { call, cause ->
             call.respond(HttpStatusCode.Forbidden, ErrorResponse(cause.message ?: "Forbidden"))
         }
         exception<CapReachedException> { call, cause ->
             call.respond(HttpStatusCode.Forbidden, ErrorResponse(cause.message ?: "Plan limit reached"))
         }
+        exception<NotFoundException> { call, cause ->
+            call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: "Not found"))
+        }
         exception<ConflictException> { call, cause ->
             call.respond(HttpStatusCode.Conflict, ErrorResponse(cause.message ?: "Conflict"))
-        }
-        exception<UnauthorizedException> { call, cause ->
-            call.respond(HttpStatusCode.Unauthorized, ErrorResponse(cause.message ?: "Unauthorized"))
         }
         exception<Throwable> { call, cause ->
             call.respond(HttpStatusCode.InternalServerError, ErrorResponse(cause.message ?: "Internal server error"))
