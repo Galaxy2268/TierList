@@ -1,6 +1,7 @@
 [versions]
 androidx-lifecycle = "2.10.0"
 bcrypt = "0.10.2"
+coil = "3.3.0"
 composeMultiplatform = "1.10.3"
 exposed = "1.2.0"
 junit = "4.13.2"
@@ -11,6 +12,7 @@ kotlinxSerialization = "1.11.0"
 ktor = "3.4.1"
 logback = "1.5.32"
 material3 = "1.10.0-alpha05"
+navCompose = "2.9.2"
 sqliteJdbc = "3.53.1.0"
 
 [libraries]
@@ -38,10 +40,14 @@ ktor-serverCallLogging = { module = "io.ktor:ktor-server-call-logging-jvm", vers
 ktor-clientCore = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-clientContentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-clientJs = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
+ktor-clientLogging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-clientSerializationJson = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-composeViewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-networkKtor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navCompose" }
 kotlinx-serializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
