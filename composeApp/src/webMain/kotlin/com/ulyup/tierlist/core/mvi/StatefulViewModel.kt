@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-abstract class StatefulViewModel<I : Any, S : Any>(
+abstract class StatefulViewModel<A : Any, S : Any>(
     initialState: S,
 ) : ViewModel() {
 
@@ -28,9 +28,9 @@ abstract class StatefulViewModel<I : Any, S : Any>(
         @Composable
         get() = stateFlow.collectAsStateWithLifecycle().value
 
-    fun onIntent(intent: I) {
-        viewModelScope.launch { handleIntent(intent) }
+    fun onAction(action: A) {
+        viewModelScope.launch { handleAction(action) }
     }
 
-    protected abstract suspend fun handleIntent(intent: I)
+    protected open suspend fun handleAction(action: A) = Unit
 }

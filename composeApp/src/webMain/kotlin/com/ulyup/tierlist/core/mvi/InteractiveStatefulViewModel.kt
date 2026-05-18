@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-abstract class InteractiveStatefulViewModel<I : Any, S : Any, E : Any>(
+abstract class InteractiveStatefulViewModel<A : Any, S : Any, E : Any>(
     initialState: S,
-) : StatefulViewModel<I, S>(initialState) {
+) : StatefulViewModel<A, S>(initialState) {
 
     private val effectChannel = Channel<E>(Channel.BUFFERED)
     val effects: Flow<E> = effectChannel.receiveAsFlow()
