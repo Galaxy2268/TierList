@@ -17,10 +17,17 @@ data object LoginRoute
 @Serializable
 data object RegisterRoute
 
-fun NavGraphBuilder.authGraph() {
+fun NavGraphBuilder.authGraph(
+    onNavigateToRegister: () -> Unit,
+    onBack: () -> Unit,
+) {
     navigation<AuthGraph>(startDestination = LoginRoute) {
-        composable<LoginRoute> { LoginScreen() }
-        composable<RegisterRoute> { RegisterScreen() }
+        composable<LoginRoute> {
+            LoginScreen(onNavigateToRegister = onNavigateToRegister)
+        }
+        composable<RegisterRoute> {
+            RegisterScreen(onBack = onBack)
+        }
     }
 }
 

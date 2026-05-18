@@ -7,15 +7,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.ulyup.tierlist.core.mvi.ObserveAsEvents
 import com.ulyup.tierlist.core.navigation.AppNavHost
-import com.ulyup.tierlist.core.navigation.AppNavigator
-import com.ulyup.tierlist.core.navigation.LocalAppNavigator
 import com.ulyup.tierlist.core.ui.components.LoadingState
+import com.ulyup.tierlist.feature.auth.navigation.navigateToAuth
+import com.ulyup.tierlist.feature.feed.navigation.navigateToFeed
 import com.ulyup.tierlist.main.vm.MainEvent
 import com.ulyup.tierlist.main.vm.MainViewModel
 import com.ulyup.tierlist.theme.appColors
@@ -28,12 +26,11 @@ fun MainScreen() {
     val viewModel = koinViewModel<MainViewModel>()
     val state = viewModel.uiState
     val navController = rememberNavController()
-    val appNavigator = remember(navController) { AppNavigator(navController) }
 
     ObserveAsEvents(viewModel.effects) { event ->
         when (event) {
-            MainEvent.NavigateToFeed -> appNavigator.toFeed()
-            MainEvent.NavigateToAuth -> appNavigator.toAuth()
+            MainEvent.NavigateToFeed -> navController.navigateToFeed()
+            MainEvent.NavigateToAuth -> navController.navigateToAuth()
         }
     }
 
@@ -57,12 +54,10 @@ fun MainScreen() {
         if (!state.isReady) {
             LoadingState(modifier = Modifier.padding(padding))
         } else {
-            CompositionLocalProvider(LocalAppNavigator provides appNavigator) {
-                AppNavHost(
-                    navController = navController,
-                    modifier = Modifier.padding(padding),
-                )
-            }
+            AppNavHost(
+                navController = navController,
+                modifier = Modifier.padding(padding),
+            )
         }
     }
 }

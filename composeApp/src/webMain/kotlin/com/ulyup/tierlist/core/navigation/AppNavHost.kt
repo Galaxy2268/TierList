@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.ulyup.tierlist.feature.auth.navigation.AuthGraph
 import com.ulyup.tierlist.feature.auth.navigation.authGraph
+import com.ulyup.tierlist.feature.auth.navigation.navigateToRegister
 import com.ulyup.tierlist.feature.feed.navigation.feedGraph
 import com.ulyup.tierlist.feature.mylists.navigation.myListsGraph
 
@@ -19,7 +20,10 @@ fun AppNavHost(
         startDestination = AuthGraph,
         modifier = modifier,
     ) {
-        authGraph()
+        authGraph(
+            onNavigateToRegister = { navController.navigateToRegister() },
+            onBack = { navController.popBackStack() },
+        )
         feedGraph()
         myListsGraph()
     }

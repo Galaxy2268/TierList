@@ -15,7 +15,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.ulyup.tierlist.Routes
-import com.ulyup.tierlist.core.navigation.LocalAppNavigator
 import com.ulyup.tierlist.core.network.session.SessionManager
 import com.ulyup.tierlist.core.network.util.ApiException
 import com.ulyup.tierlist.core.network.util.apiCall
@@ -32,10 +31,11 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    onNavigateToRegister: () -> Unit,
+) {
     val httpClient = koinInject<HttpClient>()
     val sessionManager = koinInject<SessionManager>()
-    val appNavigator = LocalAppNavigator.current
     val scope = rememberCoroutineScope()
     var error by remember { mutableStateOf<String?>(null) }
 
@@ -77,7 +77,7 @@ fun LoginScreen() {
             Text(text = "Login as testuser (temp)")
         }
         VBox8
-        Button(onClick = { appNavigator.toRegister() }) {
+        Button(onClick = onNavigateToRegister) {
             Text(text = "Go to Register")
         }
         error?.let { message ->
