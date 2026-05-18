@@ -1,5 +1,6 @@
 package com.ulyup.tierlist.routes
 
+import com.ulyup.tierlist.Routes
 import com.ulyup.tierlist.auth.UserSession
 import com.ulyup.tierlist.auth.authenticated
 import com.ulyup.tierlist.domain.model.Caller
@@ -16,40 +17,38 @@ import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 
 fun Route.itemRoutes(itemService: ItemService) {
-    route("/api/tierlists/{id}/items") {
-        get {
-            val tierlistId = call.parameters.requireInt("id")
-            val caller = call.sessions.get<UserSession>()?.let { Caller(it.userId, it.role) }
-            call.respond(itemService.getItems(caller, tierlistId))
+    get(Routes.Items.ROOT) {
+        val tierlistId = call.parameters.requireInt(Routes.Items.TIERLIST_ID_PARAM)
+        val caller = call.sessions.get<UserSession>()?.let { Caller(it.userId, it.role) }
+        call.respond(itemService.getItems(caller, tierlistId))
+    }
+
+    authenticated {
+        post(Routes.Items.ROOT) {
+            val tierlistId = call.parameters.requireInt(Routes.Items.TIERLIST_ID_PARAM)
+            val request = call.receive<CreateItemRequest>()
+            call.respond(HttpStatusCode.Created, itemService.createItem(call.caller, tierlistId, request))
         }
 
-        authenticated {
-            post {
-                val tierlistId = call.parameters.requireInt("id")
-                val request = call.receive<CreateItemRequest>()
-                call.respond(HttpStatusCode.Created, itemService.createItem(call.caller, tierlistId, request))
-            }
+        put(Routes.Items.BY_ID) {
+            val tierlistId = call.parameters.requireInt(Routes.Items.TIERLIST_ID_PARAM)
+            val itemId = call.parameters.requireInt(Routes.Items.ITEM_ID_PARAM)
+            val request = call.receive<UpdateItemRequest>()
+            call.respond(itemService.updateItem(call.caller, tierlistId, itemId, request))
+        }
 
-            put("/{itemId}") {
-                val tierlistId = call.parameters.requireInt("id")
-                val itemId = call.parameters.requireInt("itemId")
-                val request = call.receive<UpdateItemRequest>()
-                call.respond(itemService.updateItem(call.caller, tierlistId, itemId, request))
-            }
+        patch(Routes.Items.MOVE) {
+            val tierlistId = call.parameters.requireInt(Routes.Items.TIERLIST_ID_PARAM)
+            val itemId = call.parameters.requireInt(Routes.Items.ITEM_ID_PARAM)
+            val request = call.receive<MoveItemRequest>()
+            call.respond(itemService.moveItem(call.caller, tierlistId, itemId, request))
+        }
 
-            patch("/{itemId}/move") {
-                val tierlistId = call.parameters.requireInt("id")
-                val itemId = call.parameters.requireInt("itemId")
-                val request = call.receive<MoveItemRequest>()
-                call.respond(itemService.moveItem(call.caller, tierlistId, itemId, request))
-            }
-
-            delete("/{itemId}") {
-                val tierlistId = call.parameters.requireInt("id")
-                val itemId = call.parameters.requireInt("itemId")
-                itemService.deleteItem(call.caller, tierlistId, itemId)
-                call.respond(HttpStatusCode.NoContent)
-            }
+        delete(Routes.Items.BY_ID) {
+            val tierlistId = call.parameters.requireInt(Routes.Items.TIERLIST_ID_PARAM)
+            val itemId = call.parameters.requireInt(Routes.Items.ITEM_ID_PARAM)
+            itemService.deleteItem(call.caller, tierlistId, itemId)
+            call.respond(HttpStatusCode.NoContent)
         }
     }
 }

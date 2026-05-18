@@ -1,5 +1,6 @@
 package com.ulyup.tierlist.routes
 
+import com.ulyup.tierlist.Routes
 import com.ulyup.tierlist.auth.UserSession
 import com.ulyup.tierlist.auth.authenticated
 import com.ulyup.tierlist.domain.model.Caller
@@ -16,44 +17,42 @@ import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 
 fun Route.tierlistRoutes(tierlistService: TierlistService) {
-    route("/api") {
-        get("/tierlists") {
-            call.respond(tierlistService.getPublicFeed())
+    get(Routes.Tierlists.ROOT) {
+        call.respond(tierlistService.getPublicFeed())
+    }
+
+    get(Routes.Tierlists.BY_ID) {
+        val tierlistId = call.parameters.requireInt(Routes.Tierlists.ID_PARAM)
+        val caller = call.sessions.get<UserSession>()?.let { Caller(it.userId, it.role) }
+        call.respond(tierlistService.getTierlist(caller, tierlistId))
+    }
+
+    authenticated {
+        get(Routes.Tierlists.MINE) {
+            call.respond(tierlistService.getUserTierlists(call.caller))
         }
 
-        get("/tierlists/{id}") {
-            val id = call.parameters.requireInt("id")
-            val caller = call.sessions.get<UserSession>()?.let { Caller(it.userId, it.role) }
-            call.respond(tierlistService.getTierlist(caller, id))
+        post(Routes.Tierlists.ROOT) {
+            val request = call.receive<CreateTierlistRequest>()
+            call.respond(HttpStatusCode.Created, tierlistService.createTierlist(call.caller, request))
         }
 
-        authenticated {
-            get("/users/me/tierlists") {
-                call.respond(tierlistService.getUserTierlists(call.caller))
-            }
+        put(Routes.Tierlists.BY_ID) {
+            val tierlistId = call.parameters.requireInt(Routes.Tierlists.ID_PARAM)
+            val request = call.receive<UpdateTierlistRequest>()
+            call.respond(tierlistService.updateTierlist(call.caller, tierlistId, request))
+        }
 
-            post("/tierlists") {
-                val request = call.receive<CreateTierlistRequest>()
-                call.respond(HttpStatusCode.Created, tierlistService.createTierlist(call.caller, request))
-            }
+        patch(Routes.Tierlists.VISIBILITY) {
+            val tierlistId = call.parameters.requireInt(Routes.Tierlists.ID_PARAM)
+            val request = call.receive<UpdateVisibilityRequest>()
+            call.respond(tierlistService.setVisibility(call.caller, tierlistId, request))
+        }
 
-            put("/tierlists/{id}") {
-                val id = call.parameters.requireInt("id")
-                val request = call.receive<UpdateTierlistRequest>()
-                call.respond(tierlistService.updateTierlist(call.caller, id, request))
-            }
-
-            patch("/tierlists/{id}/visibility") {
-                val id = call.parameters.requireInt("id")
-                val request = call.receive<UpdateVisibilityRequest>()
-                call.respond(tierlistService.setVisibility(call.caller, id, request))
-            }
-
-            delete("/tierlists/{id}") {
-                val id = call.parameters.requireInt("id")
-                tierlistService.deleteTierlist(call.caller, id)
-                call.respond(HttpStatusCode.NoContent)
-            }
+        delete(Routes.Tierlists.BY_ID) {
+            val tierlistId = call.parameters.requireInt(Routes.Tierlists.ID_PARAM)
+            tierlistService.deleteTierlist(call.caller, tierlistId)
+            call.respond(HttpStatusCode.NoContent)
         }
     }
 }
