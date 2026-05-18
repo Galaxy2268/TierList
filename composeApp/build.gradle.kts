@@ -14,6 +14,12 @@ kotlin {
             commonWebpackConfig {
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
                     port = 8081
+                    proxy = mutableListOf(
+                        KotlinWebpackConfig.DevServer.Proxy(
+                            context = mutableListOf("/api"),
+                            target = "http://localhost:8080",
+                        )
+                    )
                 }
             }
         }
