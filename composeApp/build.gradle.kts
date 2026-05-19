@@ -1,3 +1,4 @@
+import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
@@ -6,6 +7,12 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+}
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "com.ulyup.tierlist.resources"
+    generateResClass = ResourcesExtension.ResourceClassGeneration.Always
 }
 
 kotlin {

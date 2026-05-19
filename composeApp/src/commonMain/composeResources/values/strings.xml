@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_title">Welcome back</string>
+    <string name="login_field_username_or_email">Username or email</string>
+    <string name="login_field_password">Password</string>
+    <string name="login_action_submit">Log in</string>
+    <string name="login_action_go_to_register">Create an account</string>
+
+    <string name="register_title">Create your account</string>
+    <string name="register_field_username">Username</string>
+    <string name="register_field_email">Email</string>
+    <string name="register_field_password">Password</string>
+    <string name="register_action_submit">Sign up</string>
+    <string name="register_action_back">Back to login</string>
+</resources>

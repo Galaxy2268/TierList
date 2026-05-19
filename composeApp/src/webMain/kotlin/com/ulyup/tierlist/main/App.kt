@@ -1,7 +1,6 @@
-package com.ulyup.tierlist
+package com.ulyup.tierlist.main
 
 import androidx.compose.runtime.Composable
-import com.ulyup.tierlist.main.MainScreen
 import com.ulyup.tierlist.theme.AppTheme
 
 @Composable

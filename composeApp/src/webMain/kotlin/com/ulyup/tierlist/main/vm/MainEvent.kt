@@ -1,6 +1,6 @@
 package com.ulyup.tierlist.main.vm
 
-sealed interface MainEvent {
-    data object NavigateToFeed : MainEvent
-    data object NavigateToAuth : MainEvent
-}
+sealed interface MainEvent
+
+data object NavigateToFeedEvent : MainEvent
+data object NavigateToAuthEvent : MainEvent

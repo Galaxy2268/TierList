@@ -10,14 +10,14 @@ abstract class InteractiveStatefulViewModel<A : Any, S : Any, E : Any>(
     initialState: S,
 ) : StatefulViewModel<A, S>(initialState) {
 
-    private val effectChannel = Channel<E>(Channel.BUFFERED)
-    val effects: Flow<E> = effectChannel.receiveAsFlow()
+    private val eventChannel = Channel<E>(Channel.BUFFERED)
+    val events: Flow<E> = eventChannel.receiveAsFlow()
 
-    protected suspend fun sendEffect(effect: E) {
-        effectChannel.send(effect)
+    protected suspend fun sendEvent(event: E) {
+        eventChannel.send(event)
     }
 
-    protected fun launchEffect(effect: E) {
-        viewModelScope.launch { sendEffect(effect) }
+    protected fun launchEvent(event: E) {
+        viewModelScope.launch { sendEvent(event) }
     }
 }

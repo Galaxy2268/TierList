@@ -1,6 +1,7 @@
 package com.ulyup.tierlist.core.mvi
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
@@ -26,7 +27,7 @@ abstract class StatefulViewModel<A : Any, S : Any>(
 
     val uiState: S
         @Composable
-        get() = stateFlow.collectAsStateWithLifecycle().value
+        get() = stateFlow.collectAsState().value
 
     fun onAction(action: A) {
         viewModelScope.launch { handleAction(action) }

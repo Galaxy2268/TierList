@@ -22,11 +22,11 @@ class MainViewModel(
                     SessionState.Unknown -> Unit
                     SessionState.Authorized -> {
                         updateState { it.copy(isReady = true) }
-                        sendEffect(MainEvent.NavigateToFeed)
+                        sendEvent(NavigateToFeedEvent)
                     }
                     SessionState.Unauthorized -> {
                         updateState { it.copy(isReady = true) }
-                        sendEffect(MainEvent.NavigateToAuth)
+                        sendEvent(NavigateToAuthEvent)
                     }
                 }
             }

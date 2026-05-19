@@ -1,4 +1,4 @@
-package com.ulyup.tierlist.core.ui.components
+package com.ulyup.tierlist.core.ui.components.state
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
