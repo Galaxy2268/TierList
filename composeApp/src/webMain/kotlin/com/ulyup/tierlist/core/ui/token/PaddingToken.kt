@@ -18,3 +18,4 @@ val vPadding16 = PaddingValues(vertical = 16.dp)
 
 // Mixed
 val paddingV12H16 = PaddingValues(vertical = 12.dp, horizontal = 16.dp)
+val paddingV16H24 = PaddingValues(vertical = 16.dp, horizontal = 24.dp)

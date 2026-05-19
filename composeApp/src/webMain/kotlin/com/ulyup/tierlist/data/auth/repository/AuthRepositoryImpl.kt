@@ -24,4 +24,12 @@ class AuthRepositoryImpl(
         sessionManager.authorize()
         return userDto.toDomain()
     }
+
+    override suspend fun logout() {
+        try {
+            authApi.logout()
+        } finally {
+            sessionManager.unauthorize()
+        }
+    }
 }

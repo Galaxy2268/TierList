@@ -1,5 +1,6 @@
 package com.ulyup.tierlist.data.service
 
+import com.ulyup.tierlist.FREE_TIER_LIMIT
 import com.ulyup.tierlist.data.mapper.toDetailDto
 import com.ulyup.tierlist.data.mapper.toDto
 import com.ulyup.tierlist.domain.model.Caller
@@ -36,8 +37,8 @@ class TierlistServiceImpl(
         tierlistRepo.findByUserId(caller.userId).map { it.toDto() }
 
     override suspend fun createTierlist(caller: Caller, request: CreateTierlistRequest): TierlistDto {
-        if (caller.role == UserRole.USER && tierlistRepo.countByUser(caller.userId) >= 5) {
-            throw CapReachedException("Tierlist limit of 5 reached. Upgrade to Premium for unlimited lists.")
+        if (caller.role == UserRole.USER && tierlistRepo.countByUser(caller.userId) >= FREE_TIER_LIMIT) {
+            throw CapReachedException("Tierlist limit of $FREE_TIER_LIMIT reached. Upgrade to Premium for unlimited lists.")
         }
         return tierlistRepo.create(caller.userId, request.title, request.isPublic).toDto()
     }

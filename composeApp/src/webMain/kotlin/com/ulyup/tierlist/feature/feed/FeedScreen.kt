@@ -1,65 +1,58 @@
 package com.ulyup.tierlist.feature.feed
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.ulyup.tierlist.Routes
-import com.ulyup.tierlist.domain.error.ApiException
-import com.ulyup.tierlist.data.network.util.apiCall
-import com.ulyup.tierlist.data.session.SessionManager
+import androidx.compose.ui.unit.dp
 import com.ulyup.tierlist.core.ui.components.scaffold.AppScaffold
-import com.ulyup.tierlist.core.ui.components.topbar.AppTopAppBar
-import com.ulyup.tierlist.core.ui.token.VBox16
-import com.ulyup.tierlist.core.ui.token.aPadding24
-import com.ulyup.tierlist.theme.appColors
-import com.ulyup.tierlist.theme.appTypography
-import io.ktor.client.HttpClient
-import io.ktor.client.request.post
-import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
+import com.ulyup.tierlist.core.ui.components.state.EmptyState
+import com.ulyup.tierlist.core.ui.components.state.ErrorState
+import com.ulyup.tierlist.core.ui.components.state.LoadingState
+import com.ulyup.tierlist.core.ui.components.tierlist.TierlistCard
+import com.ulyup.tierlist.core.ui.token.paddingV16H24
+import com.ulyup.tierlist.core.ui.token.tierlistCardMinWidth
+import com.ulyup.tierlist.feature.feed.vm.FeedViewModel
+import com.ulyup.tierlist.feature.feed.vm.LoadFeedAction
+import com.ulyup.tierlist.resources.Res
+import com.ulyup.tierlist.resources.error_action_retry
+import com.ulyup.tierlist.resources.feed_empty
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun FeedScreen() {
-    val httpClient = koinInject<HttpClient>()
-    val sessionManager = koinInject<SessionManager>()
-    val scope = rememberCoroutineScope()
+    val viewModel = koinViewModel<FeedViewModel>()
+    val state = viewModel.uiState
 
-    AppScaffold(
-        topBar = { AppTopAppBar(title = "TierRank") },
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(aPadding24),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = "Feed (placeholder)",
-                style = appTypography.titleLarge,
-                color = appColors.onBackground,
+    AppScaffold { padding ->
+        val modifier = Modifier.fillMaxSize().padding(padding)
+        when {
+            state.isLoading && state.tierlists.isEmpty() -> LoadingState(modifier = modifier)
+            state.errorMessage != null && state.tierlists.isEmpty() -> ErrorState(
+                message = state.errorMessage,
+                modifier = modifier,
+                retryLabel = stringResource(Res.string.error_action_retry),
+                onRetry = { viewModel.onAction(LoadFeedAction) },
             )
-            VBox16
-            Button(
-                onClick = {
-                    scope.launch {
-                        try {
-                            apiCall { httpClient.post(Routes.Auth.LOGOUT) }
-                        } catch (_: ApiException) {
-                        }
-                        sessionManager.unauthorize()
-                    }
-                },
+            state.tierlists.isEmpty() -> EmptyState(
+                message = stringResource(Res.string.feed_empty),
+                modifier = modifier,
+            )
+            else -> LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = tierlistCardMinWidth),
+                modifier = modifier,
+                contentPadding = paddingV16H24,
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Text(text = "Logout (temp)")
+                items(state.tierlists, key = { it.id }) { tierlist ->
+                    TierlistCard(tierlist = tierlist)
+                }
             }
         }
     }

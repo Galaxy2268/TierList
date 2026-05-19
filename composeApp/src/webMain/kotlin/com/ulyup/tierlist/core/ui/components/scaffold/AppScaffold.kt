@@ -12,6 +12,7 @@ fun AppScaffold(
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
+    floatingActionButton: @Composable () -> Unit = {},
     containerColor: Color = appColors.background,
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -19,6 +20,7 @@ fun AppScaffold(
         modifier = modifier,
         topBar = topBar,
         bottomBar = bottomBar,
+        floatingActionButton = floatingActionButton,
         containerColor = containerColor,
         content = content,
     )

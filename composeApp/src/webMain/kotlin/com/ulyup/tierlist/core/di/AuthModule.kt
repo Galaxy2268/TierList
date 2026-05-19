@@ -5,6 +5,7 @@ import com.ulyup.tierlist.data.auth.api.AuthApiImpl
 import com.ulyup.tierlist.data.auth.repository.AuthRepositoryImpl
 import com.ulyup.tierlist.domain.auth.repository.AuthRepository
 import com.ulyup.tierlist.domain.auth.usecase.LoginUseCase
+import com.ulyup.tierlist.domain.auth.usecase.LogoutUseCase
 import com.ulyup.tierlist.domain.auth.usecase.RegisterUseCase
 import com.ulyup.tierlist.feature.auth.vm.login.LoginViewModel
 import com.ulyup.tierlist.feature.auth.vm.register.RegisterViewModel
@@ -19,6 +20,7 @@ val authModule = module {
     singleOf(::AuthRepositoryImpl) bind AuthRepository::class
     factoryOf(::LoginUseCase)
     factoryOf(::RegisterUseCase)
+    factoryOf(::LogoutUseCase)
     viewModelOf(::LoginViewModel)
     viewModelOf(::RegisterViewModel)
 }

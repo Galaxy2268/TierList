@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.ulyup.tierlist.core.ui.token.aPadding24
+import com.ulyup.tierlist.core.ui.token.maxFormWidth
 
 @Composable
 fun AuthCenteredColumn(
@@ -27,7 +27,7 @@ fun AuthCenteredColumn(
     ) {
         Column(
             modifier = Modifier
-                .widthIn(max = 360.dp)
+                .widthIn(max = maxFormWidth)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,

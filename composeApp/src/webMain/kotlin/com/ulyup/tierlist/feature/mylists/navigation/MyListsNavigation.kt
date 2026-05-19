@@ -1,6 +1,5 @@
 package com.ulyup.tierlist.feature.mylists.navigation
 
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
@@ -16,11 +15,5 @@ data object MyListsRoute
 fun NavGraphBuilder.myListsGraph() {
     navigation<MyListsGraph>(startDestination = MyListsRoute) {
         composable<MyListsRoute> { MyListsScreen() }
-    }
-}
-
-fun NavController.navigateToMyLists() {
-    navigate(MyListsGraph) {
-        launchSingleTop = true
     }
 }
