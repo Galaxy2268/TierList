@@ -4,4 +4,5 @@ enum class SessionState {
     Unknown,
     Authorized,
     Unauthorized,
+    Error,
 }

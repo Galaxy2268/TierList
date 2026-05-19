@@ -1,27 +1,35 @@
 package com.ulyup.tierlist.core.navigation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.ulyup.tierlist.feature.auth.navigation.authGraph
 import com.ulyup.tierlist.feature.auth.navigation.navigateToRegister
+import com.ulyup.tierlist.feature.error.navigation.errorGraph
 import com.ulyup.tierlist.feature.feed.navigation.feedGraph
 import com.ulyup.tierlist.feature.mylists.navigation.myListsGraph
 import com.ulyup.tierlist.feature.splash.navigation.splashGraph
+import com.ulyup.tierlist.theme.appColors
 
 @Composable
 fun AppNavHost(
     startDestination: Any,
+    onRetryBootstrap: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxSize()
+            .background(appColors.background),
     ) {
         splashGraph()
+        errorGraph(onRetry = onRetryBootstrap)
         authGraph(
             onNavigateToRegister = { navController.navigateToRegister() },
             onBack = { navController.popBackStack() },

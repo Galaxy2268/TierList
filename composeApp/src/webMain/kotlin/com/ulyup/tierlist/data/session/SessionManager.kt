@@ -10,11 +10,19 @@ class SessionManager {
     private val _authState = MutableStateFlow(SessionState.Unknown)
     val authState: StateFlow<SessionState> = _authState.asStateFlow()
 
+    fun unknown() {
+        _authState.value = SessionState.Unknown
+    }
+
     fun authorize() {
         _authState.value = SessionState.Authorized
     }
 
     fun unauthorize() {
         _authState.value = SessionState.Unauthorized
+    }
+
+    fun error() {
+        _authState.value = SessionState.Error
     }
 }

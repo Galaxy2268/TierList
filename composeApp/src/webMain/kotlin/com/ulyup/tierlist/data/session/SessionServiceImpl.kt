@@ -14,13 +14,14 @@ class SessionServiceImpl(
     override val sessionState: StateFlow<SessionState> = sessionManager.authState
 
     override suspend fun bootstrap() {
+        sessionManager.unknown()
         try {
             authApi.me()
             sessionManager.authorize()
         } catch (_: ApiException.Unauthorized) {
             // HttpClient validator already flipped session to Unauthorized on 401.
         } catch (_: ApiException) {
-            // TODO: surface error state with retry; for now leave session as Unknown.
+            sessionManager.error()
         }
     }
 }

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="error_message">Couldn't reach the server. Check your connection and try again.</string>
+    <string name="error_action_retry">Try again</string>
+
     <string name="login_title">Welcome back</string>
     <string name="login_field_username_or_email">Username or email</string>
     <string name="login_field_password">Password</string>
