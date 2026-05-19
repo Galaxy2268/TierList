@@ -1,4 +1,4 @@
-package com.ulyup.tierlist.core.network.session
+package com.ulyup.tierlist.domain.session
 
 enum class SessionState {
     Unknown,

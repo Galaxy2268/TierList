@@ -1,5 +1,6 @@
-package com.ulyup.tierlist.core.network.util
+package com.ulyup.tierlist.data.network.util
 
+import com.ulyup.tierlist.domain.error.ApiException
 import kotlinx.coroutines.CancellationException
 
 suspend fun <T> apiCall(call: suspend () -> T): T = try {

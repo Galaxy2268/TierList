@@ -1,8 +1,8 @@
-package com.ulyup.tierlist.core.network
+package com.ulyup.tierlist.data.network
 
-import com.ulyup.tierlist.core.network.session.SessionManager
-import com.ulyup.tierlist.core.network.util.API_BASE_URL
-import com.ulyup.tierlist.core.network.util.toApiException
+import com.ulyup.tierlist.data.network.util.API_BASE_URL
+import com.ulyup.tierlist.data.network.util.toApiException
+import com.ulyup.tierlist.data.session.SessionManager
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation

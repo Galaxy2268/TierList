@@ -11,9 +11,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.ulyup.tierlist.Routes
-import com.ulyup.tierlist.core.network.session.SessionManager
-import com.ulyup.tierlist.core.network.util.ApiException
-import com.ulyup.tierlist.core.network.util.apiCall
+import com.ulyup.tierlist.domain.error.ApiException
+import com.ulyup.tierlist.data.network.util.apiCall
+import com.ulyup.tierlist.data.session.SessionManager
 import com.ulyup.tierlist.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tierlist.core.ui.components.topbar.AppTopAppBar
 import com.ulyup.tierlist.core.ui.token.VBox16

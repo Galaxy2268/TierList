@@ -1,4 +1,4 @@
-package com.ulyup.tierlist.core.network.util
+package com.ulyup.tierlist.domain.error
 
 sealed class ApiException(message: String) : RuntimeException(message) {
     class NetworkError(message: String) : ApiException(message)

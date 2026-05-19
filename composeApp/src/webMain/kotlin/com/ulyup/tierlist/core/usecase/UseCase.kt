@@ -1,6 +1,6 @@
 package com.ulyup.tierlist.core.usecase
 
-import com.ulyup.tierlist.core.network.util.ApiException
+import com.ulyup.tierlist.domain.error.ApiException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

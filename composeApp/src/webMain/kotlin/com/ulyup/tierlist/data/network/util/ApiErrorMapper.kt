@@ -1,5 +1,6 @@
-package com.ulyup.tierlist.core.network.util
+package com.ulyup.tierlist.data.network.util
 
+import com.ulyup.tierlist.domain.error.ApiException
 import com.ulyup.tierlist.dto.ErrorResponse
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse

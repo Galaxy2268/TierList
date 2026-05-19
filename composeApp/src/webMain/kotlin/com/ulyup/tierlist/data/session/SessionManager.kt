@@ -1,5 +1,6 @@
-package com.ulyup.tierlist.core.network.session
+package com.ulyup.tierlist.data.session
 
+import com.ulyup.tierlist.domain.session.SessionState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

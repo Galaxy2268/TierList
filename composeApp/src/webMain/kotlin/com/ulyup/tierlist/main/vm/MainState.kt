@@ -1,5 +1,7 @@
 package com.ulyup.tierlist.main.vm
 
+import com.ulyup.tierlist.feature.splash.navigation.SplashGraph
+
 data class MainState(
-    val isReady: Boolean = false,
+    val startDestination: Any = SplashGraph,
 )

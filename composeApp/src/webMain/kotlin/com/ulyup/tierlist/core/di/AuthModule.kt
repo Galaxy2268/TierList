@@ -1,5 +1,7 @@
 package com.ulyup.tierlist.core.di
 
+import com.ulyup.tierlist.data.auth.api.AuthApi
+import com.ulyup.tierlist.data.auth.api.AuthApiImpl
 import com.ulyup.tierlist.data.auth.repository.AuthRepositoryImpl
 import com.ulyup.tierlist.domain.auth.repository.AuthRepository
 import com.ulyup.tierlist.domain.auth.usecase.LoginUseCase
@@ -13,6 +15,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val authModule = module {
+    singleOf(::AuthApiImpl) bind AuthApi::class
     singleOf(::AuthRepositoryImpl) bind AuthRepository::class
     factoryOf(::LoginUseCase)
     factoryOf(::RegisterUseCase)
