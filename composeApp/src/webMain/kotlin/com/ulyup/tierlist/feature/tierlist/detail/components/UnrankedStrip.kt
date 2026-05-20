@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import com.ulyup.tierlist.core.ui.token.gap8
 import com.ulyup.tierlist.core.ui.token.itemCellSize
 import com.ulyup.tierlist.domain.tierlist.model.Item
 import com.ulyup.tierlist.resources.Res
@@ -30,7 +30,7 @@ fun UnrankedStrip(
             text = stringResource(Res.string.detail_unranked_label),
             color = appColors.onSurfaceVariant,
             style = appTypography.labelLarge,
-            modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+            modifier = Modifier.padding(start = gap8, bottom = gap8),
         )
         FlowRow(
             modifier = Modifier

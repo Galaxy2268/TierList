@@ -8,10 +8,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.ulyup.tierlist.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tierlist.core.ui.components.state.StatefulContent
 import com.ulyup.tierlist.core.ui.components.tierlist.TierlistCard
+import com.ulyup.tierlist.core.ui.token.gap12
 import com.ulyup.tierlist.core.ui.token.paddingV16H24
 import com.ulyup.tierlist.core.ui.token.tierlistCardMinWidth
 import com.ulyup.tierlist.feature.feed.vm.FeedViewModel
@@ -44,8 +44,8 @@ fun FeedScreen(
                 columns = GridCells.Adaptive(minSize = tierlistCardMinWidth),
                 modifier = contentModifier,
                 contentPadding = paddingV16H24,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(gap12),
+                horizontalArrangement = Arrangement.spacedBy(gap12),
             ) {
                 items(state.tierlists, key = { it.id }) { tierlist ->
                     TierlistCard(

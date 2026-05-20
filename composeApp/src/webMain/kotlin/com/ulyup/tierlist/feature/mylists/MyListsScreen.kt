@@ -11,10 +11,10 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.ulyup.tierlist.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tierlist.core.ui.components.state.StatefulContent
 import com.ulyup.tierlist.core.ui.components.tierlist.TierlistCard
+import com.ulyup.tierlist.core.ui.token.gap12
 import com.ulyup.tierlist.core.ui.token.paddingV16H24
 import com.ulyup.tierlist.core.ui.token.tierlistCardMinWidth
 import com.ulyup.tierlist.feature.mylists.components.CreateTierlistDialog
@@ -69,8 +69,8 @@ fun MyListsScreen(
                 columns = GridCells.Adaptive(minSize = tierlistCardMinWidth),
                 modifier = contentModifier,
                 contentPadding = paddingV16H24,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(gap12),
+                horizontalArrangement = Arrangement.spacedBy(gap12),
             ) {
                 items(state.tierlists, key = { it.id }) { tierlist ->
                     TierlistCard(

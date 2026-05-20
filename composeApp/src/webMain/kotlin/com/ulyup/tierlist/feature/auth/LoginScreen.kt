@@ -4,10 +4,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.ulyup.tierlist.core.ui.components.layout.CenteredColumn
 import com.ulyup.tierlist.core.ui.components.text.AppTextField
 import com.ulyup.tierlist.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tierlist.core.ui.token.VBox24
-import com.ulyup.tierlist.feature.auth.components.AuthCenteredColumn
 import com.ulyup.tierlist.feature.auth.components.AuthPasswordSection
 import com.ulyup.tierlist.feature.auth.vm.login.ChangePasswordAction
 import com.ulyup.tierlist.feature.auth.vm.login.ChangeUsernameOrEmailAction
@@ -32,7 +32,7 @@ fun LoginScreen(
     val state = viewModel.uiState
 
     AppScaffold { padding ->
-        AuthCenteredColumn(modifier = Modifier.padding(padding)) {
+        CenteredColumn(modifier = Modifier.padding(padding)) {
             Text(
                 text = stringResource(Res.string.login_title),
                 style = appTypography.titleLarge,

@@ -10,10 +10,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.ulyup.tierlist.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tierlist.core.ui.components.state.StatefulContent
 import com.ulyup.tierlist.core.ui.components.topbar.AppTopAppBar
+import com.ulyup.tierlist.core.ui.token.gap8
+import com.ulyup.tierlist.core.ui.token.gap16
 import com.ulyup.tierlist.core.ui.token.paddingV16H24
 import com.ulyup.tierlist.feature.tierlist.detail.components.TierRow
 import com.ulyup.tierlist.feature.tierlist.detail.components.UnrankedStrip
@@ -78,7 +79,7 @@ private fun DetailContent(state: TierlistDetailState, modifier: Modifier) {
         modifier = modifier
             .verticalScroll(rememberScrollState())
             .padding(paddingV16H24),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(gap8),
     ) {
         Tier.entries.forEach { tier ->
             TierRow(tier = tier, items = state.itemsByTier[tier].orEmpty())
@@ -86,7 +87,7 @@ private fun DetailContent(state: TierlistDetailState, modifier: Modifier) {
         if (state.unrankedItems.isNotEmpty()) {
             UnrankedStrip(
                 items = state.unrankedItems,
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier.padding(top = gap16),
             )
         }
     }

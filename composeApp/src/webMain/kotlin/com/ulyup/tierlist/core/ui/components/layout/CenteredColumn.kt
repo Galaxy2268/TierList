@@ -1,4 +1,4 @@
-package com.ulyup.tierlist.feature.auth.components
+package com.ulyup.tierlist.core.ui.components.layout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +15,7 @@ import com.ulyup.tierlist.core.ui.token.aPadding24
 import com.ulyup.tierlist.core.ui.token.maxFormWidth
 
 @Composable
-fun AuthCenteredColumn(
+fun CenteredColumn(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {

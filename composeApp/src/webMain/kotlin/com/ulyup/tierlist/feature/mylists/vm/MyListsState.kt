@@ -23,7 +23,7 @@ data class MyListsState(
     val showCreateFab: Boolean
         get() = userRole != null && !isAtCap && errorMessage == null
 
-     override fun copyLoadable(isLoading: Boolean, errorMessage: String?) =
+    override fun copyLoadable(isLoading: Boolean, errorMessage: String?) =
         copy(isLoading = isLoading, errorMessage = errorMessage)
 }
 
