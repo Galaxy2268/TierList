@@ -23,7 +23,7 @@
     <string name="feed_empty">No public tier lists yet.</string>
 
     <string name="mylists_empty">You haven\'t created any tier lists yet.</string>
-    <string name="mylists_action_create_label">+</string>
+    <string name="mylists_action_create_label">Create tier list</string>
     <string name="mylists_create_title">New tier list</string>
     <string name="mylists_create_field_title">Title</string>
     <string name="mylists_create_field_visibility">Public</string>
@@ -37,7 +37,7 @@
     <string name="profile_title">Profile</string>
     <string name="profile_action_logout">Log out</string>
 
-    <string name="detail_action_back">←</string>
+    <string name="detail_action_back">Back</string>
     <string name="detail_unranked_label">Unranked</string>
     <string name="detail_empty">No items in this tier list yet.</string>
     <string name="tier_label_s">S</string>

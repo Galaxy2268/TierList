@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,8 +25,9 @@ import com.ulyup.tierlist.resources.Res
 import com.ulyup.tierlist.resources.detail_action_back
 import com.ulyup.tierlist.resources.detail_empty
 import com.ulyup.tierlist.resources.error_action_retry
+import com.ulyup.tierlist.resources.ic_arrow_back
 import com.ulyup.tierlist.theme.appColors
-import com.ulyup.tierlist.theme.appTypography
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -46,10 +47,10 @@ fun TierlistDetailScreen(
                 title = state.title,
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Text(
-                            text = stringResource(Res.string.detail_action_back),
-                            color = appColors.onSurface,
-                            style = appTypography.titleLarge,
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_arrow_back),
+                            contentDescription = stringResource(Res.string.detail_action_back),
+                            tint = appColors.onSurface,
                         )
                     }
                 },

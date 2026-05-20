@@ -1,22 +1,14 @@
 package com.ulyup.tierlist.feature.auth
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.ulyup.tierlist.core.ui.components.text.AppTextField
-import com.ulyup.tierlist.core.ui.components.text.ErrorText
-import com.ulyup.tierlist.core.ui.components.button.PrimaryButton
 import com.ulyup.tierlist.core.ui.components.scaffold.AppScaffold
-import com.ulyup.tierlist.core.ui.token.VBox8
-import com.ulyup.tierlist.core.ui.token.VBox16
 import com.ulyup.tierlist.core.ui.token.VBox24
 import com.ulyup.tierlist.feature.auth.components.AuthCenteredColumn
+import com.ulyup.tierlist.feature.auth.components.AuthPasswordSection
 import com.ulyup.tierlist.feature.auth.vm.login.ChangePasswordAction
 import com.ulyup.tierlist.feature.auth.vm.login.ChangeUsernameOrEmailAction
 import com.ulyup.tierlist.feature.auth.vm.login.LoginViewModel
@@ -54,41 +46,18 @@ fun LoginScreen(
                 label = stringResource(Res.string.login_field_username_or_email),
                 enabled = !state.isLoading,
             )
-            VBox16
 
-            AppTextField(
-                value = state.password,
-                onValueChange = { viewModel.onAction(ChangePasswordAction(it)) },
-                label = stringResource(Res.string.login_field_password),
-                enabled = !state.isLoading,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                visualTransformation = PasswordVisualTransformation(),
-            )
-            VBox16
-
-            PrimaryButton(
-                text = stringResource(Res.string.login_action_submit),
-                onClick = { viewModel.onAction(SubmitAction) },
+            AuthPasswordSection(
+                password = state.password,
+                onPasswordChange = { viewModel.onAction(ChangePasswordAction(it)) },
+                passwordLabel = stringResource(Res.string.login_field_password),
+                submitLabel = stringResource(Res.string.login_action_submit),
+                onSubmit = { viewModel.onAction(SubmitAction) },
+                secondaryLabel = stringResource(Res.string.login_action_go_to_register),
+                onSecondaryClick = onNavigateToRegister,
+                errorMessage = state.errorMessage,
                 isLoading = state.isLoading,
-                modifier = Modifier.fillMaxWidth(),
             )
-
-            state.errorMessage?.let { message ->
-                VBox8
-                ErrorText(message = message)
-            }
-
-            VBox8
-            TextButton(
-                onClick = onNavigateToRegister,
-                enabled = !state.isLoading,
-            ) {
-                Text(
-                    text = stringResource(Res.string.login_action_go_to_register),
-                    style = appTypography.labelLarge,
-                    color = appColors.primary,
-                )
-            }
         }
     }
 }
