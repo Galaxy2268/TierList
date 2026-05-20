@@ -39,20 +39,19 @@ class MyListsViewModel(
     private suspend fun load() {
         if (state.isLoading) return
         getCurrentUserUseCase(Unit).fold(
-            onLoading = { updateState { it.copy(isLoading = true, errorMessage = null) } },
-            onSuccess = { user -> updateState { it.copy(userRole = user.role) } },
-            onError = { exception ->
-                updateState { it.copy(isLoading = false, errorMessage = exception.message) }
+            onLoading = { updateState { it.withLoading() } },
+            onSuccess = { user ->
+                updateState { it.withLoaded().copy(userRole = user.role) }
             },
+            onError = { exception -> updateState { it.withError(exception.message) } },
         )
         if (state.errorMessage != null) return
         getMyTierlistsUseCase(Unit).fold(
+            onLoading = { updateState { it.withLoading() } },
             onSuccess = { tierlists ->
-                updateState { it.copy(isLoading = false, tierlists = tierlists) }
+                updateState { it.withLoaded().copy(tierlists = tierlists) }
             },
-            onError = { exception ->
-                updateState { it.copy(isLoading = false, errorMessage = exception.message) }
-            },
+            onError = { exception -> updateState { it.withError(exception.message) } },
         )
     }
 

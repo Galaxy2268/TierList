@@ -23,18 +23,11 @@ class FeedViewModel(
     private suspend fun load() {
         if (state.isLoading) return
         getPublicTierlistsUseCase(Unit).fold(
-            onLoading = { updateState { it.copy(isLoading = true, errorMessage = null) } },
+            onLoading = { updateState { it.withLoading() } },
             onSuccess = { tierlists ->
-                updateState { it.copy(isLoading = false, tierlists = tierlists) }
+                updateState { it.withLoaded().copy(tierlists = tierlists) }
             },
-            onError = { exception ->
-                updateState {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = exception.message,
-                    )
-                }
-            },
+            onError = { exception -> updateState { it.withError(exception.message) } },
         )
     }
 }

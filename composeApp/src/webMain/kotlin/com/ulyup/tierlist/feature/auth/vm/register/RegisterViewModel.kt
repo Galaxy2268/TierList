@@ -30,16 +30,9 @@ class RegisterViewModel(
                 password = current.password,
             )
         ).fold(
-            onLoading = { updateState { it.copy(isLoading = true, errorMessage = null) } },
-            onSuccess = { updateState { it.copy(isLoading = false) } },
-            onError = { exception ->
-                updateState {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = exception.message,
-                    )
-                }
-            },
+            onLoading = { updateState { it.withLoading() } },
+            onSuccess = { updateState { it.withLoaded() } },
+            onError = { exception -> updateState { it.withError(exception.message) } },
         )
     }
 }

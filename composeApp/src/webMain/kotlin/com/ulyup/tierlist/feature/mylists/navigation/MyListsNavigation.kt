@@ -12,8 +12,8 @@ data object MyListsGraph
 @Serializable
 data object MyListsRoute
 
-fun NavGraphBuilder.myListsGraph() {
+fun NavGraphBuilder.myListsGraph(onOpenTierlist: (Int) -> Unit) {
     navigation<MyListsGraph>(startDestination = MyListsRoute) {
-        composable<MyListsRoute> { MyListsScreen() }
+        composable<MyListsRoute> { MyListsScreen(onOpenTierlist = onOpenTierlist) }
     }
 }

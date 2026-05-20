@@ -7,8 +7,10 @@ import com.ulyup.tierlist.domain.tierlist.repository.TierlistRepository
 import com.ulyup.tierlist.domain.tierlist.usecase.CreateTierlistUseCase
 import com.ulyup.tierlist.domain.tierlist.usecase.GetMyTierlistsUseCase
 import com.ulyup.tierlist.domain.tierlist.usecase.GetPublicTierlistsUseCase
+import com.ulyup.tierlist.domain.tierlist.usecase.GetTierlistDetailUseCase
 import com.ulyup.tierlist.feature.feed.vm.FeedViewModel
 import com.ulyup.tierlist.feature.mylists.vm.MyListsViewModel
+import com.ulyup.tierlist.feature.tierlist.detail.vm.TierlistDetailViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -21,6 +23,8 @@ val tierlistModule = module {
     factoryOf(::GetPublicTierlistsUseCase)
     factoryOf(::GetMyTierlistsUseCase)
     factoryOf(::CreateTierlistUseCase)
+    factoryOf(::GetTierlistDetailUseCase)
     viewModelOf(::FeedViewModel)
     viewModelOf(::MyListsViewModel)
+    viewModelOf(::TierlistDetailViewModel)
 }

@@ -36,6 +36,8 @@ data class AppColors(
     val tierD: Color,
     val tierF: Color,
 ) {
+    val onTier: Color get() = background
+
     fun tierColor(tier: Tier): Color = when (tier) {
         Tier.S -> tierS
         Tier.A -> tierA

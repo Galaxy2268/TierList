@@ -36,4 +36,14 @@
 
     <string name="profile_title">Profile</string>
     <string name="profile_action_logout">Log out</string>
+
+    <string name="detail_action_back">←</string>
+    <string name="detail_unranked_label">Unranked</string>
+    <string name="detail_empty">No items in this tier list yet.</string>
+    <string name="tier_label_s">S</string>
+    <string name="tier_label_a">A</string>
+    <string name="tier_label_b">B</string>
+    <string name="tier_label_c">C</string>
+    <string name="tier_label_d">D</string>
+    <string name="tier_label_f">F</string>
 </resources>

@@ -12,8 +12,8 @@ data object FeedGraph
 @Serializable
 data object FeedRoute
 
-fun NavGraphBuilder.feedGraph() {
+fun NavGraphBuilder.feedGraph(onOpenTierlist: (Int) -> Unit) {
     navigation<FeedGraph>(startDestination = FeedRoute) {
-        composable<FeedRoute> { FeedScreen() }
+        composable<FeedRoute> { FeedScreen(onOpenTierlist = onOpenTierlist) }
     }
 }

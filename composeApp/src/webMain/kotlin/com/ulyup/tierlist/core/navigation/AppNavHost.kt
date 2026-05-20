@@ -19,6 +19,8 @@ import com.ulyup.tierlist.feature.feed.navigation.feedGraph
 import com.ulyup.tierlist.feature.mylists.navigation.myListsGraph
 import com.ulyup.tierlist.feature.profile.navigation.profileGraph
 import com.ulyup.tierlist.feature.splash.navigation.splashGraph
+import com.ulyup.tierlist.feature.tierlist.detail.navigation.navigateToTierlistDetail
+import com.ulyup.tierlist.feature.tierlist.detail.navigation.tierlistDetailGraph
 import com.ulyup.tierlist.theme.appColors
 
 @Composable
@@ -56,12 +58,13 @@ fun AppNavHost(
             splashGraph()
             errorGraph(onRetry = onRetryBootstrap)
             authGraph(
-                onNavigateToRegister = { navController.navigateToRegister() },
-                onBack = { navController.popBackStack() },
+                onNavigateToRegister = navController::navigateToRegister,
+                onBack = navController::popBackStack,
             )
-            feedGraph()
-            myListsGraph()
+            feedGraph(onOpenTierlist = navController::navigateToTierlistDetail)
+            myListsGraph(onOpenTierlist = navController::navigateToTierlistDetail)
             profileGraph()
+            tierlistDetailGraph(onBack = navController::popBackStack)
         }
     }
 }

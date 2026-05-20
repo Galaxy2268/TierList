@@ -19,9 +19,11 @@ import com.ulyup.tierlist.theme.appTypography
 @Composable
 fun TierlistCard(
     tierlist: Tierlist,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
+        onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = roundedShape12,
         colors = CardDefaults.cardColors(
