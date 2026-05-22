@@ -8,6 +8,6 @@ interface ItemRepository {
     suspend fun findById(id: Int): TierlistItem?
     suspend fun findByTierlistId(tierlistId: Int): List<TierlistItem>
     suspend fun update(id: Int, tierlistId: Int, userId: Int, imageUrl: String): TierlistItem?
-    suspend fun delete(id: Int, tierlistId: Int, userId: Int): Boolean
+    suspend fun delete(id: Int, tierlistId: Int, userId: Int): TierlistItem?
     suspend fun move(id: Int, tierlistId: Int, userId: Int, newTier: Tier?, newPosition: Int): TierlistItem?
 }

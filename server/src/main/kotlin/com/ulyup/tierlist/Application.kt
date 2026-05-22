@@ -105,7 +105,7 @@ fun Application.module() {
 
     val authService = AuthServiceImpl(userRepo)
     val tierlistService = TierlistServiceImpl(tierlistRepo, itemRepo)
-    val itemService = ItemServiceImpl(itemRepo, tierlistRepo)
+    val itemService = ItemServiceImpl(itemRepo, tierlistRepo, imageStorage)
     val userService = UserServiceImpl(userRepo)
 
     routing {

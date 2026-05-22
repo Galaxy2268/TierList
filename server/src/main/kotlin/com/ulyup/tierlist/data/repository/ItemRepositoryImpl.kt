@@ -49,13 +49,13 @@ class ItemRepositoryImpl : ItemRepository {
         if (count == 0) null else fetchById(id)
     }
 
-    override suspend fun delete(id: Int, tierlistId: Int, userId: Int): Boolean = dbQuery {
-        if (!ownsParent(tierlistId, userId)) return@dbQuery false
-        val item = fetchById(id) ?: return@dbQuery false
-        if (item.tierlistId != tierlistId) return@dbQuery false
+    override suspend fun delete(id: Int, tierlistId: Int, userId: Int): TierlistItem? = dbQuery {
+        if (!ownsParent(tierlistId, userId)) return@dbQuery null
+        val item = fetchById(id) ?: return@dbQuery null
+        if (item.tierlistId != tierlistId) return@dbQuery null
         TierlistItemsTable.deleteWhere { TierlistItemsTable.id eq id }
         compactTier(tierlistId, item.tier)
-        true
+        item
     }
 
     override suspend fun move(id: Int, tierlistId: Int, userId: Int, newTier: Tier?, newPosition: Int): TierlistItem? = dbQuery {

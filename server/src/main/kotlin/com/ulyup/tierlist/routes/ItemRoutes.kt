@@ -5,10 +5,10 @@ import com.ulyup.tierlist.auth.UserSession
 import com.ulyup.tierlist.auth.authenticated
 import com.ulyup.tierlist.domain.model.Caller
 import com.ulyup.tierlist.domain.service.ItemService
-import com.ulyup.tierlist.dto.CreateItemRequest
 import com.ulyup.tierlist.dto.MoveItemRequest
 import com.ulyup.tierlist.dto.UpdateItemRequest
 import com.ulyup.tierlist.utils.caller
+import com.ulyup.tierlist.utils.receiveImageUpload
 import com.ulyup.tierlist.utils.requireInt
 import io.ktor.http.*
 import io.ktor.server.request.*
@@ -26,8 +26,8 @@ fun Route.itemRoutes(itemService: ItemService) {
     authenticated {
         post(Routes.Items.ROOT) {
             val tierlistId = call.parameters.requireInt(Routes.Items.TIERLIST_ID_PARAM)
-            val request = call.receive<CreateItemRequest>()
-            call.respond(HttpStatusCode.Created, itemService.createItem(call.caller, tierlistId, request))
+            val upload = call.receiveImageUpload()
+            call.respond(HttpStatusCode.Created, itemService.createItem(call.caller, tierlistId, upload))
         }
 
         put(Routes.Items.BY_ID) {
