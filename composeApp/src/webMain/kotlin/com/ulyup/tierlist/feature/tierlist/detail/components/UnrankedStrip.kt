@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.ulyup.tierlist.core.ui.token.gap8
-import com.ulyup.tierlist.core.ui.token.itemCellSize
+import com.ulyup.tierlist.core.ui.token.size64
 import com.ulyup.tierlist.domain.tierlist.model.Item
 import com.ulyup.tierlist.resources.Res
 import com.ulyup.tierlist.resources.detail_unranked_label
@@ -24,6 +24,7 @@ import org.jetbrains.compose.resources.stringResource
 fun UnrankedStrip(
     items: List<Item>,
     modifier: Modifier = Modifier,
+    onDeleteItem: ((Int) -> Unit)? = null,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
@@ -36,9 +37,14 @@ fun UnrankedStrip(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(appColors.surface)
-                .heightIn(min = itemCellSize),
+                .heightIn(min = size64),
         ) {
-            items.forEach { item -> ItemCell(item = item) }
+            items.forEach { item ->
+                ItemCell(
+                    item = item,
+                    onDelete = onDeleteItem?.let { delete -> { delete(item.id) } },
+                )
+            }
         }
     }
 }

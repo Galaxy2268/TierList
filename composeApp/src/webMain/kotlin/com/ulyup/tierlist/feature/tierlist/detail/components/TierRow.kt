@@ -15,7 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.ulyup.tierlist.core.ui.token.itemCellSize
+import com.ulyup.tierlist.core.ui.token.size64
 import com.ulyup.tierlist.domain.tierlist.model.Item
 import com.ulyup.tierlist.model.Tier
 import com.ulyup.tierlist.resources.Res
@@ -36,12 +36,13 @@ fun TierRow(
     tier: Tier,
     items: List<Item>,
     modifier: Modifier = Modifier,
+    onDeleteItem: ((Int) -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .heightIn(min = itemCellSize),
+            .heightIn(min = size64),
     ) {
         TierLabel(
             tier = tier,
@@ -51,9 +52,14 @@ fun TierRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(appColors.surface)
-                .heightIn(min = itemCellSize),
+                .heightIn(min = size64),
         ) {
-            items.forEach { item -> ItemCell(item = item) }
+            items.forEach { item ->
+                ItemCell(
+                    item = item,
+                    onDelete = onDeleteItem?.let { delete -> { delete(item.id) } },
+                )
+            }
         }
     }
 }
@@ -65,7 +71,7 @@ private fun TierLabel(
 ) {
     Box(
         modifier = modifier
-            .width(itemCellSize)
+            .width(size64)
             .background(appColors.tierColor(tier)),
         contentAlignment = Alignment.Center,
     ) {

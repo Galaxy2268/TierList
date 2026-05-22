@@ -16,7 +16,7 @@ import com.ulyup.tierlist.core.ui.components.state.StatefulContent
 import com.ulyup.tierlist.core.ui.components.tierlist.TierlistCard
 import com.ulyup.tierlist.core.ui.token.gap12
 import com.ulyup.tierlist.core.ui.token.paddingV16H24
-import com.ulyup.tierlist.core.ui.token.tierlistCardMinWidth
+import com.ulyup.tierlist.core.ui.token.size280
 import com.ulyup.tierlist.feature.mylists.components.CreateTierlistDialog
 import com.ulyup.tierlist.feature.mylists.components.PremiumUpsellCard
 import com.ulyup.tierlist.feature.mylists.vm.ChangeCreateTitleAction
@@ -65,7 +65,7 @@ fun MyListsScreen(
             modifier = Modifier.fillMaxSize().padding(padding),
         ) { contentModifier ->
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = tierlistCardMinWidth),
+                columns = GridCells.Adaptive(minSize = size280),
                 modifier = contentModifier,
                 contentPadding = paddingV16H24,
                 verticalArrangement = Arrangement.spacedBy(gap12),

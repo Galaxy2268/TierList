@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.ulyup.tierlist.core.ui.token.aPadding24
-import com.ulyup.tierlist.core.ui.token.maxFormWidth
+import com.ulyup.tierlist.core.ui.token.size360
 
 @Composable
 fun CenteredColumn(
@@ -27,7 +27,7 @@ fun CenteredColumn(
     ) {
         Column(
             modifier = Modifier
-                .widthIn(max = maxFormWidth)
+                .widthIn(max = size360)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
