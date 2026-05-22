@@ -62,6 +62,7 @@ class ItemServiceImpl(
     }
 
     companion object {
+        // "jpg" is non-standard but some browsers/clients send it; accept both spellings of JPEG.
         private val ALLOWED_IMAGE_SUBTYPES = setOf("jpeg", "jpg", "png", "webp")
     }
 }

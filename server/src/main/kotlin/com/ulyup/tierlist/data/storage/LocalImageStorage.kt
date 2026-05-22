@@ -28,6 +28,7 @@ class LocalImageStorage(
         File(baseDir, filename).delete()
     }
 
+    // Inverse of ItemApiImpl.filenameToContentType on the client — keep tables in sync.
     private fun contentTypeToExtension(contentType: ContentType): String =
         when (contentType.contentSubtype.lowercase()) {
             "jpeg", "jpg" -> "jpg"

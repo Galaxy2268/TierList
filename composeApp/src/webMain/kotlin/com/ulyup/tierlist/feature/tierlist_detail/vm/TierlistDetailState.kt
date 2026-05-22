@@ -25,6 +25,7 @@ data class AddItemDialogState(
     val serverErrorMessage: String? = null,
 )
 
+@Suppress("ArrayInDataClass")
 data class PickedImage(
     val bytes: ByteArray,
     val filename: String,

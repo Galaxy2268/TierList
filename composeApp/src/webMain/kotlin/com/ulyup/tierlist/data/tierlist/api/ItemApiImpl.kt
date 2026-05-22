@@ -1,5 +1,6 @@
 package com.ulyup.tierlist.data.tierlist.api
 
+import com.ulyup.tierlist.MULTIPART_IMAGE_PART
 import com.ulyup.tierlist.Routes
 import com.ulyup.tierlist.data.network.util.apiCall
 import com.ulyup.tierlist.dto.ItemDto
@@ -41,6 +42,7 @@ class ItemApiImpl(private val httpClient: HttpClient) : ItemApi {
         httpClient.patch(Routes.Items.move(tierlistId, itemId)) { setBody(request) }.body()
     }
 
+    // Inverse of LocalImageStorage.contentTypeToExtension on the server — keep tables in sync.
     private fun filenameToContentType(filename: String): String =
         when (filename.substringAfterLast('.', "").lowercase()) {
             "jpg", "jpeg" -> "image/jpeg"
@@ -48,8 +50,4 @@ class ItemApiImpl(private val httpClient: HttpClient) : ItemApi {
             "webp" -> "image/webp"
             else -> "application/octet-stream"
         }
-
-    companion object {
-        private const val MULTIPART_IMAGE_PART = "image"
-    }
 }

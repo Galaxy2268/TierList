@@ -1,5 +1,6 @@
 package com.ulyup.tierlist.utils
 
+import com.ulyup.tierlist.MULTIPART_IMAGE_PART
 import com.ulyup.tierlist.domain.storage.ImageUpload
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
@@ -9,8 +10,6 @@ import io.ktor.utils.io.readRemaining
 import kotlinx.io.readByteArray
 
 const val MAX_IMAGE_BYTES = 5L * 1024 * 1024
-
-private const val MULTIPART_IMAGE_PART = "image"
 
 suspend fun ApplicationCall.receiveImageUpload(maxBytes: Long = MAX_IMAGE_BYTES): ImageUpload {
     var upload: ImageUpload? = null
