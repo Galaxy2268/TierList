@@ -40,7 +40,6 @@ fun TierlistDetailScreen(
 ) {
     val viewModel = koinViewModel<TierlistDetailViewModel> { parametersOf(tierlistId) }
     val state = viewModel.uiState
-    val hasLoaded = state.itemsByTier.isNotEmpty()
 
     AppScaffold(
         topBar = {
@@ -61,8 +60,7 @@ fun TierlistDetailScreen(
         StatefulContent(
             isLoading = state.isLoading,
             errorMessage = state.errorMessage,
-            isInitialLoad = !hasLoaded,
-            isEmpty = hasLoaded && isFullyEmpty(state),
+            isEmpty = isFullyEmpty(state),
             emptyMessage = stringResource(Res.string.detail_empty),
             retryLabel = stringResource(Res.string.error_action_retry),
             onRetry = { viewModel.onAction(LoadDetailAction) },

@@ -58,7 +58,6 @@ fun MyListsScreen(
         StatefulContent(
             isLoading = state.isLoading,
             errorMessage = state.errorMessage,
-            isInitialLoad = state.isInitialLoad,
             isEmpty = state.tierlists.isEmpty() && !state.isAtCap,
             emptyMessage = stringResource(Res.string.mylists_empty),
             retryLabel = stringResource(Res.string.error_action_retry),

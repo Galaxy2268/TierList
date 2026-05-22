@@ -32,5 +32,5 @@ abstract class StatefulViewModel<A : Any, S : Any>(
         viewModelScope.launch { handleAction(action) }
     }
 
-    protected open suspend fun handleAction(action: A) = Unit
+    protected abstract suspend fun handleAction(action: A)
 }

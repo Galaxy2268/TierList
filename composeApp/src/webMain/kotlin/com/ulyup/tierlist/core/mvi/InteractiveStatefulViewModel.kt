@@ -1,5 +1,7 @@
 package com.ulyup.tierlist.core.mvi
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -20,4 +22,9 @@ abstract class InteractiveStatefulViewModel<A : Any, S : Any, E : Any>(
     protected fun launchEvent(event: E) {
         viewModelScope.launch { sendEvent(event) }
     }
+}
+
+@Composable
+fun <T> ObserveAsEvents(flow: Flow<T>, onEvent: (T) -> Unit) {
+    LaunchedEffect(flow) { flow.collect(onEvent) }
 }

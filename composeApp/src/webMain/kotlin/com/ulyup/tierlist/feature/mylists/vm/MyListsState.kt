@@ -17,9 +17,6 @@ data class MyListsState(
     val isAtCap: Boolean
         get() = userRole == UserRole.USER && tierlists.size >= FREE_TIER_LIMIT
 
-    val isInitialLoad: Boolean
-        get() = userRole == null && tierlists.isEmpty()
-
     val showCreateFab: Boolean
         get() = userRole != null && !isAtCap && errorMessage == null
 

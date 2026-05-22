@@ -33,7 +33,6 @@ fun FeedScreen(
         StatefulContent(
             isLoading = state.isLoading,
             errorMessage = state.errorMessage,
-            isInitialLoad = state.tierlists.isEmpty(),
             isEmpty = state.tierlists.isEmpty(),
             emptyMessage = stringResource(Res.string.feed_empty),
             retryLabel = stringResource(Res.string.error_action_retry),
