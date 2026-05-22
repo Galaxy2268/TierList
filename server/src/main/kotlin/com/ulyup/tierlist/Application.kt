@@ -6,7 +6,9 @@ import com.ulyup.tierlist.data.db.DatabaseFactory
 import com.ulyup.tierlist.data.repository.ItemRepositoryImpl
 import com.ulyup.tierlist.data.repository.TierlistRepositoryImpl
 import com.ulyup.tierlist.data.repository.UserRepositoryImpl
+import com.ulyup.tierlist.data.storage.LocalImageStorage
 import com.ulyup.tierlist.data.service.AuthServiceImpl
+import com.ulyup.tierlist.domain.storage.ImageStorage
 import com.ulyup.tierlist.data.service.ItemServiceImpl
 import com.ulyup.tierlist.data.service.TierlistServiceImpl
 import com.ulyup.tierlist.data.service.UserServiceImpl
@@ -98,6 +100,8 @@ fun Application.module() {
     val userRepo = UserRepositoryImpl()
     val tierlistRepo = TierlistRepositoryImpl()
     val itemRepo = ItemRepositoryImpl()
+
+    val imageStorage: ImageStorage = LocalImageStorage()
 
     val authService = AuthServiceImpl(userRepo)
     val tierlistService = TierlistServiceImpl(tierlistRepo, itemRepo)
