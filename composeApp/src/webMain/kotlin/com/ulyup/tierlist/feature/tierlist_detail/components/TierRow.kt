@@ -1,4 +1,4 @@
-package com.ulyup.tierlist.feature.tierlist.detail.components
+package com.ulyup.tierlist.feature.tierlist_detail.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -15,6 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import com.ulyup.tierlist.core.ui.token.size64
 import com.ulyup.tierlist.domain.tierlist.model.Item
 import com.ulyup.tierlist.model.Tier
@@ -37,12 +40,15 @@ fun TierRow(
     items: List<Item>,
     modifier: Modifier = Modifier,
     onDeleteItem: ((Int) -> Unit)? = null,
+    onRowPositioned: ((Rect) -> Unit)? = null,
+    onItemPositioned: ((Int, Rect) -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .heightIn(min = size64),
+            .heightIn(min = size64)
+            .onGloballyPositioned { coords -> onRowPositioned?.invoke(coords.boundsInWindow()) },
     ) {
         TierLabel(
             tier = tier,
@@ -58,6 +64,7 @@ fun TierRow(
                 ItemCell(
                     item = item,
                     onDelete = onDeleteItem?.let { delete -> { delete(item.id) } },
+                    onPositioned = onItemPositioned?.let { positioned -> { rect -> positioned(item.id, rect) } },
                 )
             }
         }

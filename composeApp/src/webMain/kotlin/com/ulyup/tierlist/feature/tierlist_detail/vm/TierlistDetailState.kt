@@ -1,4 +1,4 @@
-package com.ulyup.tierlist.feature.tierlist.detail.vm
+package com.ulyup.tierlist.feature.tierlist_detail.vm
 
 import com.ulyup.tierlist.core.mvi.LoadableState
 import com.ulyup.tierlist.domain.tierlist.model.Item

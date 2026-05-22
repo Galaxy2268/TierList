@@ -1,10 +1,10 @@
-package com.ulyup.tierlist.feature.tierlist.detail.navigation
+package com.ulyup.tierlist.feature.tierlist_detail.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.ulyup.tierlist.feature.tierlist.detail.TierlistDetailScreen
+import com.ulyup.tierlist.feature.tierlist_detail.TierlistDetailScreen
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -1,4 +1,6 @@
-package com.ulyup.tierlist.feature.tierlist.detail.vm
+package com.ulyup.tierlist.feature.tierlist_detail.vm
+
+import com.ulyup.tierlist.model.Tier
 
 sealed interface TierlistDetailAction
 
@@ -9,3 +11,9 @@ data object AddItemAction : TierlistDetailAction
 
 value class ChangeAddItemUrlAction(val value: String) : TierlistDetailAction
 value class DeleteItemAction(val itemId: Int) : TierlistDetailAction
+
+data class MoveItemAction(
+    val itemId: Int,
+    val tier: Tier?,
+    val position: Int,
+) : TierlistDetailAction

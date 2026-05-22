@@ -1,7 +1,7 @@
-package com.ulyup.tierlist.feature.tierlist.detail.mapper
+package com.ulyup.tierlist.feature.tierlist_detail.mapper
 
 import com.ulyup.tierlist.domain.tierlist.model.TierlistDetail
-import com.ulyup.tierlist.feature.tierlist.detail.vm.TierlistDetailState
+import com.ulyup.tierlist.feature.tierlist_detail.vm.TierlistDetailState
 import com.ulyup.tierlist.model.Tier
 
 fun TierlistDetailState.applyDetail(

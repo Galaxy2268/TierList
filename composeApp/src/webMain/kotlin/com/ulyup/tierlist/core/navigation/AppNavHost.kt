@@ -19,8 +19,8 @@ import com.ulyup.tierlist.feature.feed.navigation.feedGraph
 import com.ulyup.tierlist.feature.mylists.navigation.myListsGraph
 import com.ulyup.tierlist.feature.profile.navigation.profileGraph
 import com.ulyup.tierlist.feature.splash.navigation.splashGraph
-import com.ulyup.tierlist.feature.tierlist.detail.navigation.navigateToTierlistDetail
-import com.ulyup.tierlist.feature.tierlist.detail.navigation.tierlistDetailGraph
+import com.ulyup.tierlist.feature.tierlist_detail.navigation.navigateToTierlistDetail
+import com.ulyup.tierlist.feature.tierlist_detail.navigation.tierlistDetailGraph
 import com.ulyup.tierlist.theme.appColors
 
 @Composable
