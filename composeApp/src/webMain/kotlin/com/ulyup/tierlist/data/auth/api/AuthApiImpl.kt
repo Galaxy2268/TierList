@@ -7,7 +7,6 @@ import com.ulyup.tierlist.dto.RegisterRequest
 import com.ulyup.tierlist.dto.UserDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 
@@ -23,9 +22,5 @@ class AuthApiImpl(private val httpClient: HttpClient) : AuthApi {
 
     override suspend fun logout() {
         apiCall { httpClient.post(Routes.Auth.LOGOUT) }
-    }
-
-    override suspend fun me(): UserDto = apiCall {
-        httpClient.get(Routes.Auth.ME).body()
     }
 }

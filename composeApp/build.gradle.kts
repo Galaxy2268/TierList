@@ -24,7 +24,8 @@ kotlin {
                     port = 8081
                     proxy = mutableListOf(
                         KotlinWebpackConfig.DevServer.Proxy(
-                            context = mutableListOf("/api"),
+                            // Keep "/uploads" in sync with LocalImageStorage.URL_PREFIX (server module)
+                            context = mutableListOf("/api", "/uploads"),
                             target = "http://localhost:8080",
                         )
                     )
@@ -55,6 +56,9 @@ kotlin {
             implementation(libs.koin.composeViewmodel)
             implementation(libs.coil.compose)
             implementation(libs.coil.networkKtor3)
+            implementation(libs.filekit.core)
+            implementation(libs.filekit.dialogs)
+            implementation(libs.filekit.dialogsCompose)
             implementation(libs.navigation.compose)
             implementation(projects.shared)
         }

@@ -19,8 +19,13 @@ data class TierlistDetailState(
 }
 
 data class AddItemDialogState(
-    val url: String = "",
+    val pickedImage: PickedImage? = null,
     val isSubmitting: Boolean = false,
     val validationErrorRes: StringResource? = null,
     val serverErrorMessage: String? = null,
+)
+
+data class PickedImage(
+    val bytes: ByteArray,
+    val filename: String,
 )

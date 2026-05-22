@@ -13,7 +13,7 @@ import com.ulyup.tierlist.feature.tierlist_detail.mapper.applyDetail
 import com.ulyup.tierlist.feature.tierlist_detail.util.findItem
 import com.ulyup.tierlist.model.Tier
 import com.ulyup.tierlist.resources.Res
-import com.ulyup.tierlist.resources.detail_add_error_url_blank
+import com.ulyup.tierlist.resources.detail_add_error_no_image
 import kotlinx.coroutines.launch
 
 class TierlistDetailViewModel(
@@ -34,10 +34,10 @@ class TierlistDetailViewModel(
             LoadDetailAction -> load()
             ShowAddItemDialogAction -> updateState { it.copy(addItemDialog = AddItemDialogState()) }
             DismissAddItemDialogAction -> updateState { it.copy(addItemDialog = null) }
-            is ChangeAddItemUrlAction -> updateState { state ->
+            is ImagePickedAction -> updateState { state ->
                 state.copy(
                     addItemDialog = state.addItemDialog?.copy(
-                        url = action.value,
+                        pickedImage = PickedImage(action.bytes, action.filename),
                         validationErrorRes = null,
                         serverErrorMessage = null,
                     ),
@@ -71,19 +71,23 @@ class TierlistDetailViewModel(
     private suspend fun addItem() {
         val dialog = state.addItemDialog ?: return
         if (dialog.isSubmitting) return
-        val trimmedUrl = dialog.url.trim()
-        if (trimmedUrl.isBlank()) {
+        val picked = dialog.pickedImage
+        if (picked == null) {
             updateState { state ->
                 state.copy(
                     addItemDialog = state.addItemDialog?.copy(
-                        validationErrorRes = Res.string.detail_add_error_url_blank,
+                        validationErrorRes = Res.string.detail_add_error_no_image,
                     ),
                 )
             }
             return
         }
         createItemUseCase(
-            CreateItemUseCase.Params(tierlistId = tierlistId, imageUrl = trimmedUrl)
+            CreateItemUseCase.Params(
+                tierlistId = tierlistId,
+                bytes = picked.bytes,
+                filename = picked.filename,
+            )
         ).fold(
             onLoading = {
                 updateState { state ->

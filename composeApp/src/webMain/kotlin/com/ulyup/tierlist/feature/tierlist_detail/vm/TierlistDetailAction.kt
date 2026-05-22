@@ -9,7 +9,11 @@ data object ShowAddItemDialogAction : TierlistDetailAction
 data object DismissAddItemDialogAction : TierlistDetailAction
 data object AddItemAction : TierlistDetailAction
 
-value class ChangeAddItemUrlAction(val value: String) : TierlistDetailAction
+data class ImagePickedAction(
+    val bytes: ByteArray,
+    val filename: String,
+) : TierlistDetailAction
+
 value class DeleteItemAction(val itemId: Int) : TierlistDetailAction
 
 data class MoveItemAction(

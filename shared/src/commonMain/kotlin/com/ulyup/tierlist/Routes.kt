@@ -9,7 +9,6 @@ object Routes {
         const val REGISTER = "$BASE/register"
         const val LOGIN = "$BASE/login"
         const val LOGOUT = "$BASE/logout"
-        const val ME = "$BASE/me"
     }
 
     object Tierlists {

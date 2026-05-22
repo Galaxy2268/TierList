@@ -36,8 +36,8 @@ import com.ulyup.tierlist.feature.tierlist_detail.components.UnrankedStrip
 import com.ulyup.tierlist.feature.tierlist_detail.util.DragState
 import com.ulyup.tierlist.feature.tierlist_detail.util.findItem
 import com.ulyup.tierlist.feature.tierlist_detail.vm.AddItemAction
-import com.ulyup.tierlist.feature.tierlist_detail.vm.ChangeAddItemUrlAction
 import com.ulyup.tierlist.feature.tierlist_detail.vm.DeleteItemAction
+import com.ulyup.tierlist.feature.tierlist_detail.vm.ImagePickedAction
 import com.ulyup.tierlist.feature.tierlist_detail.vm.DismissAddItemDialogAction
 import com.ulyup.tierlist.feature.tierlist_detail.vm.LoadDetailAction
 import com.ulyup.tierlist.feature.tierlist_detail.vm.MoveItemAction
@@ -118,7 +118,7 @@ fun TierlistDetailScreen(
     state.addItemDialog?.let { dialog ->
         AddItemDialog(
             state = dialog,
-            onUrlChange = { viewModel.onAction(ChangeAddItemUrlAction(it)) },
+            onImagePicked = { bytes, filename -> viewModel.onAction(ImagePickedAction(bytes, filename)) },
             onConfirm = { viewModel.onAction(AddItemAction) },
             onDismiss = { viewModel.onAction(DismissAddItemDialogAction) },
         )

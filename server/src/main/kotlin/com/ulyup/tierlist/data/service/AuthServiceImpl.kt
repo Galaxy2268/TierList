@@ -7,7 +7,6 @@ import com.ulyup.tierlist.domain.service.AuthService
 import com.ulyup.tierlist.dto.UserDto
 import com.ulyup.tierlist.utils.BadRequestException
 import com.ulyup.tierlist.utils.UnauthorizedException
-import com.ulyup.tierlist.utils.findOrThrow
 
 private val usernamePattern = Regex("^[a-zA-Z0-9_]{3,32}$")
 private val emailPattern = Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")
@@ -34,7 +33,4 @@ class AuthServiceImpl(private val userRepo: UserRepository) : AuthService {
         }
         return user.toDto()
     }
-
-    override suspend fun getUser(id: Int): UserDto =
-        findOrThrow("User") { userRepo.findById(id) }.toDto()
 }

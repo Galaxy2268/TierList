@@ -6,7 +6,6 @@ import com.ulyup.tierlist.auth.authenticated
 import com.ulyup.tierlist.domain.service.AuthService
 import com.ulyup.tierlist.dto.LoginRequest
 import com.ulyup.tierlist.dto.RegisterRequest
-import com.ulyup.tierlist.utils.caller
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -32,10 +31,6 @@ fun Route.authRoutes(authService: AuthService) {
         post(Routes.Auth.LOGOUT) {
             call.sessions.clear<UserSession>()
             call.respond(HttpStatusCode.NoContent)
-        }
-
-        get(Routes.Auth.ME) {
-            call.respond(authService.getUser(call.caller.userId))
         }
     }
 }

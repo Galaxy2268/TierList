@@ -8,5 +8,4 @@ interface AuthApi {
     suspend fun login(request: LoginRequest): UserDto
     suspend fun register(request: RegisterRequest): UserDto
     suspend fun logout()
-    suspend fun me(): UserDto
 }

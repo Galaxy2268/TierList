@@ -11,11 +11,13 @@ class CreateItemUseCase(
     override suspend fun execute(parameters: Params): Item =
         itemRepository.create(
             tierlistId = parameters.tierlistId,
-            imageUrl = parameters.imageUrl,
+            bytes = parameters.bytes,
+            filename = parameters.filename,
         )
 
     data class Params(
         val tierlistId: Int,
-        val imageUrl: String,
+        val bytes: ByteArray,
+        val filename: String,
     )
 }
