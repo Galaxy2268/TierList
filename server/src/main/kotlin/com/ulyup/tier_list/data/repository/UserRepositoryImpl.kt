@@ -1,0 +1,71 @@
+package com.ulyup.tier_list.data.repository
+
+import com.ulyup.tier_list.data.db.DatabaseFactory.dbQuery
+import com.ulyup.tier_list.data.db.tables.UsersTable
+import com.ulyup.tier_list.domain.model.User
+import com.ulyup.tier_list.domain.repository.UserRepository
+import com.ulyup.tier_list.model.UserRole
+import com.ulyup.tier_list.utils.ConflictException
+import org.jetbrains.exposed.v1.core.ResultRow
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.or
+import org.jetbrains.exposed.v1.exceptions.ExposedSQLException
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.update
+import kotlin.time.Clock
+
+class UserRepositoryImpl : UserRepository {
+
+    override suspend fun create(username: String, email: String, passwordHash: String): User = dbQuery {
+        val now = Clock.System.now()
+        val newId = try {
+            UsersTable.insert {
+                it[UsersTable.username] = username
+                it[UsersTable.email] = email
+                it[UsersTable.passwordHash] = passwordHash
+                it[UsersTable.role] = UserRole.USER
+                it[UsersTable.createdAt] = now
+            } get UsersTable.id
+        } catch (e: ExposedSQLException) {
+            if (e.message?.contains("UNIQUE constraint failed", ignoreCase = true) == true) {
+                throw ConflictException("Username or email already taken")
+            }
+            throw e
+        }
+        User(newId, username, email, passwordHash, UserRole.USER, now)
+    }
+
+    override suspend fun findByUsername(username: String): User? = dbQuery {
+        UsersTable.selectAll().where { UsersTable.username eq username }.singleOrNull()?.toUser()
+    }
+
+    override suspend fun findByEmail(email: String): User? = dbQuery {
+        UsersTable.selectAll().where { UsersTable.email eq email }.singleOrNull()?.toUser()
+    }
+
+    override suspend fun findByUsernameOrEmail(value: String): User? = dbQuery {
+        UsersTable.selectAll()
+            .where { (UsersTable.username eq value) or (UsersTable.email eq value) }
+            .singleOrNull()?.toUser()
+    }
+
+    override suspend fun findById(id: Int): User? = dbQuery { fetchById(id) }
+
+    override suspend fun setRole(id: Int, role: UserRole): User? = dbQuery {
+        val count = UsersTable.update({ UsersTable.id eq id }) { it[UsersTable.role] = role }
+        if (count == 0) null else fetchById(id)
+    }
+
+    private fun fetchById(id: Int): User? =
+        UsersTable.selectAll().where { UsersTable.id eq id }.singleOrNull()?.toUser()
+
+    private fun ResultRow.toUser(): User = User(
+        id = this[UsersTable.id],
+        username = this[UsersTable.username],
+        email = this[UsersTable.email],
+        passwordHash = this[UsersTable.passwordHash],
+        role = this[UsersTable.role],
+        createdAt = this[UsersTable.createdAt],
+    )
+}

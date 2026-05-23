@@ -11,7 +11,7 @@ plugins {
 
 compose.resources {
     publicResClass = true
-    packageOfResClass = "com.ulyup.tierlist.resources"
+    packageOfResClass = "com.ulyup.tier_list.resources"
     generateResClass = ResourcesExtension.ResourceClassGeneration.Always
 }
 

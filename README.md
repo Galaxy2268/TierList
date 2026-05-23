@@ -37,29 +37,29 @@ All endpoints are JSON. Authenticated endpoints require the `TIERRANK_SESSION` c
 | POST | `/logout` | yes | — | 204, clears session |
 | GET | `/me` | yes | — | `UserDto` (re-fetched from DB so role changes are visible) |
 
-### Tierlists — `/api/tierlists` and `/api/users/me/tierlists`
+### Tier lists — `/api/tier_lists` and `/api/users/me/tier_lists`
 
 | Method | Path | Auth | Body | Returns |
 |---|---|---|---|---|
-| GET | `/api/tierlists` | no | — | `List<TierlistDto>` — public feed |
-| GET | `/api/tierlists/{id}` | optional | — | `TierlistDetailDto` (includes items); private lists → 404 unless owner |
-| GET | `/api/users/me/tierlists` | yes | — | `List<TierlistDto>` — own lists, public + private |
-| POST | `/api/tierlists` | yes | `CreateTierlistRequest` | `TierlistDto` (201); 5-list cap for `USER` role |
-| PUT | `/api/tierlists/{id}` | yes | `UpdateTierlistRequest` | `TierlistDto`; ownership required |
-| PATCH | `/api/tierlists/{id}/visibility` | yes | `UpdateVisibilityRequest` | `TierlistDto`; ownership required |
-| DELETE | `/api/tierlists/{id}` | yes | — | 204; CASCADE deletes items |
+| GET | `/api/tier_lists` | no | — | `List<TierListDto>` — public feed |
+| GET | `/api/tier_lists/{id}` | optional | — | `TierListDetailDto` (includes items); private lists → 404 unless owner |
+| GET | `/api/users/me/tier_lists` | yes | — | `List<TierListDto>` — own lists, public + private |
+| POST | `/api/tier_lists` | yes | `CreateTierListRequest` | `TierListDto` (201); 5-list cap for `USER` role |
+| PUT | `/api/tier_lists/{id}` | yes | `UpdateTierListRequest` | `TierListDto`; ownership required |
+| PATCH | `/api/tier_lists/{id}/visibility` | yes | `UpdateVisibilityRequest` | `TierListDto`; ownership required |
+| DELETE | `/api/tier_lists/{id}` | yes | — | 204; CASCADE deletes items |
 
-### Items — nested under `/api/tierlists/{id}/items`
+### Items — nested under `/api/tier_lists/{id}/items`
 
 Items are plain images (URL only) — no name, no notes. Each item carries an optional `tier` (null = unranked) and a `position` within that tier.
 
 | Method | Path | Auth | Body | Returns |
 |---|---|---|---|---|
-| GET | `/api/tierlists/{id}/items` | optional | — | `List<ItemDto>`; follows parent visibility |
-| POST | `/api/tierlists/{id}/items` | yes | `CreateItemRequest` | `ItemDto` (201) |
-| PUT | `/api/tierlists/{id}/items/{itemId}` | yes | `UpdateItemRequest` | `ItemDto` (replaces `imageUrl`) |
-| PATCH | `/api/tierlists/{id}/items/{itemId}/move` | yes | `MoveItemRequest` | `ItemDto` — sets `tier` and `position` |
-| DELETE | `/api/tierlists/{id}/items/{itemId}` | yes | — | 204 |
+| GET | `/api/tier_lists/{id}/items` | optional | — | `List<ItemDto>`; follows parent visibility |
+| POST | `/api/tier_lists/{id}/items` | yes | `CreateItemRequest` | `ItemDto` (201) |
+| PUT | `/api/tier_lists/{id}/items/{itemId}` | yes | `UpdateItemRequest` | `ItemDto` (replaces `imageUrl`) |
+| PATCH | `/api/tier_lists/{id}/items/{itemId}/move` | yes | `MoveItemRequest` | `ItemDto` — sets `tier` and `position` |
+| DELETE | `/api/tier_lists/{id}/items/{itemId}` | yes | — | 204 |
 
 ### User — `/api/users/me`
 
@@ -75,17 +75,17 @@ Items are plain images (URL only) — no name, no notes. Each item carries an op
 ```
 .
 ├── shared/         # KMP common: DTOs, enums, constants
-│   └── src/commonMain/kotlin/com/ulyup/tierlist/
-│       ├── dto/        # AuthDto, TierlistDto, ItemDto, ErrorDto
+│   └── src/commonMain/kotlin/com/ulyup/tier_list/
+│       ├── dto/        # AuthDto, TierListDto, ItemDto, ErrorDto
 │       └── model/      # Tier, UserRole
 ├── server/         # Ktor backend (JVM)
-│   └── src/main/kotlin/com/ulyup/tierlist/
+│   └── src/main/kotlin/com/ulyup/tier_list/
 │       ├── Application.kt          # plugin install + routing
 │       ├── auth/                   # Passwords, UserSession, authenticated{}
 │       ├── data/                   # repository impls + mappers
 │       ├── db/                     # DatabaseFactory + Exposed tables
 │       ├── domain/                 # repository + service interfaces, models
-│       └── routes/                 # Auth / Tierlist / Item / User routes
+│       └── routes/                 # Auth / TierList / Item / User routes
 ├── composeApp/     # Compose Web (WebAssembly) — stub
 └── gradle/libs.versions.toml       # dependency version catalog
 ```

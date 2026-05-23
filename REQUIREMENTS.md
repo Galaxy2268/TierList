@@ -6,7 +6,7 @@
 - **Student:** Daniels Muļukins (dm25053)
 
 > Source of truth: `tier_list_dm25053.pdf` (approved). This document mirrors that spec.
-> **Deviation note:** items in this implementation are *plain images* — the `name` field is dropped from `TierlistItem` even though the approved spec lists it. Decision made for product simplicity; no other deviations.
+> **Deviation note:** items in this implementation are *plain images* — the `name` field is dropped from `TierListItem` even though the approved spec lists it. Decision made for product simplicity; no other deviations.
 
 ## 1. Application Overview
 
@@ -39,18 +39,18 @@ Tier List is a web application for entertainment and personal information saving
 - **User** — id, username, email, password, role (USER / PREMIUM)
   - USER: up to 5 tier lists
   - PREMIUM: unlimited tier lists
-- **Tierlist** — id, userId, title, isPublic, createdAt
-- **TierlistItem** — id, tierlistId, imageUrl, tier (S/A/B/C/D/F), position
+- **TierList** — id, userId, title, isPublic, createdAt
+- **TierListItem** — id, tierListId, imageUrl, tier (S/A/B/C/D/F), position
   - *Note: approved spec includes a `name` field; this implementation drops it (items are plain images).*
 
 ### Controllers (Ktor Route Handlers)
 - **AuthController** — register, login, logout, session management
-- **TierlistController** — CRUD for tierlists, visibility toggle
+- **TierListController** — CRUD for tier_lists, visibility toggle
 - **ItemController** — CRUD for items, tier assignment
 - **UserController** — profile view, role upgrade to premium
 
 ### Views (Compose Multiplatform Screens)
 - **HomeScreen** — browsable feed of public tier lists
 - **LoginScreen / RegisterScreen** — authentication forms
-- **MyTierlistsScreen** — list of the user's own tier lists
-- **TierlistEditorScreen** — tier board with item management
+- **MyTierListsScreen** — list of the user's own tier lists
+- **TierListEditorScreen** — tier board with item management

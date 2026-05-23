@@ -5,7 +5,7 @@ plugins {
     application
 }
 
-group = "com.ulyup.tierlist"
+group = "com.ulyup.tier_list"
 version = "1.0.0"
 
 kotlin {
@@ -19,7 +19,7 @@ tasks.withType<JavaCompile> {
     targetCompatibility = "21"
 }
 application {
-    mainClass.set("com.ulyup.tierlist.ApplicationKt")
+    mainClass.set("com.ulyup.tier_list.ApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment", "--enable-native-access=ALL-UNNAMED")

@@ -1,0 +1,31 @@
+package com.ulyup.tier_list.data.tier_list.api
+
+import com.ulyup.tier_list.Routes
+import com.ulyup.tier_list.data.network.util.apiCall
+import com.ulyup.tier_list.dto.CreateTierListRequest
+import com.ulyup.tier_list.dto.TierListDetailDto
+import com.ulyup.tier_list.dto.TierListDto
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+
+class TierListApiImpl(private val httpClient: HttpClient) : TierListApi {
+
+    override suspend fun getPublicTierLists(): List<TierListDto> = apiCall {
+        httpClient.get(Routes.TierLists.ROOT).body()
+    }
+
+    override suspend fun getUserTierLists(): List<TierListDto> = apiCall {
+        httpClient.get(Routes.TierLists.MINE).body()
+    }
+
+    override suspend fun create(request: CreateTierListRequest): TierListDto = apiCall {
+        httpClient.post(Routes.TierLists.ROOT) { setBody(request) }.body()
+    }
+
+    override suspend fun getDetail(id: Int): TierListDetailDto = apiCall {
+        httpClient.get(Routes.TierLists.detail(id)).body()
+    }
+}

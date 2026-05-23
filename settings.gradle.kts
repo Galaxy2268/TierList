@@ -1,4 +1,4 @@
-rootProject.name = "tierlist"
+rootProject.name = "tier_list"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

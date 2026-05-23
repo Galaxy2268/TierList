@@ -22,7 +22,7 @@
 
     <string name="feed_empty">No public tier lists yet.</string>
 
-    <string name="mylists_empty">You haven\'t created any tier lists yet.</string>
+    <string name="mylists_empty">You haven't created any tier lists yet.</string>
     <string name="mylists_action_create_label">Create tier list</string>
     <string name="mylists_create_title">New tier list</string>
     <string name="mylists_create_field_title">Title</string>
