@@ -14,22 +14,22 @@ class AuthRepositoryImpl(
 ) : AuthRepository {
 
     override suspend fun login(usernameOrEmail: String, password: String): User {
-        val userDto = authApi.login(LoginRequest(usernameOrEmail = usernameOrEmail, password = password))
-        sessionManager.authorize()
-        return userDto.toDomain()
+        val user = authApi.login(LoginRequest(usernameOrEmail = usernameOrEmail, password = password)).toDomain()
+        sessionManager.signIn(user)
+        return user
     }
 
     override suspend fun register(username: String, email: String, password: String): User {
-        val userDto = authApi.register(RegisterRequest(username = username, email = email, password = password))
-        sessionManager.authorize()
-        return userDto.toDomain()
+        val user = authApi.register(RegisterRequest(username = username, email = email, password = password)).toDomain()
+        sessionManager.signIn(user)
+        return user
     }
 
     override suspend fun logout() {
         try {
             authApi.logout()
         } finally {
-            sessionManager.unauthorize()
+            sessionManager.signOut()
         }
     }
 }

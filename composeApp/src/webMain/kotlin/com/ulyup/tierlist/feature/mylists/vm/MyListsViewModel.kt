@@ -5,20 +5,25 @@ import com.ulyup.tierlist.core.mvi.StatefulViewModel
 import com.ulyup.tierlist.core.usecase.fold
 import com.ulyup.tierlist.domain.tierlist.usecase.CreateTierlistUseCase
 import com.ulyup.tierlist.domain.tierlist.usecase.GetMyTierlistsUseCase
-import com.ulyup.tierlist.domain.user.usecase.GetCurrentUserUseCase
+import com.ulyup.tierlist.domain.user.usecase.ObserveCurrentUserUseCase
 import com.ulyup.tierlist.domain.user.usecase.UpgradePremiumUseCase
 import com.ulyup.tierlist.resources.Res
 import com.ulyup.tierlist.resources.mylists_create_error_title_blank
 import kotlinx.coroutines.launch
 
 class MyListsViewModel(
-    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val observeCurrentUserUseCase: ObserveCurrentUserUseCase,
     private val getMyTierlistsUseCase: GetMyTierlistsUseCase,
     private val createTierlistUseCase: CreateTierlistUseCase,
     private val upgradePremiumUseCase: UpgradePremiumUseCase,
 ) : StatefulViewModel<MyListsAction, MyListsState>(MyListsState()) {
 
     init {
+        viewModelScope.launch {
+            observeCurrentUserUseCase(Unit).collect { user ->
+                updateState { it.copy(userRole = user?.role) }
+            }
+        }
         viewModelScope.launch { load() }
     }
 
@@ -38,14 +43,6 @@ class MyListsViewModel(
 
     private suspend fun load() {
         if (state.isLoading) return
-        getCurrentUserUseCase(Unit).fold(
-            onLoading = { updateState { it.withLoading() } },
-            onSuccess = { user ->
-                updateState { it.withLoaded().copy(userRole = user.role) }
-            },
-            onError = { exception -> updateState { it.withError(exception.message) } },
-        )
-        if (state.errorMessage != null) return
         getMyTierlistsUseCase(Unit).fold(
             onLoading = { updateState { it.withLoading() } },
             onSuccess = { tierlists ->
@@ -100,9 +97,7 @@ class MyListsViewModel(
         if (state.isUpgrading) return
         upgradePremiumUseCase(Unit).fold(
             onLoading = { updateState { it.copy(isUpgrading = true, errorMessage = null) } },
-            onSuccess = { user ->
-                updateState { it.copy(isUpgrading = false, userRole = user.role) }
-            },
+            onSuccess = { updateState { it.copy(isUpgrading = false) } },
             onError = { exception ->
                 updateState { it.copy(isUpgrading = false, errorMessage = exception.message) }
             },

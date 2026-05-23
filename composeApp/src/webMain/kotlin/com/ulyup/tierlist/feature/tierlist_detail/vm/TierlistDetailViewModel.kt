@@ -8,17 +8,18 @@ import com.ulyup.tierlist.domain.tierlist.usecase.CreateItemUseCase
 import com.ulyup.tierlist.domain.tierlist.usecase.DeleteItemUseCase
 import com.ulyup.tierlist.domain.tierlist.usecase.GetTierlistDetailUseCase
 import com.ulyup.tierlist.domain.tierlist.usecase.MoveItemUseCase
-import com.ulyup.tierlist.domain.user.usecase.GetCurrentUserUseCase
+import com.ulyup.tierlist.domain.user.usecase.ObserveCurrentUserUseCase
 import com.ulyup.tierlist.feature.tierlist_detail.mapper.applyDetail
 import com.ulyup.tierlist.feature.tierlist_detail.util.findItem
 import com.ulyup.tierlist.model.Tier
 import com.ulyup.tierlist.resources.Res
 import com.ulyup.tierlist.resources.detail_add_error_no_image
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class TierlistDetailViewModel(
     private val tierlistId: Int,
-    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val observeCurrentUserUseCase: ObserveCurrentUserUseCase,
     private val getTierlistDetailUseCase: GetTierlistDetailUseCase,
     private val createItemUseCase: CreateItemUseCase,
     private val deleteItemUseCase: DeleteItemUseCase,
@@ -51,21 +52,12 @@ class TierlistDetailViewModel(
 
     private suspend fun load() {
         if (state.isLoading) return
-        val currentUserId = fetchCurrentUserId()
+        val currentUserId = observeCurrentUserUseCase(Unit).firstOrNull()?.id
         getTierlistDetailUseCase(tierlistId).fold(
             onLoading = { updateState { it.withLoading() } },
             onSuccess = { detail -> updateState { it.applyDetail(detail, currentUserId) } },
             onError = { exception -> updateState { it.withError(exception.message) } },
         )
-    }
-
-    private suspend fun fetchCurrentUserId(): Int? {
-        var userId: Int? = null
-        getCurrentUserUseCase(Unit).fold(
-            onLoading = { updateState { it.withLoading() } },
-            onSuccess = { user -> userId = user.id },
-        )
-        return userId
     }
 
     private suspend fun addItem() {
@@ -192,8 +184,6 @@ class TierlistDetailViewModel(
                 position = targetPosition,
             )
         ).fold(
-            onLoading = { },
-            onSuccess = { },
             onError = { exception ->
                 updateState { now ->
                     now.copy(
