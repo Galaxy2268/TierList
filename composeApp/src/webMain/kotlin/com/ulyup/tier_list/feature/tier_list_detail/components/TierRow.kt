@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
-import com.ulyup.tier_list.core.ui.token.size64
+import com.ulyup.tier_list.core.ui.token.size96
 import com.ulyup.tier_list.domain.tier_list.model.TierListItem
 import com.ulyup.tier_list.model.Tier
 import com.ulyup.tier_list.resources.Res
@@ -47,7 +47,7 @@ fun TierRow(
         modifier = modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .heightIn(min = size64)
+            .heightIn(min = size96)
             .onGloballyPositioned { coords -> onRowPositioned?.invoke(coords.boundsInWindow()) },
     ) {
         TierLabel(
@@ -58,7 +58,7 @@ fun TierRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(appColors.surface)
-                .heightIn(min = size64),
+                .heightIn(min = size96),
         ) {
             items.forEach { item ->
                 TierListItem(
@@ -78,7 +78,7 @@ private fun TierLabel(
 ) {
     Box(
         modifier = modifier
-            .width(size64)
+            .width(size96)
             .background(appColors.tierColor(tier)),
         contentAlignment = Alignment.Center,
     ) {
