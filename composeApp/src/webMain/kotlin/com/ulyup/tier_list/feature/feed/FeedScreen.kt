@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.ulyup.tier_list.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tier_list.core.ui.components.state.StatefulContent
@@ -28,6 +29,8 @@ fun FeedScreen(
 ) {
     val viewModel = koinViewModel<FeedViewModel>()
     val state = viewModel.uiState
+
+    LaunchedEffect(Unit) { viewModel.onAction(LoadFeedAction) }
 
     AppScaffold { padding ->
         StatefulContent(
