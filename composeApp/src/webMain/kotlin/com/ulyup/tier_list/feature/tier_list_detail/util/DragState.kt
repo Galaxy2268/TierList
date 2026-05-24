@@ -19,6 +19,8 @@ class DragState {
         private set
     var rootWindowOffset: Offset by mutableStateOf(Offset.Zero)
         private set
+    var dropTarget: DropTarget? by mutableStateOf(null)
+        private set
 
     private val itemBoundsMap: SnapshotStateMap<Int, Rect> = mutableStateMapOf()
     private val tierRowBoundsMap: SnapshotStateMap<Tier, Rect> = mutableStateMapOf()
@@ -63,9 +65,17 @@ class DragState {
 
     fun endDrag() {
         dragged = null
+        dropTarget = null
     }
 
-    fun computeDropTarget(
+    fun recomputeDropTarget(
+        itemsByTier: Map<Tier, List<TierListItem>>,
+        unrankedItems: List<TierListItem>,
+    ) {
+        dropTarget = computeDropTarget(itemsByTier, unrankedItems)
+    }
+
+    private fun computeDropTarget(
         itemsByTier: Map<Tier, List<TierListItem>>,
         unrankedItems: List<TierListItem>,
     ): DropTarget? {

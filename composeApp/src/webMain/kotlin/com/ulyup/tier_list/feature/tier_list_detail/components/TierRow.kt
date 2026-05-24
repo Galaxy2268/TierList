@@ -41,6 +41,8 @@ fun TierRow(
     onDeleteItem: ((Int) -> Unit)? = null,
     onRowPositioned: ((Rect) -> Unit)? = null,
     onItemPositioned: ((Int, Rect) -> Unit)? = null,
+    ghostImageUrl: String? = null,
+    ghostIndex: Int? = null,
 ) {
     Row(
         modifier = modifier
@@ -61,6 +63,8 @@ fun TierRow(
             items = items,
             onDeleteItem = onDeleteItem,
             onItemPositioned = onItemPositioned,
+            ghostImageUrl = ghostImageUrl,
+            ghostIndex = ghostIndex,
         )
     }
 }

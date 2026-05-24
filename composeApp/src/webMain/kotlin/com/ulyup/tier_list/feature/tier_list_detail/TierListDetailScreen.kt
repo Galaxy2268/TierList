@@ -1,7 +1,6 @@
 package com.ulyup.tier_list.feature.tier_list_detail
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.unit.IntOffset
@@ -35,7 +33,7 @@ import com.ulyup.tier_list.feature.tier_list_detail.components.TierListItem
 import com.ulyup.tier_list.feature.tier_list_detail.components.TierRow
 import com.ulyup.tier_list.feature.tier_list_detail.components.UnrankedStrip
 import com.ulyup.tier_list.feature.tier_list_detail.util.DragState
-import com.ulyup.tier_list.feature.tier_list_detail.util.findItem
+import com.ulyup.tier_list.feature.tier_list_detail.util.tierListDragGestures
 import com.ulyup.tier_list.feature.tier_list_detail.vm.AddItemAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DeleteItemAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ImagePickedAction
@@ -110,7 +108,12 @@ fun TierListDetailScreen(
                 onMove = { itemId, tier, position ->
                     viewModel.onAction(MoveItemAction(itemId, tier, position))
                 },
-                onDeleteItem = { itemId -> viewModel.onAction(DeleteItemAction(itemId)) },
+                onDeleteItem = if (state.isOwner) {
+                    { itemId -> viewModel.onAction(DeleteItemAction(itemId)) }
+                } else {
+                    null
+                },
+                onItemPositioned = if (state.isOwner) dragState::setItemBounds else null,
                 modifier = contentModifier,
             )
         }
@@ -131,7 +134,8 @@ private fun DetailContent(
     state: TierListDetailState,
     dragState: DragState,
     onMove: (itemId: Int, tier: Tier?, position: Int) -> Unit,
-    onDeleteItem: (Int) -> Unit,
+    onDeleteItem: ((Int) -> Unit)?,
+    onItemPositioned: ((Int, Rect) -> Unit)?,
     modifier: Modifier,
 ) {
     val currentState by rememberUpdatedState(state)
@@ -143,38 +147,17 @@ private fun DetailContent(
         dragState.pruneItemBounds(allIds)
     }
 
-    val draggedId = dragState.dragged?.item?.id
-    val deleteHandler: ((Int) -> Unit)? = if (state.isOwner) onDeleteItem else null
-    val itemPositionedHandler: ((Int, Rect) -> Unit)? =
-        if (state.isOwner) dragState::setItemBounds else null
+    val draggedItem = dragState.dragged?.item
+    val draggedId = draggedItem?.id
+    val dropTarget = dragState.dropTarget
+    val ghostImageUrl = if (dropTarget != null) draggedItem?.imageUrl else null
 
     val dragModifier = if (state.isOwner) {
-        Modifier.pointerInput(Unit) {
-            detectDragGestures(
-                onDragStart = { localOffset ->
-                    val windowPos = dragState.rootWindowOffset + localOffset
-                    val itemId = dragState.itemIdAt(windowPos) ?: return@detectDragGestures
-                    val item = currentState.findItem(itemId) ?: return@detectDragGestures
-                    dragState.startDrag(item, windowPos)
-                },
-                onDrag = { change, _ ->
-                    change.consume()
-                    dragState.updatePointer(dragState.rootWindowOffset + change.position)
-                },
-                onDragEnd = {
-                    val target = dragState.computeDropTarget(
-                        currentState.itemsByTier,
-                        currentState.unrankedItems,
-                    )
-                    val draggedItem = dragState.dragged?.item
-                    dragState.endDrag()
-                    if (draggedItem != null && target != null) {
-                        currentOnMove(draggedItem.id, target.tier, target.position)
-                    }
-                },
-                onDragCancel = { dragState.endDrag() },
-            )
-        }
+        Modifier.tierListDragGestures(
+            dragState = dragState,
+            state = { currentState },
+            onMove = { id, tier, position -> currentOnMove(id, tier, position) },
+        )
     } else {
         Modifier
     }
@@ -199,25 +182,33 @@ private fun DetailContent(
                             color = appColors.background,
                         )
                     }
-                    val items = state.itemsByTier[tier].orEmpty()
-                        .let { if (draggedId != null) it.filterNot { item -> item.id == draggedId } else it }
+                    val tierItems = state.itemsByTier[tier].orEmpty()
+                    val items = remember(tierItems, draggedId) {
+                        if (draggedId != null) tierItems.filterNot { item -> item.id == draggedId } else tierItems
+                    }
                     TierRow(
                         tier = tier,
                         items = items,
-                        onDeleteItem = deleteHandler,
+                        onDeleteItem = onDeleteItem,
                         onRowPositioned = { rect -> dragState.setTierRowBounds(tier, rect) },
-                        onItemPositioned = itemPositionedHandler,
+                        onItemPositioned = onItemPositioned,
+                        ghostImageUrl = ghostImageUrl,
+                        ghostIndex = dropTarget?.takeIf { it.tier == tier }?.position,
                     )
                 }
             }
-            val unranked = state.unrankedItems
-                .let { if (draggedId != null) it.filterNot { item -> item.id == draggedId } else it }
+            val unrankedItems = state.unrankedItems
+            val unranked = remember(unrankedItems, draggedId) {
+                if (draggedId != null) unrankedItems.filterNot { item -> item.id == draggedId } else unrankedItems
+            }
             if (state.isOwner || unranked.isNotEmpty()) {
                 UnrankedStrip(
                     items = unranked,
-                    onDeleteItem = deleteHandler,
+                    onDeleteItem = onDeleteItem,
                     onRowPositioned = { rect -> dragState.setUnrankedRowBounds(rect) },
-                    onItemPositioned = itemPositionedHandler,
+                    onItemPositioned = onItemPositioned,
+                    ghostImageUrl = ghostImageUrl,
+                    ghostIndex = dropTarget?.takeIf { it.tier == null }?.position,
                     modifier = Modifier.padding(top = gap16),
                 )
             }

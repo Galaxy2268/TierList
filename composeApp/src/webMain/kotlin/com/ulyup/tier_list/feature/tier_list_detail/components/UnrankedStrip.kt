@@ -24,6 +24,8 @@ fun UnrankedStrip(
     onDeleteItem: ((Int) -> Unit)? = null,
     onRowPositioned: ((Rect) -> Unit)? = null,
     onItemPositioned: ((Int, Rect) -> Unit)? = null,
+    ghostImageUrl: String? = null,
+    ghostIndex: Int? = null,
 ) {
     Column(
         modifier = modifier
@@ -40,6 +42,8 @@ fun UnrankedStrip(
             items = items,
             onDeleteItem = onDeleteItem,
             onItemPositioned = onItemPositioned,
+            ghostImageUrl = ghostImageUrl,
+            ghostIndex = ghostIndex,
         )
     }
 }
