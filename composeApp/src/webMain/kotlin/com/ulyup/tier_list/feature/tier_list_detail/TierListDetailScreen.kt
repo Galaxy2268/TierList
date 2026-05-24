@@ -1,7 +1,7 @@
 package com.ulyup.tier_list.feature.tier_list_detail
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -23,10 +24,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import com.ulyup.tier_list.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tier_list.core.ui.components.state.StatefulContent
 import com.ulyup.tier_list.core.ui.components.topbar.AppTopAppBar
-import com.ulyup.tier_list.core.ui.token.gap8
 import com.ulyup.tier_list.core.ui.token.gap16
 import com.ulyup.tier_list.core.ui.token.paddingV16H24
 import com.ulyup.tier_list.feature.tier_list_detail.components.AddItemDialog
@@ -187,18 +188,27 @@ private fun DetailContent(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(paddingV16H24),
-            verticalArrangement = Arrangement.spacedBy(gap8),
         ) {
-            Tier.entries.forEach { tier ->
-                val items = state.itemsByTier[tier].orEmpty()
-                    .let { if (draggedId != null) it.filterNot { item -> item.id == draggedId } else it }
-                TierRow(
-                    tier = tier,
-                    items = items,
-                    onDeleteItem = deleteHandler,
-                    onRowPositioned = { rect -> dragState.setTierRowBounds(tier, rect) },
-                    onItemPositioned = itemPositionedHandler,
-                )
+            Column(
+                modifier = Modifier.border(2.dp, appColors.background),
+            ) {
+                Tier.entries.forEachIndexed { index, tier ->
+                    if (index > 0) {
+                        HorizontalDivider(
+                            thickness = 2.dp,
+                            color = appColors.background,
+                        )
+                    }
+                    val items = state.itemsByTier[tier].orEmpty()
+                        .let { if (draggedId != null) it.filterNot { item -> item.id == draggedId } else it }
+                    TierRow(
+                        tier = tier,
+                        items = items,
+                        onDeleteItem = deleteHandler,
+                        onRowPositioned = { rect -> dragState.setTierRowBounds(tier, rect) },
+                        onItemPositioned = itemPositionedHandler,
+                    )
+                }
             }
             val unranked = state.unrankedItems
                 .let { if (draggedId != null) it.filterNot { item -> item.id == draggedId } else it }

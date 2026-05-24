@@ -71,12 +71,12 @@ internal val darkAppColors = AppColors(
     warning = Color(0xFFFFB300),
     success = Color(0xFF4ADE80),
 
-    tierS = Color(0xFFFF5252),
-    tierA = Color(0xFFFF9B40),
-    tierB = Color(0xFFFFD740),
-    tierC = Color(0xFF69F0AE),
-    tierD = Color(0xFF40C4FF),
-    tierF = Color(0xFFB388FF),
+    tierS = Color(0xFFFF7F7F),
+    tierA = Color(0xFFFFBF7F),
+    tierB = Color(0xFFFFDF7F),
+    tierC = Color(0xFFFFFF7F),
+    tierD = Color(0xFFBFFF7F),
+    tierF = Color(0xFF7FFFFF),
 )
 
 internal fun AppColors.toMaterialColorScheme(): ColorScheme = darkColorScheme(
