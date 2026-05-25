@@ -6,6 +6,8 @@ import com.ulyup.tier_list.domain.tier_list.model.TierList
 import com.ulyup.tier_list.domain.tier_list.model.TierListDetail
 import com.ulyup.tier_list.domain.tier_list.repository.TierListRepository
 import com.ulyup.tier_list.dto.CreateTierListRequest
+import com.ulyup.tier_list.dto.UpdateTierListRequest
+import com.ulyup.tier_list.dto.UpdateVisibilityRequest
 
 class TierListRepositoryImpl(
     private val tierListApi: TierListApi,
@@ -22,4 +24,14 @@ class TierListRepositoryImpl(
 
     override suspend fun getDetail(id: Int): TierListDetail =
         tierListApi.getDetail(id).toDomain()
+
+    override suspend fun update(id: Int, title: String): TierList =
+        tierListApi.update(id, UpdateTierListRequest(title = title)).toDomain()
+
+    override suspend fun setVisibility(id: Int, isPublic: Boolean): TierList =
+        tierListApi.setVisibility(id, UpdateVisibilityRequest(isPublic = isPublic)).toDomain()
+
+    override suspend fun delete(id: Int) {
+        tierListApi.delete(id)
+    }
 }

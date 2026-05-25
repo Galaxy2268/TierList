@@ -19,7 +19,7 @@ class FeedViewModel(
         getPublicTierListsUseCase(Unit).fold(
             onLoading = { updateState { it.withLoading() } },
             onSuccess = { tierLists ->
-                updateState { it.withLoaded().copy(tierLists = tierLists) }
+                updateState { it.withSuccess().copy(tierLists = tierLists) }
             },
             onError = { exception -> updateState { it.withError(exception.message) } },
         )

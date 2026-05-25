@@ -13,7 +13,13 @@ fun TierListDetailState.applyDetail(
         isLoading = false,
         errorMessage = null,
         title = detail.tierList.title,
+        isPublic = detail.tierList.isPublic,
         isOwner = currentUserId != null && currentUserId == detail.tierList.ownerId,
+        isUpdatingVisibility = false,
+        renameDialog = null,
+        isDeleteConfirmVisible = false,
+        isDeleting = false,
+        deleteErrorMessage = null,
         itemsByTier = Tier.entries.associateWith { tier ->
             sortedItems.filter { it.tier == tier }
         },

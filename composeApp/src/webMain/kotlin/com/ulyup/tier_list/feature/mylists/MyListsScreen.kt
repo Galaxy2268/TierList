@@ -10,9 +10,11 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.ulyup.tier_list.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tier_list.core.ui.components.state.StatefulContent
+import com.ulyup.tier_list.core.ui.components.tier_list.DeleteTierListConfirmDialog
 import com.ulyup.tier_list.core.ui.components.tier_list.TierListCard
 import com.ulyup.tier_list.core.ui.token.gap12
 import com.ulyup.tier_list.core.ui.token.paddingV16H24
@@ -21,10 +23,13 @@ import com.ulyup.tier_list.feature.mylists.components.CreateTierListDialog
 import com.ulyup.tier_list.feature.mylists.components.PremiumUpsellCard
 import com.ulyup.tier_list.feature.mylists.vm.ChangeCreateTitleAction
 import com.ulyup.tier_list.feature.mylists.vm.ConfirmCreateAction
+import com.ulyup.tier_list.feature.mylists.vm.ConfirmDeleteTierListAction
 import com.ulyup.tier_list.feature.mylists.vm.DismissCreateDialogAction
+import com.ulyup.tier_list.feature.mylists.vm.DismissDeleteTierListConfirmAction
 import com.ulyup.tier_list.feature.mylists.vm.LoadMyListsAction
 import com.ulyup.tier_list.feature.mylists.vm.MyListsViewModel
 import com.ulyup.tier_list.feature.mylists.vm.ShowCreateDialogAction
+import com.ulyup.tier_list.feature.mylists.vm.ShowDeleteTierListConfirmAction
 import com.ulyup.tier_list.feature.mylists.vm.ToggleCreatePublicAction
 import com.ulyup.tier_list.feature.mylists.vm.UpgradePremiumAction
 import com.ulyup.tier_list.resources.Res
@@ -42,6 +47,8 @@ fun MyListsScreen(
 ) {
     val viewModel = koinViewModel<MyListsViewModel>()
     val state = viewModel.uiState
+
+    LaunchedEffect(Unit) { viewModel.onAction(LoadMyListsAction) }
 
     AppScaffold(
         floatingActionButton = {
@@ -75,6 +82,7 @@ fun MyListsScreen(
                     TierListCard(
                         tierList = tierList,
                         onClick = { onOpenTierList(tierList.id) },
+                        onDelete = { viewModel.onAction(ShowDeleteTierListConfirmAction(tierList)) },
                     )
                 }
                 if (state.isAtCap) {
@@ -96,6 +104,16 @@ fun MyListsScreen(
             onPublicChange = { viewModel.onAction(ToggleCreatePublicAction(it)) },
             onConfirm = { viewModel.onAction(ConfirmCreateAction) },
             onDismiss = { viewModel.onAction(DismissCreateDialogAction) },
+        )
+    }
+
+    state.deleteConfirm?.let { pending ->
+        DeleteTierListConfirmDialog(
+            tierListTitle = pending.title,
+            onConfirm = { viewModel.onAction(ConfirmDeleteTierListAction) },
+            onDismiss = { viewModel.onAction(DismissDeleteTierListConfirmAction) },
+            isLoading = pending.isLoading,
+            errorMessage = pending.errorMessage,
         )
     }
 }

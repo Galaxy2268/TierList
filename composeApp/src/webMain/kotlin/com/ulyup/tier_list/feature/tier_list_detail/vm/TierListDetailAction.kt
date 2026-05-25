@@ -22,3 +22,14 @@ data class MoveItemAction(
     val tier: Tier?,
     val position: Int,
 ) : TierListDetailAction
+
+data object ShowRenameDialogAction : TierListDetailAction
+data object DismissRenameDialogAction : TierListDetailAction
+value class ChangeRenameTitleAction(val value: String) : TierListDetailAction
+data object ConfirmRenameAction : TierListDetailAction
+
+data object ToggleVisibilityAction : TierListDetailAction
+
+data object ShowDeleteConfirmAction : TierListDetailAction
+data object DismissDeleteConfirmAction : TierListDetailAction
+data object ConfirmDeleteAction : TierListDetailAction

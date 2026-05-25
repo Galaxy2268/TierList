@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.ulyup.tier_list.core.mvi.StatefulViewModel
 import com.ulyup.tier_list.core.usecase.fold
 import com.ulyup.tier_list.domain.tier_list.usecase.CreateTierListUseCase
+import com.ulyup.tier_list.domain.tier_list.usecase.DeleteTierListUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.GetMyTierListsUseCase
 import com.ulyup.tier_list.domain.user.usecase.ObserveCurrentUserUseCase
 import com.ulyup.tier_list.domain.user.usecase.UpgradePremiumUseCase
@@ -15,6 +16,7 @@ class MyListsViewModel(
     private val observeCurrentUserUseCase: ObserveCurrentUserUseCase,
     private val getMyTierListsUseCase: GetMyTierListsUseCase,
     private val createTierListUseCase: CreateTierListUseCase,
+    private val deleteTierListUseCase: DeleteTierListUseCase,
     private val upgradePremiumUseCase: UpgradePremiumUseCase,
 ) : StatefulViewModel<MyListsAction, MyListsState>(MyListsState()) {
 
@@ -33,11 +35,16 @@ class MyListsViewModel(
             ShowCreateDialogAction -> showCreateDialog()
             DismissCreateDialogAction -> updateState { it.copy(createDialog = null) }
             is ChangeCreateTitleAction -> updateCreateDialog {
-                it.copy(title = action.value, validationErrorRes = null, serverErrorMessage = null)
+                it.copy(title = action.value).withInputChanged()
             }
             is ToggleCreatePublicAction -> updateCreateDialog { it.copy(isPublic = action.value) }
             ConfirmCreateAction -> confirmCreate()
             UpgradePremiumAction -> upgrade()
+            is ShowDeleteTierListConfirmAction -> updateState {
+                it.copy(deleteConfirm = DeleteConfirmState(action.tierList.id, action.tierList.title))
+            }
+            DismissDeleteTierListConfirmAction -> updateState { it.copy(deleteConfirm = null) }
+            ConfirmDeleteTierListAction -> confirmDeleteTierList()
         }
     }
 
@@ -46,7 +53,7 @@ class MyListsViewModel(
         getMyTierListsUseCase(Unit).fold(
             onLoading = { updateState { it.withLoading() } },
             onSuccess = { tierLists ->
-                updateState { it.withLoaded().copy(tierLists = tierLists) }
+                updateState { it.withSuccess().copy(tierLists = tierLists) }
             },
             onError = { exception -> updateState { it.withError(exception.message) } },
         )
@@ -59,11 +66,9 @@ class MyListsViewModel(
 
     private suspend fun confirmCreate() {
         val dialog = state.createDialog ?: return
-        if (dialog.isSubmitting) return
+        if (dialog.isLoading) return
         if (dialog.title.isBlank()) {
-            updateCreateDialog {
-                it.copy(validationErrorRes = Res.string.mylists_create_error_title_blank)
-            }
+            updateCreateDialog { it.withValidationError(Res.string.mylists_create_error_title_blank) }
             return
         }
         createTierListUseCase(
@@ -72,11 +77,7 @@ class MyListsViewModel(
                 isPublic = dialog.isPublic,
             )
         ).fold(
-            onLoading = {
-                updateCreateDialog {
-                    it.copy(isSubmitting = true, validationErrorRes = null, serverErrorMessage = null)
-                }
-            },
+            onLoading = { updateCreateDialog { it.withLoading() } },
             onSuccess = { created ->
                 updateState {
                     it.copy(
@@ -85,9 +86,26 @@ class MyListsViewModel(
                     )
                 }
             },
+            onError = { exception -> updateCreateDialog { it.withError(exception.message) } },
+        )
+    }
+
+    private suspend fun confirmDeleteTierList() {
+        val pending = state.deleteConfirm ?: return
+        if (pending.isLoading) return
+        updateState { it.copy(deleteConfirm = pending.withLoading()) }
+        deleteTierListUseCase(pending.tierListId).fold(
+            onSuccess = {
+                updateState {
+                    it.copy(
+                        tierLists = it.tierLists.filterNot { tierList -> tierList.id == pending.tierListId },
+                        deleteConfirm = null,
+                    )
+                }
+            },
             onError = { exception ->
-                updateCreateDialog {
-                    it.copy(isSubmitting = false, serverErrorMessage = exception.message)
+                updateState {
+                    it.copy(deleteConfirm = it.deleteConfirm?.withError(exception.message))
                 }
             },
         )

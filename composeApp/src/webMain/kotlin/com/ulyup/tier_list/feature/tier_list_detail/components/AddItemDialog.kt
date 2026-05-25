@@ -37,7 +37,7 @@ fun AddItemDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val errorText = state.validationErrorRes?.let { stringResource(it) } ?: state.serverErrorMessage
+    val errorText = state.validationErrorRes?.let { stringResource(it) } ?: state.errorMessage
     val scope = rememberCoroutineScope()
     val launcher = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
         if (file != null) {
@@ -62,7 +62,7 @@ fun AddItemDialog(
                 LinkTextButton(
                     text = stringResource(Res.string.detail_action_pick_image),
                     onClick = { launcher.launch() },
-                    enabled = !state.isSubmitting,
+                    enabled = !state.isLoading,
                 )
                 state.pickedImage?.let { picked ->
                     VBox8
@@ -89,7 +89,7 @@ fun AddItemDialog(
             PrimaryButton(
                 text = stringResource(Res.string.detail_action_add_item),
                 onClick = onConfirm,
-                isLoading = state.isSubmitting,
+                isLoading = state.isLoading,
                 enabled = state.pickedImage != null,
             )
         },
@@ -97,7 +97,7 @@ fun AddItemDialog(
             LinkTextButton(
                 text = stringResource(Res.string.detail_action_cancel),
                 onClick = onDismiss,
-                enabled = !state.isSubmitting,
+                enabled = !state.isLoading,
             )
         },
     )

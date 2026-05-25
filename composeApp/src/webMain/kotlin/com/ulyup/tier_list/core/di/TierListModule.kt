@@ -11,10 +11,13 @@ import com.ulyup.tier_list.domain.tier_list.repository.TierListRepository
 import com.ulyup.tier_list.domain.tier_list.usecase.CreateItemUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.CreateTierListUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.DeleteItemUseCase
+import com.ulyup.tier_list.domain.tier_list.usecase.DeleteTierListUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.GetMyTierListsUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.GetPublicTierListsUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.GetTierListDetailUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.MoveItemUseCase
+import com.ulyup.tier_list.domain.tier_list.usecase.SetTierListVisibilityUseCase
+import com.ulyup.tier_list.domain.tier_list.usecase.UpdateTierListUseCase
 import com.ulyup.tier_list.feature.feed.vm.FeedViewModel
 import com.ulyup.tier_list.feature.mylists.vm.MyListsViewModel
 import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDetailViewModel
@@ -33,6 +36,9 @@ val tierListModule = module {
     factoryOf(::GetMyTierListsUseCase)
     factoryOf(::CreateTierListUseCase)
     factoryOf(::GetTierListDetailUseCase)
+    factoryOf(::UpdateTierListUseCase)
+    factoryOf(::SetTierListVisibilityUseCase)
+    factoryOf(::DeleteTierListUseCase)
     factoryOf(::CreateItemUseCase)
     factoryOf(::DeleteItemUseCase)
     factoryOf(::MoveItemUseCase)

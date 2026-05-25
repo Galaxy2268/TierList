@@ -23,34 +23,54 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.ulyup.tier_list.core.mvi.ObserveAsEvents
 import com.ulyup.tier_list.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tier_list.core.ui.components.state.StatefulContent
+import com.ulyup.tier_list.core.ui.components.tier_list.DeleteTierListConfirmDialog
 import com.ulyup.tier_list.core.ui.components.topbar.AppTopAppBar
 import com.ulyup.tier_list.core.ui.token.gap16
 import com.ulyup.tier_list.core.ui.token.paddingV16H24
 import com.ulyup.tier_list.feature.tier_list_detail.components.AddItemDialog
+import com.ulyup.tier_list.feature.tier_list_detail.components.RenameTierListDialog
 import com.ulyup.tier_list.feature.tier_list_detail.components.TierListItem
 import com.ulyup.tier_list.feature.tier_list_detail.components.TierRow
 import com.ulyup.tier_list.feature.tier_list_detail.components.UnrankedStrip
 import com.ulyup.tier_list.feature.tier_list_detail.util.DragState
 import com.ulyup.tier_list.feature.tier_list_detail.util.tierListDragGestures
 import com.ulyup.tier_list.feature.tier_list_detail.vm.AddItemAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ChangeRenameTitleAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ConfirmDeleteAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ConfirmRenameAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DeleteItemAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.ImagePickedAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissAddItemDialogAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissDeleteConfirmAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissRenameDialogAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ImagePickedAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.LoadDetailAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.MoveItemAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowAddItemDialogAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowDeleteConfirmAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowRenameDialogAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDeletedEvent
 import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDetailState
 import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDetailViewModel
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ToggleVisibilityAction
 import com.ulyup.tier_list.model.Tier
 import com.ulyup.tier_list.resources.Res
 import com.ulyup.tier_list.resources.detail_action_add_item_fab
 import com.ulyup.tier_list.resources.detail_action_back
+import com.ulyup.tier_list.resources.detail_action_delete
+import com.ulyup.tier_list.resources.detail_action_make_private
+import com.ulyup.tier_list.resources.detail_action_make_public
+import com.ulyup.tier_list.resources.detail_action_rename
 import com.ulyup.tier_list.resources.detail_empty
 import com.ulyup.tier_list.resources.error_action_retry
 import com.ulyup.tier_list.resources.ic_add
 import com.ulyup.tier_list.resources.ic_arrow_back
+import com.ulyup.tier_list.resources.ic_delete
+import com.ulyup.tier_list.resources.ic_edit
+import com.ulyup.tier_list.resources.ic_unvisible
+import com.ulyup.tier_list.resources.ic_visible
 import com.ulyup.tier_list.theme.appColors
 import kotlin.math.roundToInt
 import org.jetbrains.compose.resources.painterResource
@@ -67,6 +87,12 @@ fun TierListDetailScreen(
     val state = viewModel.uiState
     val dragState = remember { DragState() }
 
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            TierListDeletedEvent -> onBack()
+        }
+    }
+
     AppScaffold(
         topBar = {
             AppTopAppBar(
@@ -78,6 +104,40 @@ fun TierListDetailScreen(
                             contentDescription = stringResource(Res.string.detail_action_back),
                             tint = appColors.onSurface,
                         )
+                    }
+                },
+                actions = {
+                    if (state.isOwner) {
+                        val visibilityIcon = if (state.isPublic) Res.drawable.ic_visible else Res.drawable.ic_unvisible
+                        val visibilityLabel = if (state.isPublic) {
+                            stringResource(Res.string.detail_action_make_private)
+                        } else {
+                            stringResource(Res.string.detail_action_make_public)
+                        }
+                        IconButton(
+                            onClick = { viewModel.onAction(ToggleVisibilityAction) },
+                            enabled = !state.isUpdatingVisibility,
+                        ) {
+                            Icon(
+                                painter = painterResource(visibilityIcon),
+                                contentDescription = visibilityLabel,
+                                tint = appColors.onSurface,
+                            )
+                        }
+                        IconButton(onClick = { viewModel.onAction(ShowRenameDialogAction) }) {
+                            Icon(
+                                painter = painterResource(Res.drawable.ic_edit),
+                                contentDescription = stringResource(Res.string.detail_action_rename),
+                                tint = appColors.onSurface,
+                            )
+                        }
+                        IconButton(onClick = { viewModel.onAction(ShowDeleteConfirmAction) }) {
+                            Icon(
+                                painter = painterResource(Res.drawable.ic_delete),
+                                contentDescription = stringResource(Res.string.detail_action_delete),
+                                tint = appColors.error,
+                            )
+                        }
                     }
                 },
             )
@@ -125,6 +185,25 @@ fun TierListDetailScreen(
             onImagePicked = { bytes, filename -> viewModel.onAction(ImagePickedAction(bytes, filename)) },
             onConfirm = { viewModel.onAction(AddItemAction) },
             onDismiss = { viewModel.onAction(DismissAddItemDialogAction) },
+        )
+    }
+
+    state.renameDialog?.let { dialog ->
+        RenameTierListDialog(
+            state = dialog,
+            onTitleChange = { viewModel.onAction(ChangeRenameTitleAction(it)) },
+            onConfirm = { viewModel.onAction(ConfirmRenameAction) },
+            onDismiss = { viewModel.onAction(DismissRenameDialogAction) },
+        )
+    }
+
+    if (state.isDeleteConfirmVisible) {
+        DeleteTierListConfirmDialog(
+            tierListTitle = state.title,
+            onConfirm = { viewModel.onAction(ConfirmDeleteAction) },
+            onDismiss = { viewModel.onAction(DismissDeleteConfirmAction) },
+            isLoading = state.isDeleting,
+            errorMessage = state.deleteErrorMessage,
         )
     }
 }

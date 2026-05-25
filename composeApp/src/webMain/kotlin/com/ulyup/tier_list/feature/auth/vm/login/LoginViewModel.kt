@@ -28,7 +28,7 @@ class LoginViewModel(
             )
         ).fold(
             onLoading = { updateState { it.withLoading() } },
-            onSuccess = { updateState { it.withLoaded() } },
+            onSuccess = { updateState { it.withSuccess() } },
             onError = { exception -> updateState { it.withError(exception.message) } },
         )
     }
