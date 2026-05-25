@@ -36,6 +36,9 @@
 
     <string name="profile_title">Profile</string>
     <string name="profile_action_logout">Log out</string>
+    <string name="profile_action_upgrade">Upgrade to Premium</string>
+    <string name="profile_role_user">Free</string>
+    <string name="profile_role_premium">Premium</string>
 
     <string name="detail_action_back">Back</string>
     <string name="detail_unranked_label">Unranked</string>
