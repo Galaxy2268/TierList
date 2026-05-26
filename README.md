@@ -2,7 +2,7 @@
 
 A tier-list web application where users register, build tier lists, and rank items across the S/A/B/C/D/F tiers. Built as a university Web Application Development project; the full feature list lives in [`REQUIREMENTS.md`](REQUIREMENTS.md).
 
-This repository currently contains a fully working JSON REST backend. The Compose Web frontend is a stub that will be built in a follow-up phase, reusing every DTO from the `shared` module.
+Both the Ktor JSON backend and the Compose Web (WebAssembly) frontend are implemented and share their API contract through the `shared` module.
 
 ## Tech stack
 
@@ -10,7 +10,7 @@ Kotlin Multiplatform project with three modules:
 
 - **`shared/`** — Common code compiled for JVM and WebAssembly. Holds the API contract: `@Serializable` DTOs, enums (`Tier`, `UserRole`), and cross-module constants.
 - **`server/`** — Ktor HTTP server on Netty, layered as routes → services → repositories. Uses Exposed (DSL) over SQLite, BCrypt for password hashing, and Ktor `Sessions` (signed cookie) for auth.
-- **`composeApp/`** — Compose Multiplatform target for WebAssembly. Stub only at this stage.
+- **`composeApp/`** — Compose Multiplatform / Material3 targeting WebAssembly (`wasmJs`). Built with Koin for DI, androidx `navigation-compose` (multiplatform fork) for routing, Ktor client for HTTP, and Coil 3 for image loading. Organized as Clean Architecture (domain / data / presentation) with MVI per feature (`StateFlow<State>` + sealed `Action` + `Event` channel). Includes session-aware bootstrap, localStorage persistence of the last tab + last opened detail, and `?detail={id}` share links.
 
 Dependencies are centralized in [`gradle/libs.versions.toml`](gradle/libs.versions.toml).
 
@@ -23,6 +23,16 @@ From the project root:
 ```
 
 The server listens on `http://localhost:8080`. On first run it creates `./data/tierrank.db` (a SQLite file). The `data/` directory is gitignored.
+
+## Run the web app
+
+With the server already running on port 8080, in a second terminal:
+
+```
+.\gradlew.bat :composeApp:wasmJsBrowserDevelopmentRun
+```
+
+The dev server opens the app at `http://localhost:8081`. The port matters: the backend's CORS allowlist is locked to that origin, so requests from any other port will be rejected.
 
 ## API reference
 
@@ -68,8 +78,6 @@ Items are plain images (URL only) — no name, no notes. Each item carries an op
 | GET | `/api/users/me` | yes | — | `UserDto` |
 | PATCH | `/api/users/me/upgrade-premium` | yes | — | `UserDto` with `role = PREMIUM`; cookie is re-issued so the new role takes effect without re-login |
 
-```
-
 ## Project structure
 
 ```
@@ -86,6 +94,31 @@ Items are plain images (URL only) — no name, no notes. Each item carries an op
 │       ├── db/                     # DatabaseFactory + Exposed tables
 │       ├── domain/                 # repository + service interfaces, models
 │       └── routes/                 # Auth / TierList / Item / User routes
-├── composeApp/     # Compose Web (WebAssembly) — stub
+├── composeApp/     # Compose Web (WebAssembly) frontend
+│   └── src/webMain/
+│       ├── kotlin/com/ulyup/tier_list/
+│       │   ├── main/               # main.kt (ComposeViewport) + App.kt + MainScreen + main VM
+│       │   ├── core/
+│       │   │   ├── browser/        # wasm interop (history, share link)
+│       │   │   ├── di/             # Koin modules
+│       │   │   ├── mvi/            # base ViewModel + LoadableState helpers
+│       │   │   ├── navigation/     # AppNavHost + route definitions + nav helpers
+│       │   │   ├── ui/             # shared composables (buttons, scaffold, snackbar, ...)
+│       │   │   └── usecase/        # UseCase<P, R> + Resource<T>
+│       │   ├── data/               # repository impls + Ktor client + SessionManager,
+│       │   │                       # grouped by bounded context:
+│       │   │                       # auth / network / preferences / session / tier_list / user
+│       │   ├── domain/             # repository + service interfaces, models, exceptions:
+│       │   │                       # auth / error / preferences / session / tier_list / user
+│       │   ├── feature/            # presentation layer, one package per screen group
+│       │   │   ├── auth/           # Login + Register
+│       │   │   ├── feed/           # public tier-list feed
+│       │   │   ├── mylists/        # user's own lists + Create dialog
+│       │   │   ├── tier_list_detail/  # viewer + editor + drag-and-drop
+│       │   │   ├── profile/        # profile + premium upgrade
+│       │   │   ├── splash/         # bootstrap screen
+│       │   │   └── error/          # fatal error screen
+│       │   └── theme/              # appColors / appTypography (dark theme)
+│       └── composeResources/       # values/strings.xml + drawable/
 └── gradle/libs.versions.toml       # dependency version catalog
 ```
