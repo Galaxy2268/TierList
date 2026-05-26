@@ -24,6 +24,7 @@ fun AuthPasswordSection(
     onSecondaryClick: () -> Unit,
     errorMessage: String?,
     isLoading: Boolean,
+    isSubmitEnabled: Boolean,
 ) {
     VBox16
 
@@ -41,6 +42,7 @@ fun AuthPasswordSection(
         text = submitLabel,
         onClick = onSubmit,
         isLoading = isLoading,
+        enabled = isSubmitEnabled,
         modifier = Modifier.fillMaxWidth(),
     )
 

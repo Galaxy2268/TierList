@@ -8,6 +8,9 @@ data class LoginState(
     override val isLoading: Boolean = false,
     override val errorMessage: String? = null,
 ) : LoadableState<LoginState> {
+    val isSubmitEnabled: Boolean
+        get() = usernameOrEmail.isNotBlank() && password.isNotBlank()
+
     override fun copyLoadable(isLoading: Boolean, errorMessage: String?) =
         copy(isLoading = isLoading, errorMessage = errorMessage)
 }

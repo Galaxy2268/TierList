@@ -83,6 +83,7 @@ fun CreateTierListDialog(
                 text = stringResource(Res.string.mylists_create_action_confirm),
                 onClick = onConfirm,
                 isLoading = state.isLoading,
+                enabled = state.isSubmitEnabled,
             )
         },
         dismissButton = {

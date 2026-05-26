@@ -9,6 +9,9 @@ data class RegisterState(
     override val isLoading: Boolean = false,
     override val errorMessage: String? = null,
 ) : LoadableState<RegisterState> {
+    val isSubmitEnabled: Boolean
+        get() = username.isNotBlank() && email.isNotBlank() && password.isNotBlank()
+
     override fun copyLoadable(isLoading: Boolean, errorMessage: String?) =
         copy(isLoading = isLoading, errorMessage = errorMessage)
 }

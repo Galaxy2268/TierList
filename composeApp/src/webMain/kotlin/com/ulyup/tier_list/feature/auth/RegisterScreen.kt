@@ -71,6 +71,7 @@ fun RegisterScreen(
                 onSecondaryClick = onBack,
                 errorMessage = state.errorMessage,
                 isLoading = state.isLoading,
+                isSubmitEnabled = state.isSubmitEnabled,
             )
         }
     }

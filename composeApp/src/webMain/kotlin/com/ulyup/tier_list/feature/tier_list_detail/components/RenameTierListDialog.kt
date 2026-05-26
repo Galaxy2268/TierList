@@ -59,6 +59,7 @@ fun RenameTierListDialog(
                 text = stringResource(Res.string.detail_rename_action_confirm),
                 onClick = onConfirm,
                 isLoading = state.isLoading,
+                enabled = state.isSubmitEnabled,
             )
         },
         dismissButton = {

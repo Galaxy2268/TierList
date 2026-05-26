@@ -90,7 +90,7 @@ fun AddItemDialog(
                 text = stringResource(Res.string.detail_action_add_item),
                 onClick = onConfirm,
                 isLoading = state.isLoading,
-                enabled = state.pickedImage != null,
+                enabled = state.isSubmitEnabled,
             )
         },
         dismissButton = {

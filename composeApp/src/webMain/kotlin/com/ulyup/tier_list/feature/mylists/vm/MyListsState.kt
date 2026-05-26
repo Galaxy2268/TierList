@@ -33,6 +33,9 @@ data class CreateDialogState(
     override val validationErrorRes: StringResource? = null,
     override val errorMessage: String? = null,
 ) : FormState<CreateDialogState> {
+    val isSubmitEnabled: Boolean
+        get() = title.isNotBlank()
+
     override fun copyForm(
         isLoading: Boolean,
         validationErrorRes: StringResource?,

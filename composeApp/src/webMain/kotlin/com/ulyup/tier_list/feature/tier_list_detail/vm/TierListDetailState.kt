@@ -31,6 +31,9 @@ data class AddItemDialogState(
     override val validationErrorRes: StringResource? = null,
     override val errorMessage: String? = null,
 ) : FormState<AddItemDialogState> {
+    val isSubmitEnabled: Boolean
+        get() = pickedImage != null
+
     override fun copyForm(
         isLoading: Boolean,
         validationErrorRes: StringResource?,
@@ -48,6 +51,9 @@ data class RenameDialogState(
     override val validationErrorRes: StringResource? = null,
     override val errorMessage: String? = null,
 ) : FormState<RenameDialogState> {
+    val isSubmitEnabled: Boolean
+        get() = title.isNotBlank()
+
     override fun copyForm(
         isLoading: Boolean,
         validationErrorRes: StringResource?,
