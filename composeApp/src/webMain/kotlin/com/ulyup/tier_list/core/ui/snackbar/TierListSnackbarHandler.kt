@@ -9,14 +9,19 @@ import org.jetbrains.compose.resources.getString
 class TierListSnackbarHandler(val hostState: SnackbarHostState) {
 
     suspend fun showMessage(text: String) {
-        hostState.showSnackbar(text)
+        show(text)
     }
 
     suspend fun showMessage(res: StringResource) {
-        hostState.showSnackbar(getString(res))
+        show(getString(res))
     }
 
     suspend fun showError(text: String?) {
-        hostState.showSnackbar(text ?: getString(Res.string.error_message))
+        show(text ?: getString(Res.string.error_message))
+    }
+
+    private suspend fun show(text: String) {
+        hostState.currentSnackbarData?.dismiss()
+        hostState.showSnackbar(text)
     }
 }

@@ -1,6 +1,7 @@
 package com.ulyup.tier_list.main.vm
 
 import androidx.lifecycle.viewModelScope
+import com.ulyup.tier_list.core.browser.ShareDetailLink
 import com.ulyup.tier_list.core.mvi.StatefulViewModel
 import com.ulyup.tier_list.core.usecase.fold
 import com.ulyup.tier_list.domain.preferences.usecase.ClearLastDetailUseCase
@@ -81,6 +82,11 @@ class MainViewModel(
     }
 
     private suspend fun resolveInitialDetailId(): Int? {
+        val urlId = ShareDetailLink.parseFromUrl()
+        if (urlId != null) {
+            ShareDetailLink.clearFromUrl()
+            return urlId
+        }
         var detailId: Int? = null
         getLastDetailUseCase(Unit).fold(
             onSuccess = { id -> detailId = id },

@@ -20,7 +20,11 @@ data class TierListDetailState(
     val isDeleteConfirmVisible: Boolean = false,
     val isDeleting: Boolean = false,
     val deleteErrorMessage: String? = null,
+    val showSharePrivateWarning: Boolean = false,
 ) : LoadableState<TierListDetailState> {
+    val showShareAction: Boolean
+        get() = isOwner || isPublic
+
     override fun copyLoadable(isLoading: Boolean, errorMessage: String?) =
         copy(isLoading = isLoading, errorMessage = errorMessage)
 }

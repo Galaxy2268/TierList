@@ -67,6 +67,13 @@
     <string name="detail_delete_body">"%1$s" will be deleted permanently. This cannot be undone.</string>
     <string name="detail_delete_action_confirm">Delete</string>
     <string name="detail_delete_action_cancel">Cancel</string>
+    <string name="share_action_label">Share</string>
+    <string name="share_link_copied_toast">Link copied</string>
+    <string name="share_private_warning_title">Private list</string>
+    <string name="share_private_warning_body">Others won't be able to see this list through the link. Make it public?</string>
+    <string name="share_private_warning_action_confirm">Make public</string>
+    <string name="share_private_warning_action_cancel">Keep private</string>
+
     <string name="tier_label_s">S</string>
     <string name="tier_label_a">A</string>
     <string name="tier_label_b">B</string>

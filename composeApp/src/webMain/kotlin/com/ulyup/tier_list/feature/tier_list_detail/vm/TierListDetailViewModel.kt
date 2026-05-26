@@ -70,6 +70,17 @@ class TierListDetailViewModel(
                 it.copy(isDeleteConfirmVisible = false, deleteErrorMessage = null)
             }
             ConfirmDeleteAction -> confirmDelete()
+            ShareAction -> share()
+            DismissSharePrivateWarningAction -> updateState {
+                it.copy(showSharePrivateWarning = false)
+            }
+        }
+    }
+
+    private suspend fun share() {
+        sendEvent(ShareLinkCopiedEvent)
+        if (state.isOwner && !state.isPublic) {
+            updateState { it.copy(showSharePrivateWarning = true) }
         }
     }
 

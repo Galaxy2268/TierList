@@ -22,8 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.ulyup.tier_list.core.browser.ShareDetailLink
 import com.ulyup.tier_list.core.mvi.ObserveAsEvents
 import com.ulyup.tier_list.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tier_list.core.ui.components.state.StatefulContent
@@ -34,6 +37,7 @@ import com.ulyup.tier_list.core.ui.token.gap16
 import com.ulyup.tier_list.core.ui.token.paddingV16H24
 import com.ulyup.tier_list.feature.tier_list_detail.components.AddItemDialog
 import com.ulyup.tier_list.feature.tier_list_detail.components.RenameTierListDialog
+import com.ulyup.tier_list.feature.tier_list_detail.components.SharePrivateWarningDialog
 import com.ulyup.tier_list.feature.tier_list_detail.components.TierListItem
 import com.ulyup.tier_list.feature.tier_list_detail.components.TierRow
 import com.ulyup.tier_list.feature.tier_list_detail.components.UnrankedStrip
@@ -47,9 +51,12 @@ import com.ulyup.tier_list.feature.tier_list_detail.vm.DeleteItemAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissAddItemDialogAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissDeleteConfirmAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissRenameDialogAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissSharePrivateWarningAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ImagePickedAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.LoadDetailAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.MoveItemAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ShareAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ShareLinkCopiedEvent
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowAddItemDialogAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowDeleteConfirmAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowErrorMessageEvent
@@ -72,8 +79,11 @@ import com.ulyup.tier_list.resources.ic_add
 import com.ulyup.tier_list.resources.ic_arrow_back
 import com.ulyup.tier_list.resources.ic_delete
 import com.ulyup.tier_list.resources.ic_edit
+import com.ulyup.tier_list.resources.ic_share
 import com.ulyup.tier_list.resources.ic_unvisible
 import com.ulyup.tier_list.resources.ic_visible
+import com.ulyup.tier_list.resources.share_action_label
+import com.ulyup.tier_list.resources.share_link_copied_toast
 import com.ulyup.tier_list.theme.appColors
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
@@ -91,11 +101,16 @@ fun TierListDetailScreen(
     val state = viewModel.uiState
     val dragState = remember { DragState() }
     val snackbarHandler = LocalTierListSnackbarHandler.current
+    @Suppress("DEPRECATION")
+    val clipboard = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             TierListDeletedEvent -> onBack()
+            ShareLinkCopiedEvent -> scope.launch {
+                snackbarHandler.showMessage(Res.string.share_link_copied_toast)
+            }
             is ShowErrorMessageEvent -> scope.launch { snackbarHandler.showError(event.text) }
         }
     }
@@ -114,6 +129,19 @@ fun TierListDetailScreen(
                     }
                 },
                 actions = {
+                    if (state.showShareAction) {
+                        IconButton(onClick = {
+                            val url = ShareDetailLink.buildShareUrl(tierListId)
+                            clipboard.setText(AnnotatedString(url))
+                            viewModel.onAction(ShareAction)
+                        }) {
+                            Icon(
+                                painter = painterResource(Res.drawable.ic_share),
+                                contentDescription = stringResource(Res.string.share_action_label),
+                                tint = appColors.onSurface,
+                            )
+                        }
+                    }
                     if (state.isOwner) {
                         val visibilityIcon = if (state.isPublic) Res.drawable.ic_visible else Res.drawable.ic_unvisible
                         val visibilityLabel = if (state.isPublic) {
@@ -211,6 +239,17 @@ fun TierListDetailScreen(
             onDismiss = { viewModel.onAction(DismissDeleteConfirmAction) },
             isLoading = state.isDeleting,
             errorMessage = state.deleteErrorMessage,
+        )
+    }
+
+    if (state.showSharePrivateWarning) {
+        SharePrivateWarningDialog(
+            onMakePublic = {
+                viewModel.onAction(DismissSharePrivateWarningAction)
+                viewModel.onAction(ToggleVisibilityAction)
+            },
+            onDismiss = { viewModel.onAction(DismissSharePrivateWarningAction) },
+            isLoading = state.isUpdatingVisibility,
         )
     }
 }
