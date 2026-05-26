@@ -29,6 +29,8 @@ data class AppColors(
     val warning: Color,
     val success: Color,
 
+    val premium: Color,
+
     val tierS: Color,
     val tierA: Color,
     val tierB: Color,
@@ -37,6 +39,7 @@ data class AppColors(
     val tierF: Color,
 ) {
     val onTier: Color get() = background
+    val onPremium: Color get() = background
 
     fun tierColor(tier: Tier): Color = when (tier) {
         Tier.S -> tierS
@@ -70,6 +73,8 @@ internal val darkAppColors = AppColors(
     onError = Color(0xFFFFFFFF),
     warning = Color(0xFFFFB300),
     success = Color(0xFF4ADE80),
+
+    premium = Color(0xFFFFC83D),
 
     tierS = Color(0xFFFF7F7F),
     tierA = Color(0xFFFFBF7F),

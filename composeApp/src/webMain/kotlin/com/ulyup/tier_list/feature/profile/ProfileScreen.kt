@@ -4,9 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.ulyup.tier_list.core.ui.components.button.ErrorButton
 import com.ulyup.tier_list.core.ui.components.button.PrimaryButton
 import com.ulyup.tier_list.core.ui.components.layout.CenteredColumn
 import com.ulyup.tier_list.core.ui.components.scaffold.AppScaffold
@@ -15,12 +18,16 @@ import com.ulyup.tier_list.core.ui.token.VBox16
 import com.ulyup.tier_list.core.ui.token.VBox24
 import com.ulyup.tier_list.core.ui.token.paddingV12H16
 import com.ulyup.tier_list.core.ui.token.roundedShape8
-import com.ulyup.tier_list.feature.profile.vm.LogoutAction
+import com.ulyup.tier_list.core.ui.token.size128
+import com.ulyup.tier_list.feature.profile.components.LogoutConfirmDialog
+import com.ulyup.tier_list.feature.profile.vm.ConfirmLogoutAction
+import com.ulyup.tier_list.feature.profile.vm.DismissLogoutConfirmAction
 import com.ulyup.tier_list.feature.profile.vm.ProfileViewModel
+import com.ulyup.tier_list.feature.profile.vm.ShowLogoutConfirmAction
 import com.ulyup.tier_list.feature.profile.vm.UpgradePremiumAction
-import com.ulyup.tier_list.model.Tier
 import com.ulyup.tier_list.model.UserRole
 import com.ulyup.tier_list.resources.Res
+import com.ulyup.tier_list.resources.ic_profile
 import com.ulyup.tier_list.resources.profile_action_logout
 import com.ulyup.tier_list.resources.profile_action_upgrade
 import com.ulyup.tier_list.resources.profile_role_premium
@@ -28,6 +35,7 @@ import com.ulyup.tier_list.resources.profile_role_user
 import com.ulyup.tier_list.resources.profile_title
 import com.ulyup.tier_list.theme.appColors
 import com.ulyup.tier_list.theme.appTypography
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -38,10 +46,11 @@ fun ProfileScreen() {
 
     AppScaffold { padding ->
         CenteredColumn(modifier = Modifier.padding(padding)) {
-            Text(
-                text = stringResource(Res.string.profile_title),
-                style = appTypography.titleLarge,
-                color = appColors.onBackground,
+            Icon(
+                painter = painterResource(Res.drawable.ic_profile),
+                contentDescription = stringResource(Res.string.profile_title),
+                tint = appColors.onBackground,
+                modifier = Modifier.size(size128),
             )
             state.user?.let { user ->
                 VBox24
@@ -77,21 +86,29 @@ fun ProfileScreen() {
                 )
             }
             VBox24
-            PrimaryButton(
+            ErrorButton(
                 text = stringResource(Res.string.profile_action_logout),
-                onClick = { viewModel.onAction(LogoutAction) },
+                onClick = { viewModel.onAction(ShowLogoutConfirmAction) },
                 isLoading = state.isLoggingOut,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
+    }
+
+    if (state.showLogoutConfirm) {
+        LogoutConfirmDialog(
+            onConfirm = { viewModel.onAction(ConfirmLogoutAction) },
+            onDismiss = { viewModel.onAction(DismissLogoutConfirmAction) },
+            isLoading = state.isLoggingOut,
+        )
     }
 }
 
 @Composable
 private fun RoleBadge(role: UserRole) {
     val isPremium = role == UserRole.PREMIUM
-    val background = if (isPremium) appColors.tierColor(Tier.S) else appColors.surfaceVariant
-    val foreground = if (isPremium) appColors.onTier else appColors.onSurfaceVariant
+    val background = if (isPremium) appColors.premium else appColors.surfaceVariant
+    val foreground = if (isPremium) appColors.onPremium else appColors.onSurfaceVariant
     val label = stringResource(
         if (isPremium) Res.string.profile_role_premium else Res.string.profile_role_user
     )

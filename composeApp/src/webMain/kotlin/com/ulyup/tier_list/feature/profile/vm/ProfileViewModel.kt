@@ -24,13 +24,16 @@ class ProfileViewModel(
 
     override suspend fun handleAction(action: ProfileAction) {
         when (action) {
-            LogoutAction -> logout()
+            ShowLogoutConfirmAction -> updateState { it.copy(showLogoutConfirm = true) }
+            DismissLogoutConfirmAction -> updateState { it.copy(showLogoutConfirm = false) }
+            ConfirmLogoutAction -> logout()
             UpgradePremiumAction -> upgrade()
         }
     }
 
     private suspend fun logout() {
         if (state.isLoggingOut) return
+        updateState { it.copy(showLogoutConfirm = false) }
         logoutUseCase(Unit).fold(
             onLoading = { updateState { it.copy(isLoggingOut = true) } },
             onSuccess = { updateState { it.copy(isLoggingOut = false) } },
