@@ -11,8 +11,11 @@ import com.ulyup.tier_list.core.navigation.AppNavHost
 import com.ulyup.tier_list.feature.feed.navigation.FeedGraph
 import com.ulyup.tier_list.feature.mylists.navigation.MyListsGraph
 import com.ulyup.tier_list.feature.profile.navigation.ProfileGraph
+import com.ulyup.tier_list.main.vm.ClearLastDetailAction
 import com.ulyup.tier_list.main.vm.MainViewModel
 import com.ulyup.tier_list.main.vm.RetryBootstrapAction
+import com.ulyup.tier_list.main.vm.SaveLastDetailAction
+import com.ulyup.tier_list.main.vm.SaveLastTabAction
 import com.ulyup.tier_list.resources.Res
 import com.ulyup.tier_list.resources.top_nav_feed
 import com.ulyup.tier_list.resources.top_nav_mylists
@@ -31,12 +34,18 @@ fun MainScreen() {
 
     AppNavHost(
         startDestination = state.startDestination,
+        initialDetailId = state.initialDetailId,
         onRetryBootstrap = { viewModel.onAction(RetryBootstrapAction) },
+        onDetailEnter = { id -> viewModel.onAction(SaveLastDetailAction(id)) },
+        onDetailExit = { viewModel.onAction(ClearLastDetailAction) },
         topBar = { currentDestination, onTabSelected ->
             if (currentDestination.isInTabbedArea()) {
                 AppTopNavBar(
                     currentDestination = currentDestination,
-                    onTabSelected = { tab -> onTabSelected(tab.target) },
+                    onTabSelected = { tab ->
+                        viewModel.onAction(SaveLastTabAction(tab.target.toString()))
+                        onTabSelected(tab.target)
+                    },
                 )
             }
         },

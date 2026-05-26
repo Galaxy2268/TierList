@@ -5,9 +5,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -15,10 +21,14 @@ import androidx.navigation.compose.rememberNavController
 import com.ulyup.tier_list.feature.auth.navigation.authGraph
 import com.ulyup.tier_list.feature.auth.navigation.navigateToRegister
 import com.ulyup.tier_list.feature.error.navigation.errorGraph
+import com.ulyup.tier_list.feature.feed.navigation.FeedGraph
 import com.ulyup.tier_list.feature.feed.navigation.feedGraph
+import com.ulyup.tier_list.feature.mylists.navigation.MyListsGraph
 import com.ulyup.tier_list.feature.mylists.navigation.myListsGraph
+import com.ulyup.tier_list.feature.profile.navigation.ProfileGraph
 import com.ulyup.tier_list.feature.profile.navigation.profileGraph
 import com.ulyup.tier_list.feature.splash.navigation.splashGraph
+import com.ulyup.tier_list.feature.tier_list_detail.navigation.TierListDetailRoute
 import com.ulyup.tier_list.feature.tier_list_detail.navigation.navigateToTierListDetail
 import com.ulyup.tier_list.feature.tier_list_detail.navigation.tierListDetailGraph
 import com.ulyup.tier_list.theme.appColors
@@ -26,7 +36,10 @@ import com.ulyup.tier_list.theme.appColors
 @Composable
 fun AppNavHost(
     startDestination: Any,
+    initialDetailId: Int?,
     onRetryBootstrap: () -> Unit,
+    onDetailEnter: (Int) -> Unit,
+    onDetailExit: () -> Unit,
     topBar: @Composable (currentDestination: NavDestination?, onTabSelected: (Any) -> Unit) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
 ) {
@@ -34,13 +47,30 @@ fun AppNavHost(
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
 
+    var initialDetailHandled by remember { mutableStateOf(false) }
+    LaunchedEffect(currentDestination, initialDetailId) {
+        if (initialDetailHandled) return@LaunchedEffect
+        if (initialDetailId == null) return@LaunchedEffect
+        if (currentDestination?.isOnTabGraph() != true) return@LaunchedEffect
+        navController.navigate(TierListDetailRoute(initialDetailId))
+        initialDetailHandled = true
+    }
+
+    val openTierList: (Int) -> Unit = { id ->
+        onDetailEnter(id)
+        navController.navigateToTierListDetail(id)
+    }
+
     Scaffold(
         modifier = modifier,
         containerColor = appColors.background,
         topBar = {
             topBar(currentDestination) { target ->
                 navController.navigate(target) {
-                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        inclusive = true
+                        saveState = true
+                    }
                     launchSingleTop = true
                     restoreState = true
                 }
@@ -61,10 +91,23 @@ fun AppNavHost(
                 onNavigateToRegister = navController::navigateToRegister,
                 onBack = navController::popBackStack,
             )
-            feedGraph(onOpenTierList = navController::navigateToTierListDetail)
-            myListsGraph(onOpenTierList = navController::navigateToTierListDetail)
+            feedGraph(onOpenTierList = openTierList)
+            myListsGraph(onOpenTierList = openTierList)
             profileGraph()
-            tierListDetailGraph(onBack = navController::popBackStack)
+            tierListDetailGraph(
+                onBack = {
+                    if (navController.popBackStack<TierListDetailRoute>(inclusive = true)) {
+                        onDetailExit()
+                    }
+                },
+            )
         }
     }
 }
+
+private fun NavDestination.isOnTabGraph(): Boolean =
+    hierarchy.any { destination ->
+        destination.hasRoute(FeedGraph::class) ||
+            destination.hasRoute(MyListsGraph::class) ||
+            destination.hasRoute(ProfileGraph::class)
+    }
