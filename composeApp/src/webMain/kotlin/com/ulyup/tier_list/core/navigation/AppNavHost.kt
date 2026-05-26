@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +20,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.ulyup.tier_list.core.ui.snackbar.LocalTierRankSnackbarHandler
+import com.ulyup.tier_list.core.ui.snackbar.TierRankSnackbarHandler
+import com.ulyup.tier_list.core.ui.snackbar.TierRankSnackbarHost
 import com.ulyup.tier_list.feature.auth.navigation.authGraph
 import com.ulyup.tier_list.feature.auth.navigation.navigateToRegister
 import com.ulyup.tier_list.feature.error.navigation.errorGraph
@@ -46,6 +51,7 @@ fun AppNavHost(
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
+    val snackbarHandler = remember { TierRankSnackbarHandler(SnackbarHostState()) }
 
     var initialDetailHandled by remember { mutableStateOf(false) }
     LaunchedEffect(currentDestination, initialDetailId) {
@@ -61,46 +67,49 @@ fun AppNavHost(
         navController.navigateToTierListDetail(id)
     }
 
-    Scaffold(
-        modifier = modifier,
-        containerColor = appColors.background,
-        topBar = {
-            topBar(currentDestination) { target ->
-                navController.navigate(target) {
-                    popUpTo(navController.graph.findStartDestination().id) {
-                        inclusive = true
-                        saveState = true
+    CompositionLocalProvider(LocalTierRankSnackbarHandler provides snackbarHandler) {
+        Scaffold(
+            modifier = modifier,
+            containerColor = appColors.background,
+            topBar = {
+                topBar(currentDestination) { target ->
+                    navController.navigate(target) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            inclusive = true
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
                     }
-                    launchSingleTop = true
-                    restoreState = true
                 }
+            },
+            snackbarHost = { TierRankSnackbarHost(snackbarHandler) },
+        ) { padding ->
+            NavHost(
+                navController = navController,
+                startDestination = startDestination,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .background(appColors.background),
+            ) {
+                splashGraph()
+                errorGraph(onRetry = onRetryBootstrap)
+                authGraph(
+                    onNavigateToRegister = navController::navigateToRegister,
+                    onBack = navController::popBackStack,
+                )
+                feedGraph(onOpenTierList = openTierList)
+                myListsGraph(onOpenTierList = openTierList)
+                profileGraph()
+                tierListDetailGraph(
+                    onBack = {
+                        if (navController.popBackStack<TierListDetailRoute>(inclusive = true)) {
+                            onDetailExit()
+                        }
+                    },
+                )
             }
-        },
-    ) { padding ->
-        NavHost(
-            navController = navController,
-            startDestination = startDestination,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .background(appColors.background),
-        ) {
-            splashGraph()
-            errorGraph(onRetry = onRetryBootstrap)
-            authGraph(
-                onNavigateToRegister = navController::navigateToRegister,
-                onBack = navController::popBackStack,
-            )
-            feedGraph(onOpenTierList = openTierList)
-            myListsGraph(onOpenTierList = openTierList)
-            profileGraph()
-            tierListDetailGraph(
-                onBack = {
-                    if (navController.popBackStack<TierListDetailRoute>(inclusive = true)) {
-                        onDetailExit()
-                    }
-                },
-            )
         }
     }
 }
