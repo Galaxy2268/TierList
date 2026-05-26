@@ -142,9 +142,9 @@ class TierListDetailViewModel(
                     current.copy(
                         unrankedItems = unrankedSnapshot,
                         itemsByTier = itemsByTierSnapshot,
-                        errorMessage = exception.message,
                     )
                 }
+                launchEvent(ShowErrorMessageEvent(exception.message))
             },
         )
     }
@@ -199,9 +199,9 @@ class TierListDetailViewModel(
                     now.copy(
                         unrankedItems = unrankedSnapshot,
                         itemsByTier = itemsByTierSnapshot,
-                        errorMessage = exception.message,
                     )
                 }
+                launchEvent(ShowErrorMessageEvent(exception.message))
             },
         )
     }
@@ -231,12 +231,13 @@ class TierListDetailViewModel(
         setTierListVisibilityUseCase(
             SetTierListVisibilityUseCase.Params(id = tierListId, isPublic = target)
         ).fold(
-            onLoading = { updateState { it.copy(isUpdatingVisibility = true, errorMessage = null) } },
+            onLoading = { updateState { it.copy(isUpdatingVisibility = true) } },
             onSuccess = { updated ->
                 updateState { it.copy(isUpdatingVisibility = false, isPublic = updated.isPublic) }
             },
             onError = { exception ->
-                updateState { it.copy(isUpdatingVisibility = false, errorMessage = exception.message) }
+                updateState { it.copy(isUpdatingVisibility = false) }
+                launchEvent(ShowErrorMessageEvent(exception.message))
             },
         )
     }

@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import com.ulyup.tier_list.theme.appColors
 
 @Composable
-fun TierRankSnackbarHost(handler: TierRankSnackbarHandler) {
+fun TierListSnackbarHost(handler: TierListSnackbarHandler) {
     SnackbarHost(hostState = handler.hostState) { data ->
         Snackbar(
             snackbarData = data,

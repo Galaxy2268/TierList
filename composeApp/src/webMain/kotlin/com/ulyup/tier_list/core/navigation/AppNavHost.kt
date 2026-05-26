@@ -20,9 +20,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.ulyup.tier_list.core.ui.snackbar.LocalTierRankSnackbarHandler
-import com.ulyup.tier_list.core.ui.snackbar.TierRankSnackbarHandler
-import com.ulyup.tier_list.core.ui.snackbar.TierRankSnackbarHost
+import com.ulyup.tier_list.core.ui.snackbar.LocalTierListSnackbarHandler
+import com.ulyup.tier_list.core.ui.snackbar.TierListSnackbarHandler
+import com.ulyup.tier_list.core.ui.snackbar.TierListSnackbarHost
 import com.ulyup.tier_list.feature.auth.navigation.authGraph
 import com.ulyup.tier_list.feature.auth.navigation.navigateToRegister
 import com.ulyup.tier_list.feature.error.navigation.errorGraph
@@ -51,7 +51,7 @@ fun AppNavHost(
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
-    val snackbarHandler = remember { TierRankSnackbarHandler(SnackbarHostState()) }
+    val snackbarHandler = remember { TierListSnackbarHandler(SnackbarHostState()) }
 
     var initialDetailHandled by remember { mutableStateOf(false) }
     LaunchedEffect(currentDestination, initialDetailId) {
@@ -67,7 +67,7 @@ fun AppNavHost(
         navController.navigateToTierListDetail(id)
     }
 
-    CompositionLocalProvider(LocalTierRankSnackbarHandler provides snackbarHandler) {
+    CompositionLocalProvider(LocalTierListSnackbarHandler provides snackbarHandler) {
         Scaffold(
             modifier = modifier,
             containerColor = appColors.background,
@@ -83,7 +83,7 @@ fun AppNavHost(
                     }
                 }
             },
-            snackbarHost = { TierRankSnackbarHost(snackbarHandler) },
+            snackbarHost = { TierListSnackbarHost(snackbarHandler) },
         ) { padding ->
             NavHost(
                 navController = navController,

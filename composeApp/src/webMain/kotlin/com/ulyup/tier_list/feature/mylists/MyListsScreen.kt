@@ -11,11 +11,14 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import com.ulyup.tier_list.core.mvi.ObserveAsEvents
 import com.ulyup.tier_list.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tier_list.core.ui.components.state.StatefulContent
 import com.ulyup.tier_list.core.ui.components.tier_list.DeleteTierListConfirmDialog
 import com.ulyup.tier_list.core.ui.components.tier_list.TierListCard
+import com.ulyup.tier_list.core.ui.snackbar.LocalTierListSnackbarHandler
 import com.ulyup.tier_list.core.ui.token.gap12
 import com.ulyup.tier_list.core.ui.token.paddingV16H24
 import com.ulyup.tier_list.core.ui.token.size280
@@ -30,6 +33,7 @@ import com.ulyup.tier_list.feature.mylists.vm.LoadMyListsAction
 import com.ulyup.tier_list.feature.mylists.vm.MyListsViewModel
 import com.ulyup.tier_list.feature.mylists.vm.ShowCreateDialogAction
 import com.ulyup.tier_list.feature.mylists.vm.ShowDeleteTierListConfirmAction
+import com.ulyup.tier_list.feature.mylists.vm.ShowErrorMessageEvent
 import com.ulyup.tier_list.feature.mylists.vm.ToggleCreatePublicAction
 import com.ulyup.tier_list.feature.mylists.vm.UpgradePremiumAction
 import com.ulyup.tier_list.resources.Res
@@ -37,6 +41,7 @@ import com.ulyup.tier_list.resources.error_action_retry
 import com.ulyup.tier_list.resources.ic_add
 import com.ulyup.tier_list.resources.mylists_action_create_label
 import com.ulyup.tier_list.resources.mylists_empty
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -47,8 +52,16 @@ fun MyListsScreen(
 ) {
     val viewModel = koinViewModel<MyListsViewModel>()
     val state = viewModel.uiState
+    val snackbarHandler = LocalTierListSnackbarHandler.current
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) { viewModel.onAction(LoadMyListsAction) }
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is ShowErrorMessageEvent -> scope.launch { snackbarHandler.showError(event.text) }
+        }
+    }
 
     AppScaffold(
         floatingActionButton = {

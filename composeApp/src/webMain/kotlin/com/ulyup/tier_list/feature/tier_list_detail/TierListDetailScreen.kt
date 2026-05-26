@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
@@ -28,6 +29,7 @@ import com.ulyup.tier_list.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tier_list.core.ui.components.state.StatefulContent
 import com.ulyup.tier_list.core.ui.components.tier_list.DeleteTierListConfirmDialog
 import com.ulyup.tier_list.core.ui.components.topbar.AppTopAppBar
+import com.ulyup.tier_list.core.ui.snackbar.LocalTierListSnackbarHandler
 import com.ulyup.tier_list.core.ui.token.gap16
 import com.ulyup.tier_list.core.ui.token.paddingV16H24
 import com.ulyup.tier_list.feature.tier_list_detail.components.AddItemDialog
@@ -50,6 +52,7 @@ import com.ulyup.tier_list.feature.tier_list_detail.vm.LoadDetailAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.MoveItemAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowAddItemDialogAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowDeleteConfirmAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowErrorMessageEvent
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowRenameDialogAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDeletedEvent
 import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDetailState
@@ -73,6 +76,7 @@ import com.ulyup.tier_list.resources.ic_unvisible
 import com.ulyup.tier_list.resources.ic_visible
 import com.ulyup.tier_list.theme.appColors
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -86,10 +90,13 @@ fun TierListDetailScreen(
     val viewModel = koinViewModel<TierListDetailViewModel> { parametersOf(tierListId) }
     val state = viewModel.uiState
     val dragState = remember { DragState() }
+    val snackbarHandler = LocalTierListSnackbarHandler.current
+    val scope = rememberCoroutineScope()
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             TierListDeletedEvent -> onBack()
+            is ShowErrorMessageEvent -> scope.launch { snackbarHandler.showError(event.text) }
         }
     }
 

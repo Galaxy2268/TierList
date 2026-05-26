@@ -1,7 +1,7 @@
 package com.ulyup.tier_list.feature.mylists.vm
 
 import androidx.lifecycle.viewModelScope
-import com.ulyup.tier_list.core.mvi.StatefulViewModel
+import com.ulyup.tier_list.core.mvi.InteractiveStatefulViewModel
 import com.ulyup.tier_list.core.usecase.fold
 import com.ulyup.tier_list.domain.tier_list.usecase.CreateTierListUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.DeleteTierListUseCase
@@ -18,7 +18,7 @@ class MyListsViewModel(
     private val createTierListUseCase: CreateTierListUseCase,
     private val deleteTierListUseCase: DeleteTierListUseCase,
     private val upgradePremiumUseCase: UpgradePremiumUseCase,
-) : StatefulViewModel<MyListsAction, MyListsState>(MyListsState()) {
+) : InteractiveStatefulViewModel<MyListsAction, MyListsState, MyListsEvent>(MyListsState()) {
 
     init {
         viewModelScope.launch {
@@ -114,10 +114,11 @@ class MyListsViewModel(
     private suspend fun upgrade() {
         if (state.isUpgrading) return
         upgradePremiumUseCase(Unit).fold(
-            onLoading = { updateState { it.copy(isUpgrading = true, errorMessage = null) } },
+            onLoading = { updateState { it.copy(isUpgrading = true) } },
             onSuccess = { updateState { it.copy(isUpgrading = false) } },
             onError = { exception ->
-                updateState { it.copy(isUpgrading = false, errorMessage = exception.message) }
+                updateState { it.copy(isUpgrading = false) }
+                launchEvent(ShowErrorMessageEvent(exception.message))
             },
         )
     }

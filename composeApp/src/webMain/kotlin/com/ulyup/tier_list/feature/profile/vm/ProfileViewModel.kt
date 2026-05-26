@@ -1,7 +1,7 @@
 package com.ulyup.tier_list.feature.profile.vm
 
 import androidx.lifecycle.viewModelScope
-import com.ulyup.tier_list.core.mvi.StatefulViewModel
+import com.ulyup.tier_list.core.mvi.InteractiveStatefulViewModel
 import com.ulyup.tier_list.core.usecase.fold
 import com.ulyup.tier_list.domain.auth.usecase.LogoutUseCase
 import com.ulyup.tier_list.domain.user.usecase.ObserveCurrentUserUseCase
@@ -12,7 +12,7 @@ class ProfileViewModel(
     private val observeCurrentUserUseCase: ObserveCurrentUserUseCase,
     private val upgradePremiumUseCase: UpgradePremiumUseCase,
     private val logoutUseCase: LogoutUseCase,
-) : StatefulViewModel<ProfileAction, ProfileState>(ProfileState()) {
+) : InteractiveStatefulViewModel<ProfileAction, ProfileState, ProfileEvent>(ProfileState()) {
 
     init {
         viewModelScope.launch {
@@ -44,10 +44,11 @@ class ProfileViewModel(
     private suspend fun upgrade() {
         if (state.isUpgrading) return
         upgradePremiumUseCase(Unit).fold(
-            onLoading = { updateState { it.copy(isUpgrading = true, errorMessage = null) } },
+            onLoading = { updateState { it.copy(isUpgrading = true) } },
             onSuccess = { updateState { it.copy(isUpgrading = false) } },
             onError = { exception ->
-                updateState { it.copy(isUpgrading = false, errorMessage = exception.message) }
+                updateState { it.copy(isUpgrading = false) }
+                launchEvent(ShowErrorMessageEvent(exception.message))
             },
         )
     }

@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import com.ulyup.tier_list.core.mvi.ObserveAsEvents
 import com.ulyup.tier_list.core.ui.components.button.ErrorButton
 import com.ulyup.tier_list.core.ui.components.button.PrimaryButton
 import com.ulyup.tier_list.core.ui.components.layout.CenteredColumn
 import com.ulyup.tier_list.core.ui.components.scaffold.AppScaffold
+import com.ulyup.tier_list.core.ui.snackbar.LocalTierListSnackbarHandler
 import com.ulyup.tier_list.core.ui.token.VBox8
 import com.ulyup.tier_list.core.ui.token.VBox16
 import com.ulyup.tier_list.core.ui.token.VBox24
@@ -23,6 +26,7 @@ import com.ulyup.tier_list.feature.profile.components.LogoutConfirmDialog
 import com.ulyup.tier_list.feature.profile.vm.ConfirmLogoutAction
 import com.ulyup.tier_list.feature.profile.vm.DismissLogoutConfirmAction
 import com.ulyup.tier_list.feature.profile.vm.ProfileViewModel
+import com.ulyup.tier_list.feature.profile.vm.ShowErrorMessageEvent
 import com.ulyup.tier_list.feature.profile.vm.ShowLogoutConfirmAction
 import com.ulyup.tier_list.feature.profile.vm.UpgradePremiumAction
 import com.ulyup.tier_list.model.UserRole
@@ -35,6 +39,7 @@ import com.ulyup.tier_list.resources.profile_role_user
 import com.ulyup.tier_list.resources.profile_title
 import com.ulyup.tier_list.theme.appColors
 import com.ulyup.tier_list.theme.appTypography
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -43,6 +48,14 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ProfileScreen() {
     val viewModel = koinViewModel<ProfileViewModel>()
     val state = viewModel.uiState
+    val snackbarHandler = LocalTierListSnackbarHandler.current
+    val scope = rememberCoroutineScope()
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is ShowErrorMessageEvent -> scope.launch { snackbarHandler.showError(event.text) }
+        }
+    }
 
     AppScaffold { padding ->
         CenteredColumn(modifier = Modifier.padding(padding)) {
@@ -75,14 +88,6 @@ fun ProfileScreen() {
                     onClick = { viewModel.onAction(UpgradePremiumAction) },
                     isLoading = state.isUpgrading,
                     modifier = Modifier.fillMaxWidth(),
-                )
-            }
-            state.errorMessage?.let { message ->
-                VBox8
-                Text(
-                    text = message,
-                    style = appTypography.bodySmall,
-                    color = appColors.error,
                 )
             }
             VBox24

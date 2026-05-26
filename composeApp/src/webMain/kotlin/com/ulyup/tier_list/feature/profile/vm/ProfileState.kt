@@ -7,7 +7,6 @@ data class ProfileState(
     val user: User? = null,
     val isLoggingOut: Boolean = false,
     val isUpgrading: Boolean = false,
-    val errorMessage: String? = null,
     val showLogoutConfirm: Boolean = false,
 ) {
     val showUpgradeButton: Boolean
