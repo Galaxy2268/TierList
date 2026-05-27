@@ -83,10 +83,7 @@ class MainViewModel(
 
     private suspend fun resolveInitialDetailId(): Int? {
         val urlId = ShareDetailLink.parseFromUrl()
-        if (urlId != null) {
-            ShareDetailLink.clearFromUrl()
-            return urlId
-        }
+        if (urlId != null) return urlId
         var detailId: Int? = null
         getLastDetailUseCase(Unit).fold(
             onSuccess = { id -> detailId = id },

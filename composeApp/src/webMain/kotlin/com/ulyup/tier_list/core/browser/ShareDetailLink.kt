@@ -7,11 +7,7 @@ object ShareDetailLink {
     private const val QUERY_KEY = "detail"
 
     @OptIn(ExperimentalWasmJsInterop::class)
-    fun buildShareUrl(tierListId: Int): String {
-        val pathname = window.location.pathname
-        val newPath = "$pathname?$QUERY_KEY=$tierListId"
-        return "${window.location.origin}$newPath"
-    }
+    fun currentShareUrl(): String = window.location.href
 
     fun parseFromUrl(): Int? =
         window.location.search
@@ -20,6 +16,11 @@ object ShareDetailLink {
             .firstOrNull { it.startsWith("$QUERY_KEY=") }
             ?.removePrefix("$QUERY_KEY=")
             ?.toIntOrNull()
+
+    @OptIn(ExperimentalWasmJsInterop::class)
+    fun setInUrl(tierListId: Int) {
+        window.history.replaceState(null, "", "?$QUERY_KEY=$tierListId")
+    }
 
     @OptIn(ExperimentalWasmJsInterop::class)
     fun clearFromUrl() {

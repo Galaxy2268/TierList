@@ -131,7 +131,7 @@ fun TierListDetailScreen(
                 actions = {
                     if (state.showShareAction) {
                         IconButton(onClick = {
-                            val url = ShareDetailLink.buildShareUrl(tierListId)
+                            val url = ShareDetailLink.currentShareUrl()
                             clipboard.setText(AnnotatedString(url))
                             viewModel.onAction(ShareAction)
                         }) {

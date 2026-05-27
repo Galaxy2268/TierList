@@ -20,6 +20,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.ulyup.tier_list.core.browser.ShareDetailLink
 import com.ulyup.tier_list.core.ui.snackbar.LocalTierListSnackbarHandler
 import com.ulyup.tier_list.core.ui.snackbar.TierListSnackbarHandler
 import com.ulyup.tier_list.core.ui.snackbar.TierListSnackbarHost
@@ -53,18 +54,19 @@ fun AppNavHost(
     val currentDestination = currentBackStackEntry?.destination
     val snackbarHandler = remember { TierListSnackbarHandler(SnackbarHostState()) }
 
+    val openTierList: (Int) -> Unit = { id ->
+        onDetailEnter(id)
+        ShareDetailLink.setInUrl(id)
+        navController.navigateToTierListDetail(id)
+    }
+
     var initialDetailHandled by remember { mutableStateOf(false) }
     LaunchedEffect(currentDestination, initialDetailId) {
         if (initialDetailHandled) return@LaunchedEffect
         if (initialDetailId == null) return@LaunchedEffect
         if (currentDestination?.isOnTabGraph() != true) return@LaunchedEffect
-        navController.navigate(TierListDetailRoute(initialDetailId))
+        openTierList(initialDetailId)
         initialDetailHandled = true
-    }
-
-    val openTierList: (Int) -> Unit = { id ->
-        onDetailEnter(id)
-        navController.navigateToTierListDetail(id)
     }
 
     CompositionLocalProvider(LocalTierListSnackbarHandler provides snackbarHandler) {
@@ -106,6 +108,7 @@ fun AppNavHost(
                     onBack = {
                         if (navController.popBackStack<TierListDetailRoute>(inclusive = true)) {
                             onDetailExit()
+                            ShareDetailLink.clearFromUrl()
                         }
                     },
                 )
