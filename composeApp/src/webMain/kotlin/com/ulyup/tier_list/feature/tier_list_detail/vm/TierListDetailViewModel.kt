@@ -6,6 +6,7 @@ import com.ulyup.tier_list.core.mvi.InteractiveStatefulViewModel
 import com.ulyup.tier_list.core.usecase.fold
 import com.ulyup.tier_list.domain.tier_list.model.ItemImage
 import com.ulyup.tier_list.domain.tier_list.model.TierListItem
+import com.ulyup.tier_list.domain.tier_list.usecase.ClearItemsUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.CreateItemsBatchUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.DeleteItemUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.DeleteTierListUseCase
@@ -29,6 +30,7 @@ class TierListDetailViewModel(
     private val getTierListDetailUseCase: GetTierListDetailUseCase,
     private val createItemsBatchUseCase: CreateItemsBatchUseCase,
     private val deleteItemUseCase: DeleteItemUseCase,
+    private val clearItemsUseCase: ClearItemsUseCase,
     private val moveItemUseCase: MoveItemUseCase,
     private val updateTierListUseCase: UpdateTierListUseCase,
     private val setTierListVisibilityUseCase: SetTierListVisibilityUseCase,
@@ -77,6 +79,13 @@ class TierListDetailViewModel(
                 it.copy(isDeleteConfirmVisible = false, deleteErrorMessage = null)
             }
             ConfirmDeleteAction -> confirmDelete()
+            ShowClearConfirmAction -> updateState {
+                it.copy(isClearConfirmVisible = true, clearErrorMessage = null)
+            }
+            DismissClearConfirmAction -> updateState {
+                it.copy(isClearConfirmVisible = false, clearErrorMessage = null)
+            }
+            ConfirmClearAction -> confirmClear()
             ShareAction -> share()
             DismissSharePrivateWarningAction -> updateState {
                 it.copy(showSharePrivateWarning = false)
@@ -288,6 +297,26 @@ class TierListDetailViewModel(
                 updateState {
                     it.copy(isDeleting = false, deleteErrorMessage = exception.message)
                 }
+            },
+        )
+    }
+
+    private suspend fun confirmClear() {
+        if (state.isClearing) return
+        updateState { it.copy(isClearing = true, clearErrorMessage = null) }
+        clearItemsUseCase(tierListId).fold(
+            onSuccess = {
+                updateState {
+                    it.copy(
+                        itemsByTier = emptyMap(),
+                        unrankedItems = emptyList(),
+                        isClearConfirmVisible = false,
+                        isClearing = false,
+                    )
+                }
+            },
+            onError = { exception ->
+                updateState { it.copy(isClearing = false, clearErrorMessage = exception.message) }
             },
         )
     }

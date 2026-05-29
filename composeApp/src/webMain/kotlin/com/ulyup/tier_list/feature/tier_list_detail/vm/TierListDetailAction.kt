@@ -34,5 +34,9 @@ data object ShowDeleteConfirmAction : TierListDetailAction
 data object DismissDeleteConfirmAction : TierListDetailAction
 data object ConfirmDeleteAction : TierListDetailAction
 
+data object ShowClearConfirmAction : TierListDetailAction
+data object DismissClearConfirmAction : TierListDetailAction
+data object ConfirmClearAction : TierListDetailAction
+
 data object ShareAction : TierListDetailAction
 data object DismissSharePrivateWarningAction : TierListDetailAction

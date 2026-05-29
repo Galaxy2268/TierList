@@ -71,6 +71,12 @@ class ItemServiceImpl(
         imageStorage.delete(deleted.imageUrl)
     }
 
+    override suspend fun clearItems(caller: Caller, tierListId: Int) {
+        val deleted = itemRepo.deleteByTierListId(tierListId, caller.userId)
+            ?: throw NotFoundException("TierList not found")
+        deleted.forEach { imageStorage.delete(it.imageUrl) }
+    }
+
     private fun IncomingImage.toValidUploadOrNull(): ImageUpload? {
         val contentType = contentType ?: return null
         if (contentType.contentSubtype.lowercase() !in ALLOWED_IMAGE_SUBTYPES) return null

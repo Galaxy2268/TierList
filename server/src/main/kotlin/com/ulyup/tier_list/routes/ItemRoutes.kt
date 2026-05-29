@@ -50,5 +50,11 @@ fun Route.itemRoutes(itemService: ItemService) {
             itemService.deleteItem(call.caller, tierListId, itemId)
             call.respond(HttpStatusCode.NoContent)
         }
+
+        delete(Routes.Items.ROOT) {
+            val tierListId = call.parameters.requireInt(Routes.Items.TIER_LIST_ID_PARAM)
+            itemService.clearItems(call.caller, tierListId)
+            call.respond(HttpStatusCode.NoContent)
+        }
     }
 }

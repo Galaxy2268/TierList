@@ -58,14 +58,21 @@ class ItemRepositoryImpl : ItemRepository {
         item
     }
 
+    override suspend fun deleteByTierListId(tierListId: Int, userId: Int): List<TierListItem>? = dbQuery {
+        if (!ownsParent(tierListId, userId)) return@dbQuery null
+        val items = TierListItemsTable.selectAll()
+            .where { TierListItemsTable.tierListId eq tierListId }
+            .map { it.toItem() }
+        TierListItemsTable.deleteWhere { TierListItemsTable.tierListId eq tierListId }
+        items
+    }
+
     override suspend fun move(id: Int, tierListId: Int, userId: Int, newTier: Tier?, newPosition: Int): TierListItem? = dbQuery {
         if (!ownsParent(tierListId, userId)) return@dbQuery null
         val item = fetchById(id) ?: return@dbQuery null
         if (item.tierListId != tierListId) return@dbQuery null
 
         val oldTier = item.tier
-        // Build the new ordering of the destination tier: take everyone currently there,
-        // pull out the moved item if it was already in this tier, then insert at newPosition.
         val destination = loadTier(tierListId, newTier)
             .filter { it.id != id }
             .toMutableList()

@@ -54,7 +54,6 @@ class TierListServiceImpl(
             ?: throw NotFoundException("TierList not found")
 
     override suspend fun deleteTierList(caller: Caller, id: Int) {
-        // Capture image URLs before the delete cascades the item rows away, then remove the files on disk.
         val imageUrls = itemRepo.findByTierListId(id).map { it.imageUrl }
         if (!tierListRepo.delete(id, caller.userId)) throw NotFoundException("TierList not found")
         imageUrls.forEach { imageStorage.delete(it) }

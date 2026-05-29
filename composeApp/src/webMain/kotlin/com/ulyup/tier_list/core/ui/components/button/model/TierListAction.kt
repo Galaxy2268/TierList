@@ -3,10 +3,12 @@ package com.ulyup.tier_list.core.ui.components.button.model
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.ulyup.tier_list.resources.Res
+import com.ulyup.tier_list.resources.detail_action_clear
 import com.ulyup.tier_list.resources.detail_action_delete
 import com.ulyup.tier_list.resources.detail_action_make_private
 import com.ulyup.tier_list.resources.detail_action_make_public
 import com.ulyup.tier_list.resources.detail_action_rename
+import com.ulyup.tier_list.resources.ic_clear
 import com.ulyup.tier_list.resources.ic_delete
 import com.ulyup.tier_list.resources.ic_edit
 import com.ulyup.tier_list.resources.ic_share
@@ -39,6 +41,11 @@ enum class TierListAction(
     EDIT(
         labelRes = Res.string.detail_action_rename,
         iconRes = Res.drawable.ic_edit,
+        visibleToNonOwners = false,
+    ),
+    CLEAR(
+        labelRes = Res.string.detail_action_clear,
+        iconRes = Res.drawable.ic_clear,
         visibleToNonOwners = false,
     ),
     DELETE(

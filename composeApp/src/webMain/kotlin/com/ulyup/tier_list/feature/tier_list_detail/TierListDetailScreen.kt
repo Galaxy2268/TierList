@@ -32,6 +32,7 @@ import com.ulyup.tier_list.core.ui.components.button.model.TierListAction
 import com.ulyup.tier_list.core.ui.components.button.model.TierListActionButton
 import com.ulyup.tier_list.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tier_list.core.ui.components.state.StatefulContent
+import com.ulyup.tier_list.core.ui.components.tier_list.ClearItemsConfirmDialog
 import com.ulyup.tier_list.core.ui.components.tier_list.DeleteTierListConfirmDialog
 import com.ulyup.tier_list.core.ui.components.topbar.AppTopAppBar
 import com.ulyup.tier_list.core.ui.snackbar.LocalTierListSnackbarHandler
@@ -47,10 +48,12 @@ import com.ulyup.tier_list.feature.tier_list_detail.util.DragState
 import com.ulyup.tier_list.feature.tier_list_detail.util.tierListDragGestures
 import com.ulyup.tier_list.feature.tier_list_detail.vm.AddItemAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ChangeRenameTitleAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ConfirmClearAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ConfirmDeleteAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ConfirmRenameAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DeleteItemAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissAddItemDialogAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissClearConfirmAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissDeleteConfirmAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissRenameDialogAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissSharePrivateWarningAction
@@ -61,6 +64,7 @@ import com.ulyup.tier_list.feature.tier_list_detail.vm.RemovePickedImageAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShareAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShareLinkCopiedEvent
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowAddItemDialogAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowClearConfirmAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowDeleteConfirmAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowErrorMessageEvent
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowRenameDialogAction
@@ -131,7 +135,11 @@ fun TierListDetailScreen(
                 },
                 actions = {
                     state.actions.forEach { action ->
-                        val enabled = if(action == TierListAction.VISIBILITY) !state.isUpdatingVisibility else true
+                        val enabled = when (action) {
+                            TierListAction.VISIBILITY -> !state.isUpdatingVisibility
+                            TierListAction.CLEAR -> !isFullyEmpty(state)
+                            else -> true
+                        }
                         val selected = if(action == TierListAction.VISIBILITY) state.isPublic else true
                         TierListActionButton(
                             onClick = {
@@ -142,6 +150,7 @@ fun TierListDetailScreen(
                                     }
                                     TierListAction.DELETE -> viewModel.onAction(ShowDeleteConfirmAction)
                                     TierListAction.EDIT -> viewModel.onAction(ShowRenameDialogAction)
+                                    TierListAction.CLEAR -> viewModel.onAction(ShowClearConfirmAction)
                                     TierListAction.VISIBILITY -> viewModel.onAction(ToggleVisibilityAction)
                                 }
                             },
@@ -216,6 +225,15 @@ fun TierListDetailScreen(
             onDismiss = { viewModel.onAction(DismissDeleteConfirmAction) },
             isLoading = state.isDeleting,
             errorMessage = state.deleteErrorMessage,
+        )
+    }
+
+    if (state.isClearConfirmVisible) {
+        ClearItemsConfirmDialog(
+            onConfirm = { viewModel.onAction(ConfirmClearAction) },
+            onDismiss = { viewModel.onAction(DismissClearConfirmAction) },
+            isLoading = state.isClearing,
+            errorMessage = state.clearErrorMessage,
         )
     }
 

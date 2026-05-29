@@ -13,4 +13,5 @@ interface ItemService {
     suspend fun updateItem(caller: Caller, tierListId: Int, itemId: Int, request: UpdateItemRequest): ItemDto
     suspend fun moveItem(caller: Caller, tierListId: Int, itemId: Int, request: MoveItemRequest): ItemDto
     suspend fun deleteItem(caller: Caller, tierListId: Int, itemId: Int)
+    suspend fun clearItems(caller: Caller, tierListId: Int)
 }

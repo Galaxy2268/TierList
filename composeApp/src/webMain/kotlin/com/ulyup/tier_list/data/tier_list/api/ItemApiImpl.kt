@@ -42,6 +42,10 @@ class ItemApiImpl(private val httpClient: HttpClient) : ItemApi {
         apiCall { httpClient.delete(Routes.Items.byId(tierListId, itemId)) }
     }
 
+    override suspend fun clear(tierListId: Int) {
+        apiCall { httpClient.delete(Routes.Items.root(tierListId)) }
+    }
+
     override suspend fun move(tierListId: Int, itemId: Int, request: MoveItemRequest): ItemDto = apiCall {
         httpClient.patch(Routes.Items.move(tierListId, itemId)) { setBody(request) }.body()
     }

@@ -8,5 +8,6 @@ import com.ulyup.tier_list.dto.MoveItemRequest
 interface ItemApi {
     suspend fun createBatch(tierListId: Int, images: List<ItemImage>): CreateItemsBatchResponse
     suspend fun delete(tierListId: Int, itemId: Int)
+    suspend fun clear(tierListId: Int)
     suspend fun move(tierListId: Int, itemId: Int, request: MoveItemRequest): ItemDto
 }

@@ -61,6 +61,7 @@
     <string name="detail_action_make_public">Make public</string>
     <string name="detail_action_make_private">Make private</string>
     <string name="detail_action_delete">Delete tier list</string>
+    <string name="detail_action_clear">Clear tier list</string>
     <string name="detail_rename_title">Rename tier list</string>
     <string name="detail_rename_field_title">Title</string>
     <string name="detail_rename_action_confirm">Save</string>
@@ -70,6 +71,9 @@
     <string name="detail_delete_body">"%1$s" will be deleted permanently. This cannot be undone.</string>
     <string name="detail_delete_action_confirm">Delete</string>
     <string name="detail_delete_action_cancel">Cancel</string>
+    <string name="detail_clear_title">Clear tier list?</string>
+    <string name="detail_clear_body">This removes all images from this tier list. This cannot be undone.</string>
+    <string name="detail_clear_action_confirm">Clear</string>
     <string name="share_action_label">Share</string>
     <string name="share_link_copied_toast">Link copied</string>
     <string name="share_private_warning_title">Private list</string>

@@ -25,6 +25,10 @@ class ItemRepositoryImpl(
         itemApi.delete(tierListId, itemId)
     }
 
+    override suspend fun clear(tierListId: Int) {
+        itemApi.clear(tierListId)
+    }
+
     override suspend fun move(tierListId: Int, itemId: Int, tier: Tier?, position: Int): TierListItem =
         itemApi.move(tierListId, itemId, MoveItemRequest(tier = tier, position = position)).toDomain()
 }
