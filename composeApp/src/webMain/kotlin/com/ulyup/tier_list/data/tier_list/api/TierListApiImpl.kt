@@ -42,6 +42,13 @@ class TierListApiImpl(private val httpClient: HttpClient) : TierListApi {
         httpClient.patch(Routes.TierLists.visibility(id)) { setBody(request) }.body()
     }
 
+    override suspend fun setFavourite(id: Int, favourite: Boolean) {
+        apiCall {
+            if (favourite) httpClient.put(Routes.TierLists.favourite(id))
+            else httpClient.delete(Routes.TierLists.favourite(id))
+        }
+    }
+
     override suspend fun delete(id: Int) {
         apiCall { httpClient.delete(Routes.TierLists.detail(id)) }
     }

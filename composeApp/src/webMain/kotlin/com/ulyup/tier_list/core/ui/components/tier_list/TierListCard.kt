@@ -1,5 +1,6 @@
 package com.ulyup.tier_list.core.ui.components.tier_list
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.ulyup.tier_list.core.ui.token.VBox4
 import com.ulyup.tier_list.core.ui.token.aPadding16
 import com.ulyup.tier_list.core.ui.token.roundedShape12
@@ -40,6 +42,7 @@ fun TierListCard(
             containerColor = appColors.surface,
             contentColor = appColors.onSurface,
         ),
+        border = if (tierList.isFavourite) BorderStroke(1.dp, appColors.premium) else null,
     ) {
         Row(
             modifier = Modifier

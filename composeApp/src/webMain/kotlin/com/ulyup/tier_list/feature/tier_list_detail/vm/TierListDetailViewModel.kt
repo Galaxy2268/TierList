@@ -12,6 +12,7 @@ import com.ulyup.tier_list.domain.tier_list.usecase.DeleteItemUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.DeleteTierListUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.GetTierListDetailUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.MoveItemUseCase
+import com.ulyup.tier_list.domain.tier_list.usecase.SetFavouriteUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.SetTierListVisibilityUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.UpdateTierListUseCase
 import com.ulyup.tier_list.domain.user.usecase.ObserveCurrentUserUseCase
@@ -34,6 +35,7 @@ class TierListDetailViewModel(
     private val moveItemUseCase: MoveItemUseCase,
     private val updateTierListUseCase: UpdateTierListUseCase,
     private val setTierListVisibilityUseCase: SetTierListVisibilityUseCase,
+    private val setFavouriteUseCase: SetFavouriteUseCase,
     private val deleteTierListUseCase: DeleteTierListUseCase,
 ) : InteractiveStatefulViewModel<TierListDetailAction, TierListDetailState, TierListDetailEvent>(
     TierListDetailState()
@@ -90,7 +92,21 @@ class TierListDetailViewModel(
             DismissSharePrivateWarningAction -> updateState {
                 it.copy(showSharePrivateWarning = false)
             }
+            ToggleFavouriteAction -> toggleFavourite()
         }
+    }
+
+    private suspend fun toggleFavourite() {
+        val target = !state.isFavourite
+        updateState { it.copy(isFavourite = target) }
+        setFavouriteUseCase(
+            SetFavouriteUseCase.Params(tierListId = tierListId, favourite = target)
+        ).fold(
+            onError = { exception ->
+                updateState { it.copy(isFavourite = !target) }
+                launchEvent(ShowErrorMessageEvent(exception.message))
+            },
+        )
     }
 
     private suspend fun share() {

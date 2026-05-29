@@ -15,6 +15,8 @@ fun TierListDetailState.applyDetail(
         title = detail.tierList.title,
         isPublic = detail.tierList.isPublic,
         isOwner = currentUserId != null && currentUserId == detail.tierList.ownerId,
+        isLoggedIn = currentUserId != null,
+        isFavourite = detail.tierList.isFavourite,
         isUpdatingVisibility = false,
         renameDialog = null,
         isDeleteConfirmVisible = false,

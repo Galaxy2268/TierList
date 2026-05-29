@@ -36,11 +36,10 @@ class TierListRepositoryImpl : TierListRepository {
             .map { it.toTierList() }
     }
 
-    override suspend fun listPublic(limit: Int, offset: Int): List<TierList> = dbQuery {
+    override suspend fun listPublic(): List<TierList> = dbQuery {
         TierListsTable.selectAll()
             .where { TierListsTable.isPublic eq true }
             .orderBy(TierListsTable.createdAt to SortOrder.DESC)
-            .limit(limit).offset(offset.toLong())
             .map { it.toTierList() }
     }
 

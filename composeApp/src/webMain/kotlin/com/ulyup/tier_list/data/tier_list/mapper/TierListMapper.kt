@@ -11,6 +11,7 @@ fun TierListDto.toDomain(): TierList = TierList(
     title = title,
     isPublic = isPublic,
     createdAt = createdAt.toEpochMilliseconds(),
+    isFavourite = isFavourite,
 )
 
 fun TierListDetailDto.toDomain(): TierListDetail = TierListDetail(
@@ -20,6 +21,7 @@ fun TierListDetailDto.toDomain(): TierListDetail = TierListDetail(
         title = title,
         isPublic = isPublic,
         createdAt = createdAt.toEpochMilliseconds(),
+        isFavourite = isFavourite,
     ),
     items = items.map { it.toDomain() },
 )

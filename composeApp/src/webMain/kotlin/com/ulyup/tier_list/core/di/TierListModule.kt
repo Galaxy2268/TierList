@@ -17,6 +17,7 @@ import com.ulyup.tier_list.domain.tier_list.usecase.GetMyTierListsUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.GetPublicTierListsUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.GetTierListDetailUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.MoveItemUseCase
+import com.ulyup.tier_list.domain.tier_list.usecase.SetFavouriteUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.SetTierListVisibilityUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.UpdateTierListUseCase
 import com.ulyup.tier_list.feature.feed.vm.FeedViewModel
@@ -39,6 +40,7 @@ val tierListModule = module {
     factoryOf(::GetTierListDetailUseCase)
     factoryOf(::UpdateTierListUseCase)
     factoryOf(::SetTierListVisibilityUseCase)
+    factoryOf(::SetFavouriteUseCase)
     factoryOf(::DeleteTierListUseCase)
     factoryOf(::CreateItemsBatchUseCase)
     factoryOf(::DeleteItemUseCase)

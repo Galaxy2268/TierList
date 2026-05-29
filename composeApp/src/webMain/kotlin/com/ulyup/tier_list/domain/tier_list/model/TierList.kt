@@ -6,4 +6,5 @@ data class TierList(
     val title: String,
     val isPublic: Boolean,
     val createdAt: Long,
+    val isFavourite: Boolean = false,
 )

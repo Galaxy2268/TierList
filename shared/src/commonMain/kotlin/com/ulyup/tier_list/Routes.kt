@@ -18,9 +18,11 @@ object Routes {
         const val ID_PARAM = "tierListId"
         const val BY_ID = "$ROOT/{$ID_PARAM}"
         const val VISIBILITY = "$BY_ID/visibility"
+        const val FAVOURITE = "$BY_ID/favourite"
 
         fun detail(id: Int): String = "$ROOT/$id"
         fun visibility(id: Int): String = "$ROOT/$id/visibility"
+        fun favourite(id: Int): String = "$ROOT/$id/favourite"
     }
 
     object Items {

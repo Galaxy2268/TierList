@@ -10,5 +10,6 @@ interface TierListRepository {
     suspend fun getDetail(id: Int): TierListDetail
     suspend fun update(id: Int, title: String): TierList
     suspend fun setVisibility(id: Int, isPublic: Boolean): TierList
+    suspend fun setFavourite(id: Int, favourite: Boolean)
     suspend fun delete(id: Int)
 }

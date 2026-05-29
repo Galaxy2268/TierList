@@ -10,10 +10,10 @@ import com.ulyup.tier_list.dto.UserDto
 
 fun User.toDto() = UserDto(id, username, email, role, createdAt)
 
-fun TierList.toDto() =
-    TierListDto(id, userId, title, isPublic, createdAt)
+fun TierList.toDto(isFavourite: Boolean = false) =
+    TierListDto(id, userId, title, isPublic, createdAt, isFavourite)
 
-fun TierList.toDetailDto(items: List<TierListItem>) =
-    TierListDetailDto(id, userId, title, isPublic, createdAt, items.map { it.toDto() })
+fun TierList.toDetailDto(items: List<TierListItem>, isFavourite: Boolean = false) =
+    TierListDetailDto(id, userId, title, isPublic, createdAt, items.map { it.toDto() }, isFavourite)
 
 fun TierListItem.toDto() = ItemDto(id, tierListId, imageUrl, tier, position)

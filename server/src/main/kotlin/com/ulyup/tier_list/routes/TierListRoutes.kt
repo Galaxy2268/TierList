@@ -18,7 +18,8 @@ import io.ktor.server.sessions.*
 
 fun Route.tierListRoutes(tierListService: TierListService) {
     get(Routes.TierLists.ROOT) {
-        call.respond(tierListService.getPublicFeed())
+        val caller = call.sessions.get<UserSession>()?.let { Caller(it.userId, it.role) }
+        call.respond(tierListService.getPublicFeed(caller))
     }
 
     get(Routes.TierLists.BY_ID) {
@@ -52,6 +53,18 @@ fun Route.tierListRoutes(tierListService: TierListService) {
         delete(Routes.TierLists.BY_ID) {
             val tierListId = call.parameters.requireInt(Routes.TierLists.ID_PARAM)
             tierListService.deleteTierList(call.caller, tierListId)
+            call.respond(HttpStatusCode.NoContent)
+        }
+
+        put(Routes.TierLists.FAVOURITE) {
+            val tierListId = call.parameters.requireInt(Routes.TierLists.ID_PARAM)
+            tierListService.setFavourite(call.caller, tierListId, favourite = true)
+            call.respond(HttpStatusCode.NoContent)
+        }
+
+        delete(Routes.TierLists.FAVOURITE) {
+            val tierListId = call.parameters.requireInt(Routes.TierLists.ID_PARAM)
+            tierListService.setFavourite(call.caller, tierListId, favourite = false)
             call.respond(HttpStatusCode.NoContent)
         }
     }

@@ -13,5 +13,6 @@ interface TierListApi {
     suspend fun getDetail(id: Int): TierListDetailDto
     suspend fun update(id: Int, request: UpdateTierListRequest): TierListDto
     suspend fun setVisibility(id: Int, request: UpdateVisibilityRequest): TierListDto
+    suspend fun setFavourite(id: Int, favourite: Boolean)
     suspend fun delete(id: Int)
 }

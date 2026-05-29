@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.ulyup.tier_list.core.browser.ShareDetailLink
 import com.ulyup.tier_list.core.mvi.ObserveAsEvents
 import com.ulyup.tier_list.core.ui.components.button.model.TierListAction
-import com.ulyup.tier_list.core.ui.components.button.model.TierListActionButton
+import com.ulyup.tier_list.core.ui.components.button.TierListActionButton
 import com.ulyup.tier_list.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tier_list.core.ui.components.state.StatefulContent
 import com.ulyup.tier_list.core.ui.components.tier_list.ClearItemsConfirmDialog
@@ -72,6 +72,7 @@ import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowUploadFailuresEvent
 import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDeletedEvent
 import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDetailState
 import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDetailViewModel
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ToggleFavouriteAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ToggleVisibilityAction
 import com.ulyup.tier_list.model.Tier
 import com.ulyup.tier_list.resources.Res
@@ -140,7 +141,11 @@ fun TierListDetailScreen(
                             TierListAction.CLEAR -> !isFullyEmpty(state)
                             else -> true
                         }
-                        val selected = if(action == TierListAction.VISIBILITY) state.isPublic else true
+                        val selected = when (action) {
+                            TierListAction.VISIBILITY -> state.isPublic
+                            TierListAction.FAVOURITE -> state.isFavourite
+                            else -> true
+                        }
                         TierListActionButton(
                             onClick = {
                                 when (action) {
@@ -148,6 +153,7 @@ fun TierListDetailScreen(
                                         clipboard.setText(AnnotatedString(ShareDetailLink.currentShareUrl()))
                                         viewModel.onAction(ShareAction)
                                     }
+                                    TierListAction.FAVOURITE -> viewModel.onAction(ToggleFavouriteAction)
                                     TierListAction.DELETE -> viewModel.onAction(ShowDeleteConfirmAction)
                                     TierListAction.EDIT -> viewModel.onAction(ShowRenameDialogAction)
                                     TierListAction.CLEAR -> viewModel.onAction(ShowClearConfirmAction)

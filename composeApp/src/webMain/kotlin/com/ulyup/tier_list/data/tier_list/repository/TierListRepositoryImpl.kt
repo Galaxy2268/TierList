@@ -31,6 +31,10 @@ class TierListRepositoryImpl(
     override suspend fun setVisibility(id: Int, isPublic: Boolean): TierList =
         tierListApi.setVisibility(id, UpdateVisibilityRequest(isPublic = isPublic)).toDomain()
 
+    override suspend fun setFavourite(id: Int, favourite: Boolean) {
+        tierListApi.setFavourite(id, favourite)
+    }
+
     override suspend fun delete(id: Int) {
         tierListApi.delete(id)
     }

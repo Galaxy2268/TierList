@@ -10,6 +10,7 @@ data class TierListDto(
     val title: String,
     val isPublic: Boolean,
     val createdAt: Instant,
+    val isFavourite: Boolean = false,
 )
 
 @Serializable
@@ -20,6 +21,7 @@ data class TierListDetailDto(
     val isPublic: Boolean,
     val createdAt: Instant,
     val items: List<ItemDto>,
+    val isFavourite: Boolean = false,
 )
 
 @Serializable

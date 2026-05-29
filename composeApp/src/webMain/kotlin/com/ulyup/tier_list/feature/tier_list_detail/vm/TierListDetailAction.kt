@@ -40,3 +40,5 @@ data object ConfirmClearAction : TierListDetailAction
 
 data object ShareAction : TierListDetailAction
 data object DismissSharePrivateWarningAction : TierListDetailAction
+
+data object ToggleFavouriteAction : TierListDetailAction

@@ -3,6 +3,7 @@ package com.ulyup.tier_list.feature.mylists.vm
 import androidx.lifecycle.viewModelScope
 import com.ulyup.tier_list.core.mvi.InteractiveStatefulViewModel
 import com.ulyup.tier_list.core.usecase.fold
+import com.ulyup.tier_list.domain.tier_list.util.favouritesFirst
 import com.ulyup.tier_list.domain.tier_list.usecase.CreateTierListUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.DeleteTierListUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.GetMyTierListsUseCase
@@ -81,7 +82,7 @@ class MyListsViewModel(
             onSuccess = { created ->
                 updateState {
                     it.copy(
-                        tierLists = listOf(created) + it.tierLists,
+                        tierLists = (listOf(created) + it.tierLists).favouritesFirst(),
                         createDialog = null,
                     )
                 }
