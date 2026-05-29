@@ -9,11 +9,11 @@ data object ShowAddItemDialogAction : TierListDetailAction
 data object DismissAddItemDialogAction : TierListDetailAction
 data object AddItemAction : TierListDetailAction
 
-@Suppress("ArrayInDataClass")
-data class ImagePickedAction(
-    val bytes: ByteArray,
-    val filename: String,
+data class ImagesPickedAction(
+    val images: List<PickedImage>,
 ) : TierListDetailAction
+
+value class RemovePickedImageAction(val index: Int) : TierListDetailAction
 
 value class DeleteItemAction(val itemId: Int) : TierListDetailAction
 

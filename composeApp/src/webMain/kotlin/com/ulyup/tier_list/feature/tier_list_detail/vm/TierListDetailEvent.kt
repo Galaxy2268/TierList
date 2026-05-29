@@ -5,3 +5,4 @@ sealed interface TierListDetailEvent
 data object TierListDeletedEvent : TierListDetailEvent
 data object ShareLinkCopiedEvent : TierListDetailEvent
 data class ShowErrorMessageEvent(val text: String?) : TierListDetailEvent
+data class ShowUploadFailuresEvent(val filenames: List<String>) : TierListDetailEvent

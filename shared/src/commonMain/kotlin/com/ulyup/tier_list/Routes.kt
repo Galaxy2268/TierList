@@ -28,10 +28,12 @@ object Routes {
         const val ITEM_ID_PARAM = "itemId"
 
         const val ROOT = "$API/tier_lists/{$TIER_LIST_ID_PARAM}/items"
+        const val BATCH = "$ROOT/batch"
         const val BY_ID = "$ROOT/{$ITEM_ID_PARAM}"
         const val MOVE = "$BY_ID/move"
 
         fun root(tierListId: Int): String = "$API/tier_lists/$tierListId/items"
+        fun batch(tierListId: Int): String = "${root(tierListId)}/batch"
         fun byId(tierListId: Int, itemId: Int): String = "${root(tierListId)}/$itemId"
         fun move(tierListId: Int, itemId: Int): String = "${byId(tierListId, itemId)}/move"
     }

@@ -11,12 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.layout.ContentScale
-import coil3.compose.AsyncImage
-import coil3.compose.LocalPlatformContext
-import coil3.request.ImageRequest
-import coil3.size.Size
+import com.ulyup.tier_list.core.ui.components.image.AppImage
 import com.ulyup.tier_list.core.ui.token.size96
 import com.ulyup.tier_list.domain.tier_list.model.TierListItem
 import com.ulyup.tier_list.theme.appColors
@@ -56,18 +51,14 @@ fun TierItemsRow(
 @Composable
 private fun GhostItem(imageUrl: String) {
     Box(modifier = Modifier.size(size96).alpha(GHOST_ALPHA)) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(imageUrl)
-                .size(Size(GHOST_DECODE_PX, GHOST_DECODE_PX))
-                .build(),
+        AppImage(
+            model = imageUrl,
             contentDescription = null,
-            modifier = Modifier.size(size96),
-            contentScale = ContentScale.Crop,
-            filterQuality = FilterQuality.High,
+            size = size96,
+            resolutionScale = GHOST_RESOLUTION_SCALE,
         )
     }
 }
 
 private const val GHOST_ALPHA = 0.4f
-private const val GHOST_DECODE_PX = 96 * 4
+private const val GHOST_RESOLUTION_SCALE = 4

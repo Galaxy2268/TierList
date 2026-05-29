@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.ulyup.tier_list.core.browser.ShareDetailLink
 import com.ulyup.tier_list.core.mvi.ObserveAsEvents
+import com.ulyup.tier_list.core.ui.components.button.model.TierListAction
+import com.ulyup.tier_list.core.ui.components.button.model.TierListActionButton
 import com.ulyup.tier_list.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tier_list.core.ui.components.state.StatefulContent
 import com.ulyup.tier_list.core.ui.components.tier_list.DeleteTierListConfirmDialog
@@ -52,15 +54,17 @@ import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissAddItemDialogActio
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissDeleteConfirmAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissRenameDialogAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissSharePrivateWarningAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.ImagePickedAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ImagesPickedAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.LoadDetailAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.MoveItemAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.RemovePickedImageAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShareAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShareLinkCopiedEvent
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowAddItemDialogAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowDeleteConfirmAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowErrorMessageEvent
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowRenameDialogAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowUploadFailuresEvent
 import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDeletedEvent
 import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDetailState
 import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDetailViewModel
@@ -69,24 +73,16 @@ import com.ulyup.tier_list.model.Tier
 import com.ulyup.tier_list.resources.Res
 import com.ulyup.tier_list.resources.detail_action_add_item_fab
 import com.ulyup.tier_list.resources.detail_action_back
-import com.ulyup.tier_list.resources.detail_action_delete
-import com.ulyup.tier_list.resources.detail_action_make_private
-import com.ulyup.tier_list.resources.detail_action_make_public
-import com.ulyup.tier_list.resources.detail_action_rename
+import com.ulyup.tier_list.resources.detail_add_error_some_failed
 import com.ulyup.tier_list.resources.detail_empty
 import com.ulyup.tier_list.resources.error_action_retry
 import com.ulyup.tier_list.resources.ic_add
 import com.ulyup.tier_list.resources.ic_arrow_back
-import com.ulyup.tier_list.resources.ic_delete
-import com.ulyup.tier_list.resources.ic_edit
-import com.ulyup.tier_list.resources.ic_share
-import com.ulyup.tier_list.resources.ic_unvisible
-import com.ulyup.tier_list.resources.ic_visible
-import com.ulyup.tier_list.resources.share_action_label
 import com.ulyup.tier_list.resources.share_link_copied_toast
 import com.ulyup.tier_list.theme.appColors
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -112,6 +108,11 @@ fun TierListDetailScreen(
                 snackbarHandler.showMessage(Res.string.share_link_copied_toast)
             }
             is ShowErrorMessageEvent -> scope.launch { snackbarHandler.showError(event.text) }
+            is ShowUploadFailuresEvent -> scope.launch {
+                val joined = event.filenames.joinToString(", ")
+                val message = getString(Res.string.detail_add_error_some_failed, event.filenames.size, joined)
+                snackbarHandler.showError(message)
+            }
         }
     }
 
@@ -129,50 +130,25 @@ fun TierListDetailScreen(
                     }
                 },
                 actions = {
-                    if (state.showShareAction) {
-                        IconButton(onClick = {
-                            val url = ShareDetailLink.currentShareUrl()
-                            clipboard.setText(AnnotatedString(url))
-                            viewModel.onAction(ShareAction)
-                        }) {
-                            Icon(
-                                painter = painterResource(Res.drawable.ic_share),
-                                contentDescription = stringResource(Res.string.share_action_label),
-                                tint = appColors.onSurface,
-                            )
-                        }
-                    }
-                    if (state.isOwner) {
-                        val visibilityIcon = if (state.isPublic) Res.drawable.ic_visible else Res.drawable.ic_unvisible
-                        val visibilityLabel = if (state.isPublic) {
-                            stringResource(Res.string.detail_action_make_private)
-                        } else {
-                            stringResource(Res.string.detail_action_make_public)
-                        }
-                        IconButton(
-                            onClick = { viewModel.onAction(ToggleVisibilityAction) },
-                            enabled = !state.isUpdatingVisibility,
-                        ) {
-                            Icon(
-                                painter = painterResource(visibilityIcon),
-                                contentDescription = visibilityLabel,
-                                tint = appColors.onSurface,
-                            )
-                        }
-                        IconButton(onClick = { viewModel.onAction(ShowRenameDialogAction) }) {
-                            Icon(
-                                painter = painterResource(Res.drawable.ic_edit),
-                                contentDescription = stringResource(Res.string.detail_action_rename),
-                                tint = appColors.onSurface,
-                            )
-                        }
-                        IconButton(onClick = { viewModel.onAction(ShowDeleteConfirmAction) }) {
-                            Icon(
-                                painter = painterResource(Res.drawable.ic_delete),
-                                contentDescription = stringResource(Res.string.detail_action_delete),
-                                tint = appColors.error,
-                            )
-                        }
+                    state.actions.forEach { action ->
+                        val enabled = if(action == TierListAction.VISIBILITY) !state.isUpdatingVisibility else true
+                        val selected = if(action == TierListAction.VISIBILITY) state.isPublic else true
+                        TierListActionButton(
+                            onClick = {
+                                when (action) {
+                                    TierListAction.SHARE -> {
+                                        clipboard.setText(AnnotatedString(ShareDetailLink.currentShareUrl()))
+                                        viewModel.onAction(ShareAction)
+                                    }
+                                    TierListAction.DELETE -> viewModel.onAction(ShowDeleteConfirmAction)
+                                    TierListAction.EDIT -> viewModel.onAction(ShowRenameDialogAction)
+                                    TierListAction.VISIBILITY -> viewModel.onAction(ToggleVisibilityAction)
+                                }
+                            },
+                            enabled = enabled,
+                            action = action,
+                            selected = selected,
+                        )
                     }
                 },
             )
@@ -217,7 +193,8 @@ fun TierListDetailScreen(
     state.addItemDialog?.let { dialog ->
         AddItemDialog(
             state = dialog,
-            onImagePicked = { bytes, filename -> viewModel.onAction(ImagePickedAction(bytes, filename)) },
+            onImagesPicked = { images -> viewModel.onAction(ImagesPickedAction(images)) },
+            onRemovePicked = { index -> viewModel.onAction(RemovePickedImageAction(index)) },
             onConfirm = { viewModel.onAction(AddItemAction) },
             onDismiss = { viewModel.onAction(DismissAddItemDialogAction) },
         )

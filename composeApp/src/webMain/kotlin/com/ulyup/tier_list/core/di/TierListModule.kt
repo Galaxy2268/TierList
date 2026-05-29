@@ -8,7 +8,7 @@ import com.ulyup.tier_list.data.tier_list.repository.ItemRepositoryImpl
 import com.ulyup.tier_list.data.tier_list.repository.TierListRepositoryImpl
 import com.ulyup.tier_list.domain.tier_list.repository.ItemRepository
 import com.ulyup.tier_list.domain.tier_list.repository.TierListRepository
-import com.ulyup.tier_list.domain.tier_list.usecase.CreateItemUseCase
+import com.ulyup.tier_list.domain.tier_list.usecase.CreateItemsBatchUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.CreateTierListUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.DeleteItemUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.DeleteTierListUseCase
@@ -39,7 +39,7 @@ val tierListModule = module {
     factoryOf(::UpdateTierListUseCase)
     factoryOf(::SetTierListVisibilityUseCase)
     factoryOf(::DeleteTierListUseCase)
-    factoryOf(::CreateItemUseCase)
+    factoryOf(::CreateItemsBatchUseCase)
     factoryOf(::DeleteItemUseCase)
     factoryOf(::MoveItemUseCase)
     viewModelOf(::FeedViewModel)

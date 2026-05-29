@@ -2,8 +2,10 @@ package com.ulyup.tier_list.feature.tier_list_detail.vm
 
 import com.ulyup.tier_list.core.mvi.FormState
 import com.ulyup.tier_list.core.mvi.LoadableState
+import com.ulyup.tier_list.core.ui.components.button.model.TierListAction
 import com.ulyup.tier_list.domain.tier_list.model.TierListItem
 import com.ulyup.tier_list.model.Tier
+import kotlin.random.Random
 import org.jetbrains.compose.resources.StringResource
 
 data class TierListDetailState(
@@ -22,21 +24,22 @@ data class TierListDetailState(
     val deleteErrorMessage: String? = null,
     val showSharePrivateWarning: Boolean = false,
 ) : LoadableState<TierListDetailState> {
-    val showShareAction: Boolean
-        get() = isOwner || isPublic
 
     override fun copyLoadable(isLoading: Boolean, errorMessage: String?) =
         copy(isLoading = isLoading, errorMessage = errorMessage)
+
+    val actions: List<TierListAction>
+        get() = TierListAction.entries.filter { isOwner || it.visibleToNonOwners }
 }
 
 data class AddItemDialogState(
-    val pickedImage: PickedImage? = null,
+    val pickedImages: List<PickedImage> = emptyList(),
     override val isLoading: Boolean = false,
     override val validationErrorRes: StringResource? = null,
     override val errorMessage: String? = null,
 ) : FormState<AddItemDialogState> {
     val isSubmitEnabled: Boolean
-        get() = pickedImage != null
+        get() = pickedImages.isNotEmpty()
 
     override fun copyForm(
         isLoading: Boolean,
@@ -73,4 +76,5 @@ data class RenameDialogState(
 data class PickedImage(
     val bytes: ByteArray,
     val filename: String,
+    val id: Long = Random.nextLong(),
 )

@@ -1,10 +1,12 @@
 package com.ulyup.tier_list.feature.tier_list_detail.vm
 
 import androidx.lifecycle.viewModelScope
+import com.ulyup.tier_list.MAX_BATCH_IMAGES
 import com.ulyup.tier_list.core.mvi.InteractiveStatefulViewModel
 import com.ulyup.tier_list.core.usecase.fold
+import com.ulyup.tier_list.domain.tier_list.model.ItemImage
 import com.ulyup.tier_list.domain.tier_list.model.TierListItem
-import com.ulyup.tier_list.domain.tier_list.usecase.CreateItemUseCase
+import com.ulyup.tier_list.domain.tier_list.usecase.CreateItemsBatchUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.DeleteItemUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.DeleteTierListUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.GetTierListDetailUseCase
@@ -25,7 +27,7 @@ class TierListDetailViewModel(
     private val tierListId: Int,
     private val observeCurrentUserUseCase: ObserveCurrentUserUseCase,
     private val getTierListDetailUseCase: GetTierListDetailUseCase,
-    private val createItemUseCase: CreateItemUseCase,
+    private val createItemsBatchUseCase: CreateItemsBatchUseCase,
     private val deleteItemUseCase: DeleteItemUseCase,
     private val moveItemUseCase: MoveItemUseCase,
     private val updateTierListUseCase: UpdateTierListUseCase,
@@ -44,11 +46,16 @@ class TierListDetailViewModel(
             LoadDetailAction -> load()
             ShowAddItemDialogAction -> updateState { it.copy(addItemDialog = AddItemDialogState()) }
             DismissAddItemDialogAction -> updateState { it.copy(addItemDialog = null) }
-            is ImagePickedAction -> updateState { state ->
+            is ImagesPickedAction -> onImagesPicked(action.images)
+            is RemovePickedImageAction -> updateState { state ->
                 state.copy(
-                    addItemDialog = state.addItemDialog
-                        ?.copy(pickedImage = PickedImage(action.bytes, action.filename))
-                        ?.withInputChanged(),
+                    addItemDialog = state.addItemDialog?.let { dialog ->
+                        if (action.index !in dialog.pickedImages.indices) dialog
+                        else dialog.copy(
+                            pickedImages = dialog.pickedImages.toMutableList()
+                                .also { it.removeAt(action.index) },
+                        ).withInputChanged()
+                    },
                 )
             }
             AddItemAction -> addItem()
@@ -94,11 +101,22 @@ class TierListDetailViewModel(
         )
     }
 
+    private fun onImagesPicked(images: List<PickedImage>) {
+        val truncated = images.take(MAX_BATCH_IMAGES)
+        updateState { state ->
+            state.copy(
+                addItemDialog = state.addItemDialog
+                    ?.copy(pickedImages = truncated)
+                    ?.withInputChanged(),
+            )
+        }
+    }
+
     private suspend fun addItem() {
         val dialog = state.addItemDialog ?: return
         if (dialog.isLoading) return
-        val picked = dialog.pickedImage
-        if (picked == null) {
+        val picked = dialog.pickedImages
+        if (picked.isEmpty()) {
             updateState { state ->
                 state.copy(
                     addItemDialog = state.addItemDialog?.withValidationError(Res.string.detail_add_error_no_image),
@@ -106,30 +124,35 @@ class TierListDetailViewModel(
             }
             return
         }
-        createItemUseCase(
-            CreateItemUseCase.Params(
-                tierListId = tierListId,
-                bytes = picked.bytes,
-                filename = picked.filename,
-            )
+        val images = picked.map { ItemImage(bytes = it.bytes, filename = it.filename) }
+        createItemsBatchUseCase(
+            CreateItemsBatchUseCase.Params(tierListId = tierListId, images = images)
         ).fold(
             onLoading = {
-                updateState { state ->
-                    state.copy(addItemDialog = state.addItemDialog?.withLoading())
-                }
+                updateState { state -> state.copy(addItemDialog = state.addItemDialog?.withLoading()) }
             },
-            onSuccess = { created ->
-                updateState {
-                    it.copy(
-                        addItemDialog = null,
-                        unrankedItems = it.unrankedItems + created,
-                    )
+            onSuccess = { result ->
+                if (result.created.isNotEmpty()) {
+                    updateState {
+                        it.copy(
+                            addItemDialog = null,
+                            unrankedItems = it.unrankedItems + result.created,
+                        )
+                    }
+                } else {
+                    updateState { state ->
+                        state.copy(addItemDialog = state.addItemDialog?.copyLoadable(isLoading = false, errorMessage = null))
+                    }
+                }
+                if (result.failedFilenames.isNotEmpty()) {
+                    launchEvent(ShowUploadFailuresEvent(result.failedFilenames))
                 }
             },
             onError = { exception ->
                 updateState { state ->
-                    state.copy(addItemDialog = state.addItemDialog?.withError(exception.message))
+                    state.copy(addItemDialog = state.addItemDialog?.copyLoadable(isLoading = false, errorMessage = null))
                 }
+                launchEvent(ShowErrorMessageEvent(exception.message))
             },
         )
     }

@@ -13,8 +13,9 @@ data class ItemDto(
 )
 
 @Serializable
-data class CreateItemRequest(
-    val imageUrl: String,
+data class CreateItemsBatchResponse(
+    val created: List<ItemDto>,
+    val failedFilenames: List<String>,
 )
 
 @Serializable

@@ -107,7 +107,7 @@ fun Application.module() {
     File(LocalImageStorage.BASE_DIR).mkdirs()
 
     val authService = AuthServiceImpl(userRepo)
-    val tierListService = TierListServiceImpl(tierListRepo, itemRepo)
+    val tierListService = TierListServiceImpl(tierListRepo, itemRepo, imageStorage)
     val itemService = ItemServiceImpl(itemRepo, tierListRepo, imageStorage)
     val userService = UserServiceImpl(userRepo)
 

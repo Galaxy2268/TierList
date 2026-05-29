@@ -66,7 +66,7 @@ Items are plain images (URL only) — no name, no notes. Each item carries an op
 | Method | Path | Auth | Body | Returns |
 |---|---|---|---|---|
 | GET | `/api/tier_lists/{id}/items` | optional | — | `List<ItemDto>`; follows parent visibility |
-| POST | `/api/tier_lists/{id}/items` | yes | `CreateItemRequest` | `ItemDto` (201) |
+| POST | `/api/tier_lists/{id}/items/batch` | yes | multipart: up to 25 `image` parts | `CreateItemsBatchResponse` (201) — `created` + `failedFilenames` |
 | PUT | `/api/tier_lists/{id}/items/{itemId}` | yes | `UpdateItemRequest` | `ItemDto` (replaces `imageUrl`) |
 | PATCH | `/api/tier_lists/{id}/items/{itemId}/move` | yes | `MoveItemRequest` | `ItemDto` — sets `tier` and `position` |
 | DELETE | `/api/tier_lists/{id}/items/{itemId}` | yes | — | 204 |

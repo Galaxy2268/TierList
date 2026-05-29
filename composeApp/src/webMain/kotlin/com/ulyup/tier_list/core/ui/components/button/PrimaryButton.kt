@@ -1,6 +1,6 @@
 package com.ulyup.tier_list.core.ui.components.button
 
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ulyup.tier_list.core.ui.token.roundedShape8
+import com.ulyup.tier_list.core.ui.token.size20
 import com.ulyup.tier_list.theme.appColors
 import com.ulyup.tier_list.theme.appTypography
 
@@ -29,7 +30,7 @@ fun PrimaryButton(
             CircularProgressIndicator(
                 color = appColors.onPrimary,
                 strokeWidth = 2.dp,
-                modifier = Modifier.padding(2.dp),
+                modifier = Modifier.size(size20),
             )
         } else {
             Text(

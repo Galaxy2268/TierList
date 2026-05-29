@@ -7,13 +7,15 @@ import com.ulyup.tier_list.domain.repository.TierListRepository
 import com.ulyup.tier_list.domain.service.ItemService
 import com.ulyup.tier_list.domain.storage.ImageStorage
 import com.ulyup.tier_list.domain.storage.ImageUpload
+import com.ulyup.tier_list.domain.storage.IncomingImage
+import com.ulyup.tier_list.dto.CreateItemsBatchResponse
 import com.ulyup.tier_list.dto.ItemDto
 import com.ulyup.tier_list.dto.MoveItemRequest
 import com.ulyup.tier_list.dto.UpdateItemRequest
 import com.ulyup.tier_list.utils.BadRequestException
+import com.ulyup.tier_list.utils.MAX_IMAGE_BYTES
 import com.ulyup.tier_list.utils.NotFoundException
 import com.ulyup.tier_list.utils.findOrThrow
-import io.ktor.http.ContentType
 
 class ItemServiceImpl(
     private val itemRepo: ItemRepository,
@@ -29,14 +31,28 @@ class ItemServiceImpl(
         return itemRepo.findByTierListId(tierListId).map { it.toDto() }
     }
 
-    override suspend fun createItem(caller: Caller, tierListId: Int, upload: ImageUpload): ItemDto {
-        validateImageContentType(upload.contentType)
-        val url = imageStorage.save(upload)
-        return itemRepo.create(tierListId, caller.userId, url)?.toDto()
-            ?: run {
-                imageStorage.delete(url)
-                throw NotFoundException("TierList not found")
+    override suspend fun createItems(
+        caller: Caller,
+        tierListId: Int,
+        images: List<IncomingImage>,
+    ): CreateItemsBatchResponse {
+        val created = mutableListOf<ItemDto>()
+        val failedFilenames = mutableListOf<String>()
+        for (image in images) {
+            val upload = image.toValidUploadOrNull()
+            if (upload == null) {
+                failedFilenames += image.filename
+                continue
             }
+            val url = imageStorage.save(upload)
+            val item = itemRepo.create(tierListId, caller.userId, url)
+                ?: run {
+                    imageStorage.delete(url)
+                    throw NotFoundException("TierList not found")
+                }
+            created += item.toDto()
+        }
+        return CreateItemsBatchResponse(created, failedFilenames)
     }
 
     override suspend fun updateItem(caller: Caller, tierListId: Int, itemId: Int, request: UpdateItemRequest): ItemDto =
@@ -55,10 +71,11 @@ class ItemServiceImpl(
         imageStorage.delete(deleted.imageUrl)
     }
 
-    private fun validateImageContentType(contentType: ContentType) {
-        if (contentType.contentSubtype.lowercase() !in ALLOWED_IMAGE_SUBTYPES) {
-            throw BadRequestException("Only JPEG, PNG, or WebP images are accepted")
-        }
+    private fun IncomingImage.toValidUploadOrNull(): ImageUpload? {
+        val contentType = contentType ?: return null
+        if (contentType.contentSubtype.lowercase() !in ALLOWED_IMAGE_SUBTYPES) return null
+        if (bytes.size > MAX_IMAGE_BYTES) return null
+        return ImageUpload(bytes, contentType)
     }
 
     companion object {

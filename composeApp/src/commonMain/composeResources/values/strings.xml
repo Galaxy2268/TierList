@@ -51,9 +51,12 @@
     <string name="detail_action_add_item_fab">Add item</string>
     <string name="detail_action_delete_item">Delete item</string>
     <string name="detail_action_cancel">Cancel</string>
-    <string name="detail_action_pick_image">Choose image</string>
-    <string name="detail_add_dialog_title">Add item</string>
+    <string name="detail_action_pick_image">Choose images</string>
+    <string name="detail_add_dialog_title">Add items</string>
+    <string name="detail_action_remove_picked_image">Remove image</string>
     <string name="detail_add_error_no_image">Pick an image first</string>
+    <string name="detail_add_dialog_limit">Up to 25 images per upload.</string>
+    <string name="detail_add_error_some_failed">Failed to upload %1$d image(s): %2$s</string>
     <string name="detail_action_rename">Rename tier list</string>
     <string name="detail_action_make_public">Make public</string>
     <string name="detail_action_make_private">Make private</string>
