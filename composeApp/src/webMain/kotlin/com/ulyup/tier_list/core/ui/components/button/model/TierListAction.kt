@@ -2,23 +2,7 @@ package com.ulyup.tier_list.core.ui.components.button.model
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.ulyup.tier_list.resources.Res
-import com.ulyup.tier_list.resources.detail_action_clear
-import com.ulyup.tier_list.resources.detail_action_delete
-import com.ulyup.tier_list.resources.detail_action_favourite
-import com.ulyup.tier_list.resources.detail_action_make_private
-import com.ulyup.tier_list.resources.detail_action_make_public
-import com.ulyup.tier_list.resources.detail_action_rename
-import com.ulyup.tier_list.resources.detail_action_unfavourite
-import com.ulyup.tier_list.resources.ic_clear
-import com.ulyup.tier_list.resources.ic_delete
-import com.ulyup.tier_list.resources.ic_edit
-import com.ulyup.tier_list.resources.ic_favourite
-import com.ulyup.tier_list.resources.ic_favourite_filled
-import com.ulyup.tier_list.resources.ic_share
-import com.ulyup.tier_list.resources.ic_unvisible
-import com.ulyup.tier_list.resources.ic_visible
-import com.ulyup.tier_list.resources.share_action_label
+import com.ulyup.tier_list.resources.*
 import com.ulyup.tier_list.theme.appColors
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
@@ -68,16 +52,34 @@ enum class TierListAction(
     );
 
 
+    fun getIcon(selected: Boolean) = if (selected) iconRes else trailingIconRes ?: iconRes
+
+    fun getLabel(selected: Boolean) = if (selected) labelRes else trailingLabelRes ?: labelRes
+
     @Composable
-    fun color(): Color = when (this) {
+    fun getColor(selected: Boolean) = if (selected) color() else trailingColor() ?: color()
+
+
+    @Composable
+    private fun color(): Color = when (this) {
         DELETE -> appColors.error
         FAVOURITE -> appColors.premium
         else -> appColors.onSurface
     }
 
     @Composable
-    fun trailingColor(): Color? = when (this) {
+    private fun trailingColor(): Color? = when (this) {
         FAVOURITE -> appColors.onSurface
         else -> null
+    }
+
+    companion object{
+        fun getVisibleActions(isLoggedIn: Boolean, isOwner: Boolean): List<TierListAction> = TierListAction.entries.filter { action ->
+            when (action.visibility) {
+                ActionVisibility.EVERYONE -> true
+                ActionVisibility.LOGGED_IN -> isLoggedIn
+                ActionVisibility.OWNER_ONLY -> isOwner
+            }
+        }
     }
 }

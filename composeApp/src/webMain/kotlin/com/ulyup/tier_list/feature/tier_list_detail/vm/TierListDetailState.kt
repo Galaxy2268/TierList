@@ -2,12 +2,11 @@ package com.ulyup.tier_list.feature.tier_list_detail.vm
 
 import com.ulyup.tier_list.core.mvi.FormState
 import com.ulyup.tier_list.core.mvi.LoadableState
-import com.ulyup.tier_list.core.ui.components.button.model.ActionVisibility
 import com.ulyup.tier_list.core.ui.components.button.model.TierListAction
 import com.ulyup.tier_list.domain.tier_list.model.TierListItem
 import com.ulyup.tier_list.model.Tier
-import kotlin.random.Random
 import org.jetbrains.compose.resources.StringResource
+import kotlin.random.Random
 
 data class TierListDetailState(
     override val isLoading: Boolean = false,
@@ -35,13 +34,7 @@ data class TierListDetailState(
         copy(isLoading = isLoading, errorMessage = errorMessage)
 
     val actions: List<TierListAction>
-        get() = TierListAction.entries.filter { action ->
-            when (action.visibility) {
-                ActionVisibility.EVERYONE -> true
-                ActionVisibility.LOGGED_IN -> isLoggedIn
-                ActionVisibility.OWNER_ONLY -> isOwner
-            }
-        }
+        get() = TierListAction.getVisibleActions(isLoggedIn, isOwner)
 }
 
 data class AddItemDialogState(

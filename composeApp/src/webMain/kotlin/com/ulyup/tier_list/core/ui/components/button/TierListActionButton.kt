@@ -14,17 +14,14 @@ fun TierListActionButton(
     action: TierListAction,
     selected: Boolean = true,
 ) {
-    val icon = if (selected) action.iconRes else action.trailingIconRes ?: action.iconRes
-    val label = if (selected) action.labelRes else action.trailingLabelRes ?: action.labelRes
-    val tint = if (selected) action.color() else action.trailingColor() ?: action.color()
     IconButton(
         onClick = onClick,
         enabled = enabled,
     ) {
         Icon(
-            painter = painterResource(icon),
-            contentDescription = stringResource(label),
-            tint = tint,
+            painter = painterResource(action.getIcon(selected)),
+            contentDescription = stringResource(action.getLabel(selected)),
+            tint = action.getColor(selected),
         )
     }
 }
