@@ -4,6 +4,8 @@ import com.ulyup.tier_list.FREE_TIER_LIMIT
 import com.ulyup.tier_list.core.mvi.FormState
 import com.ulyup.tier_list.core.mvi.LoadableState
 import com.ulyup.tier_list.domain.tier_list.model.TierList
+import com.ulyup.tier_list.domain.tier_list.model.TierListSort
+import com.ulyup.tier_list.domain.tier_list.util.filteredAndSorted
 import com.ulyup.tier_list.model.UserRole
 import org.jetbrains.compose.resources.StringResource
 
@@ -11,10 +13,16 @@ data class MyListsState(
     override val isLoading: Boolean = false,
     val tierLists: List<TierList> = emptyList(),
     val userRole: UserRole? = null,
+    val searchQuery: String = "",
+    val sortOrder: TierListSort = TierListSort.NEWEST,
+    val favouritesOnly: Boolean = false,
     override val errorMessage: String? = null,
     val createDialog: CreateDialogState? = null,
     val isUpgrading: Boolean = false,
 ) : LoadableState<MyListsState> {
+    val visibleTierLists: List<TierList>
+        get() = tierLists.filteredAndSorted(searchQuery, sortOrder, favouritesOnly)
+
     val isAtCap: Boolean
         get() = userRole == UserRole.USER && tierLists.size >= FREE_TIER_LIMIT
 

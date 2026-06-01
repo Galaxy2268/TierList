@@ -59,6 +59,9 @@ class MyListsViewModel(
                     },
                 )
             }
+            is ChangeSearchQueryAction -> updateState { it.copy(searchQuery = action.value) }
+            is ChangeSortOrderAction -> updateState { it.copy(sortOrder = action.sort) }
+            ToggleFavouritesOnlyAction -> updateState { it.copy(favouritesOnly = !it.favouritesOnly) }
         }
     }
 

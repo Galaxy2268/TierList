@@ -35,6 +35,9 @@ class FeedViewModel(
             is SetTitleAction -> updateState {
                 it.copy(tierLists = it.tierLists.setTitle(action.tierListId, action.title))
             }
+            is ChangeSearchQueryAction -> updateState { it.copy(searchQuery = action.value) }
+            is ChangeSortOrderAction -> updateState { it.copy(sortOrder = action.sort) }
+            ToggleFavouritesOnlyAction -> updateState { it.copy(favouritesOnly = !it.favouritesOnly) }
         }
     }
 

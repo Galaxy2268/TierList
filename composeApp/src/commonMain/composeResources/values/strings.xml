@@ -85,6 +85,15 @@
     <string name="share_private_warning_action_confirm">Make public</string>
     <string name="share_private_warning_action_cancel">Keep private</string>
 
+    <string name="filter_search_placeholder">Search by title</string>
+    <string name="filter_clear_search">Clear search</string>
+    <string name="filter_sort_label">Sort: %1$s</string>
+    <string name="filter_sort_newest">Newest</string>
+    <string name="filter_sort_oldest">Oldest</string>
+    <string name="filter_sort_title_az">Title A-Z</string>
+    <string name="filter_favourites_only">Favourites</string>
+    <string name="filter_no_matches">No tier lists match your filters.</string>
+
     <string name="tier_label_s">S</string>
     <string name="tier_label_a">A</string>
     <string name="tier_label_b">B</string>

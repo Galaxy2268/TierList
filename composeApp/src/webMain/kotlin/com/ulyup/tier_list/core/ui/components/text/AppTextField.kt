@@ -17,6 +17,8 @@ fun AppTextField(
     enabled: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
 ) {
     OutlinedTextField(
         value = value,
@@ -26,6 +28,8 @@ fun AppTextField(
         enabled = enabled,
         keyboardOptions = keyboardOptions,
         visualTransformation = visualTransformation,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
         modifier = modifier.fillMaxWidth(),
     )
 }
