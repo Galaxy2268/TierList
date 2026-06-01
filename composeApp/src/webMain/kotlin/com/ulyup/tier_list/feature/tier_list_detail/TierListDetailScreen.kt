@@ -22,58 +22,48 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.ulyup.tier_list.core.browser.ShareDetailLink
 import com.ulyup.tier_list.core.mvi.ObserveAsEvents
-import com.ulyup.tier_list.core.ui.components.button.model.TierListAction
-import com.ulyup.tier_list.core.ui.components.button.TierListActionButton
+import com.ulyup.tier_list.core.ui.components.button.TierListOptionButton
+import com.ulyup.tier_list.core.ui.components.button.model.TierListOption
 import com.ulyup.tier_list.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tier_list.core.ui.components.state.StatefulContent
-import com.ulyup.tier_list.core.ui.components.tier_list.ClearItemsConfirmDialog
-import com.ulyup.tier_list.core.ui.components.tier_list.DeleteTierListConfirmDialog
 import com.ulyup.tier_list.core.ui.components.topbar.AppTopAppBar
 import com.ulyup.tier_list.core.ui.snackbar.LocalTierListSnackbarHandler
 import com.ulyup.tier_list.core.ui.token.gap16
 import com.ulyup.tier_list.core.ui.token.paddingV16H24
+import com.ulyup.tier_list.feature.shared.tier_list.TierListOptionsHost
+import com.ulyup.tier_list.feature.shared.tier_list.rememberTierListOptionDispatch
+import com.ulyup.tier_list.feature.shared.tier_list.vm.FavouriteChangedEvent
+import com.ulyup.tier_list.feature.shared.tier_list.vm.ItemsClearedEvent
+import com.ulyup.tier_list.feature.shared.tier_list.vm.TierListOptionTarget
+import com.ulyup.tier_list.feature.shared.tier_list.vm.TierListOptionsViewModel
+import com.ulyup.tier_list.feature.shared.tier_list.vm.TierListDeletedEvent
+import com.ulyup.tier_list.feature.shared.tier_list.vm.TitleChangedEvent
+import com.ulyup.tier_list.feature.shared.tier_list.vm.VisibilityChangedEvent
 import com.ulyup.tier_list.feature.tier_list_detail.components.AddItemDialog
-import com.ulyup.tier_list.feature.tier_list_detail.components.RenameTierListDialog
-import com.ulyup.tier_list.feature.tier_list_detail.components.SharePrivateWarningDialog
 import com.ulyup.tier_list.feature.tier_list_detail.components.TierListItem
 import com.ulyup.tier_list.feature.tier_list_detail.components.TierRow
 import com.ulyup.tier_list.feature.tier_list_detail.components.UnrankedStrip
 import com.ulyup.tier_list.feature.tier_list_detail.util.DragState
 import com.ulyup.tier_list.feature.tier_list_detail.util.tierListDragGestures
 import com.ulyup.tier_list.feature.tier_list_detail.vm.AddItemAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.ChangeRenameTitleAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.ConfirmClearAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.ConfirmDeleteAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.ConfirmRenameAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.ClearItemsAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DeleteItemAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissAddItemDialogAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissClearConfirmAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissDeleteConfirmAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissRenameDialogAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.DismissSharePrivateWarningAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ImagesPickedAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.LoadDetailAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.MoveItemAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.RemovePickedImageAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.ShareAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.ShareLinkCopiedEvent
+import com.ulyup.tier_list.feature.tier_list_detail.vm.SetFavouriteAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.SetTitleAction
+import com.ulyup.tier_list.feature.tier_list_detail.vm.SetVisibilityAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowAddItemDialogAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowClearConfirmAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowDeleteConfirmAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowErrorMessageEvent
-import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowRenameDialogAction
 import com.ulyup.tier_list.feature.tier_list_detail.vm.ShowUploadFailuresEvent
-import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDeletedEvent
 import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDetailState
 import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDetailViewModel
-import com.ulyup.tier_list.feature.tier_list_detail.vm.ToggleFavouriteAction
-import com.ulyup.tier_list.feature.tier_list_detail.vm.ToggleVisibilityAction
 import com.ulyup.tier_list.model.Tier
 import com.ulyup.tier_list.resources.Res
 import com.ulyup.tier_list.resources.detail_action_add_item_fab
@@ -83,7 +73,6 @@ import com.ulyup.tier_list.resources.detail_empty
 import com.ulyup.tier_list.resources.error_action_retry
 import com.ulyup.tier_list.resources.ic_add
 import com.ulyup.tier_list.resources.ic_arrow_back
-import com.ulyup.tier_list.resources.share_link_copied_toast
 import com.ulyup.tier_list.theme.appColors
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
@@ -99,25 +88,33 @@ fun TierListDetailScreen(
     onBack: () -> Unit,
 ) {
     val viewModel = koinViewModel<TierListDetailViewModel> { parametersOf(tierListId) }
+    val optionsViewModel = koinViewModel<TierListOptionsViewModel>()
     val state = viewModel.uiState
+    val optionsState = optionsViewModel.uiState
     val dragState = remember { DragState() }
     val snackbarHandler = LocalTierListSnackbarHandler.current
-    @Suppress("DEPRECATION")
-    val clipboard = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
+    val dispatchOption = rememberTierListOptionDispatch(optionsViewModel)
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            TierListDeletedEvent -> onBack()
-            ShareLinkCopiedEvent -> scope.launch {
-                snackbarHandler.showMessage(Res.string.share_link_copied_toast)
-            }
             is ShowErrorMessageEvent -> scope.launch { snackbarHandler.showError(event.text) }
             is ShowUploadFailuresEvent -> scope.launch {
                 val joined = event.filenames.joinToString(", ")
                 val message = getString(Res.string.detail_add_error_some_failed, event.filenames.size, joined)
                 snackbarHandler.showError(message)
             }
+        }
+    }
+
+    TierListOptionsHost(optionsViewModel) { event ->
+        when (event) {
+            is TierListDeletedEvent -> onBack()
+            is FavouriteChangedEvent -> viewModel.onAction(SetFavouriteAction(event.isFavourite))
+            is VisibilityChangedEvent -> viewModel.onAction(SetVisibilityAction(event.isPublic))
+            is TitleChangedEvent -> viewModel.onAction(SetTitleAction(event.title))
+            is ItemsClearedEvent -> viewModel.onAction(ClearItemsAction)
+            else -> Unit
         }
     }
 
@@ -135,34 +132,24 @@ fun TierListDetailScreen(
                     }
                 },
                 actions = {
-                    state.actions.forEach { action ->
-                        val enabled = when (action) {
-                            TierListAction.VISIBILITY -> !state.isUpdatingVisibility
-                            TierListAction.CLEAR -> !isFullyEmpty(state)
-                            else -> true
-                        }
-                        val selected = when (action) {
-                            TierListAction.VISIBILITY -> state.isPublic
-                            TierListAction.FAVOURITE -> state.isFavourite
-                            else -> true
-                        }
-                        TierListActionButton(
-                            onClick = {
-                                when (action) {
-                                    TierListAction.SHARE -> {
-                                        clipboard.setText(AnnotatedString(ShareDetailLink.currentShareUrl()))
-                                        viewModel.onAction(ShareAction)
-                                    }
-                                    TierListAction.FAVOURITE -> viewModel.onAction(ToggleFavouriteAction)
-                                    TierListAction.DELETE -> viewModel.onAction(ShowDeleteConfirmAction)
-                                    TierListAction.EDIT -> viewModel.onAction(ShowRenameDialogAction)
-                                    TierListAction.CLEAR -> viewModel.onAction(ShowClearConfirmAction)
-                                    TierListAction.VISIBILITY -> viewModel.onAction(ToggleVisibilityAction)
-                                }
-                            },
+                    val target = TierListOptionTarget(
+                        id = tierListId,
+                        title = state.title,
+                        isPublic = state.isPublic,
+                        isFavourite = state.isFavourite,
+                        isOwner = state.isOwner,
+                    )
+                    state.options.forEach { option ->
+                        val enabled = option != TierListOption.VISIBILITY ||
+                            !optionsState.isUpdatingVisibility(tierListId)
+                        TierListOptionButton(
+                            onClick = { dispatchOption(target, option) },
                             enabled = enabled,
-                            action = action,
-                            selected = selected,
+                            option = option,
+                            selected = option.isSelected(
+                                isPublic = state.isPublic,
+                                isFavourite = state.isFavourite,
+                            ),
                         )
                     }
                 },
@@ -212,45 +199,6 @@ fun TierListDetailScreen(
             onRemovePicked = { index -> viewModel.onAction(RemovePickedImageAction(index)) },
             onConfirm = { viewModel.onAction(AddItemAction) },
             onDismiss = { viewModel.onAction(DismissAddItemDialogAction) },
-        )
-    }
-
-    state.renameDialog?.let { dialog ->
-        RenameTierListDialog(
-            state = dialog,
-            onTitleChange = { viewModel.onAction(ChangeRenameTitleAction(it)) },
-            onConfirm = { viewModel.onAction(ConfirmRenameAction) },
-            onDismiss = { viewModel.onAction(DismissRenameDialogAction) },
-        )
-    }
-
-    if (state.isDeleteConfirmVisible) {
-        DeleteTierListConfirmDialog(
-            tierListTitle = state.title,
-            onConfirm = { viewModel.onAction(ConfirmDeleteAction) },
-            onDismiss = { viewModel.onAction(DismissDeleteConfirmAction) },
-            isLoading = state.isDeleting,
-            errorMessage = state.deleteErrorMessage,
-        )
-    }
-
-    if (state.isClearConfirmVisible) {
-        ClearItemsConfirmDialog(
-            onConfirm = { viewModel.onAction(ConfirmClearAction) },
-            onDismiss = { viewModel.onAction(DismissClearConfirmAction) },
-            isLoading = state.isClearing,
-            errorMessage = state.clearErrorMessage,
-        )
-    }
-
-    if (state.showSharePrivateWarning) {
-        SharePrivateWarningDialog(
-            onMakePublic = {
-                viewModel.onAction(DismissSharePrivateWarningAction)
-                viewModel.onAction(ToggleVisibilityAction)
-            },
-            onDismiss = { viewModel.onAction(DismissSharePrivateWarningAction) },
-            isLoading = state.isUpdatingVisibility,
         )
     }
 }

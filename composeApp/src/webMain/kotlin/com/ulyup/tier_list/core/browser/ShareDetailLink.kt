@@ -7,7 +7,8 @@ object ShareDetailLink {
     private const val QUERY_KEY = "detail"
 
     @OptIn(ExperimentalWasmJsInterop::class)
-    fun currentShareUrl(): String = window.location.href
+    fun shareUrlFor(tierListId: Int): String =
+        "${window.location.origin}${window.location.pathname}?$QUERY_KEY=$tierListId"
 
     fun parseFromUrl(): Int? =
         window.location.search

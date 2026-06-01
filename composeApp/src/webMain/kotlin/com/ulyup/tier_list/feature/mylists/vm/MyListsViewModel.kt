@@ -4,8 +4,11 @@ import androidx.lifecycle.viewModelScope
 import com.ulyup.tier_list.core.mvi.InteractiveStatefulViewModel
 import com.ulyup.tier_list.core.usecase.fold
 import com.ulyup.tier_list.domain.tier_list.util.favouritesFirst
+import com.ulyup.tier_list.domain.tier_list.util.mapById
+import com.ulyup.tier_list.domain.tier_list.util.removeById
+import com.ulyup.tier_list.domain.tier_list.util.setFavourite
+import com.ulyup.tier_list.domain.tier_list.util.setTitle
 import com.ulyup.tier_list.domain.tier_list.usecase.CreateTierListUseCase
-import com.ulyup.tier_list.domain.tier_list.usecase.DeleteTierListUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.GetMyTierListsUseCase
 import com.ulyup.tier_list.domain.user.usecase.ObserveCurrentUserUseCase
 import com.ulyup.tier_list.domain.user.usecase.UpgradePremiumUseCase
@@ -17,7 +20,6 @@ class MyListsViewModel(
     private val observeCurrentUserUseCase: ObserveCurrentUserUseCase,
     private val getMyTierListsUseCase: GetMyTierListsUseCase,
     private val createTierListUseCase: CreateTierListUseCase,
-    private val deleteTierListUseCase: DeleteTierListUseCase,
     private val upgradePremiumUseCase: UpgradePremiumUseCase,
 ) : InteractiveStatefulViewModel<MyListsAction, MyListsState, MyListsEvent>(MyListsState()) {
 
@@ -41,11 +43,22 @@ class MyListsViewModel(
             is ToggleCreatePublicAction -> updateCreateDialog { it.copy(isPublic = action.value) }
             ConfirmCreateAction -> confirmCreate()
             UpgradePremiumAction -> upgrade()
-            is ShowDeleteTierListConfirmAction -> updateState {
-                it.copy(deleteConfirm = DeleteConfirmState(action.tierList.id, action.tierList.title))
+            is RemoveTierListAction -> updateState {
+                it.copy(tierLists = it.tierLists.removeById(action.tierListId))
             }
-            DismissDeleteTierListConfirmAction -> updateState { it.copy(deleteConfirm = null) }
-            ConfirmDeleteTierListAction -> confirmDeleteTierList()
+            is SetFavouriteAction -> updateState {
+                it.copy(tierLists = it.tierLists.setFavourite(action.tierListId, action.isFavourite))
+            }
+            is SetTitleAction -> updateState {
+                it.copy(tierLists = it.tierLists.setTitle(action.tierListId, action.title))
+            }
+            is SetVisibilityAction -> updateState {
+                it.copy(
+                    tierLists = it.tierLists.mapById(action.tierListId) { tierList ->
+                        tierList.copy(isPublic = action.isPublic)
+                    },
+                )
+            }
         }
     }
 
@@ -88,27 +101,6 @@ class MyListsViewModel(
                 }
             },
             onError = { exception -> updateCreateDialog { it.withError(exception.message) } },
-        )
-    }
-
-    private suspend fun confirmDeleteTierList() {
-        val pending = state.deleteConfirm ?: return
-        if (pending.isLoading) return
-        updateState { it.copy(deleteConfirm = pending.withLoading()) }
-        deleteTierListUseCase(pending.tierListId).fold(
-            onSuccess = {
-                updateState {
-                    it.copy(
-                        tierLists = it.tierLists.filterNot { tierList -> tierList.id == pending.tierListId },
-                        deleteConfirm = null,
-                    )
-                }
-            },
-            onError = { exception ->
-                updateState {
-                    it.copy(deleteConfirm = it.deleteConfirm?.withError(exception.message))
-                }
-            },
         )
     }
 

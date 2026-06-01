@@ -1,4 +1,4 @@
-package com.ulyup.tier_list.feature.tier_list_detail.components
+package com.ulyup.tier_list.feature.shared.tier_list.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +11,7 @@ import com.ulyup.tier_list.core.ui.components.button.PrimaryButton
 import com.ulyup.tier_list.core.ui.components.text.AppTextField
 import com.ulyup.tier_list.core.ui.components.text.ErrorText
 import com.ulyup.tier_list.core.ui.token.VBox8
-import com.ulyup.tier_list.feature.tier_list_detail.vm.RenameDialogState
+import com.ulyup.tier_list.feature.shared.tier_list.vm.RenameDialogState
 import com.ulyup.tier_list.resources.Res
 import com.ulyup.tier_list.resources.detail_rename_action_cancel
 import com.ulyup.tier_list.resources.detail_rename_action_confirm

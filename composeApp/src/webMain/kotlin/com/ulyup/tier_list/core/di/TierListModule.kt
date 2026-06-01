@@ -22,6 +22,7 @@ import com.ulyup.tier_list.domain.tier_list.usecase.SetTierListVisibilityUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.UpdateTierListUseCase
 import com.ulyup.tier_list.feature.feed.vm.FeedViewModel
 import com.ulyup.tier_list.feature.mylists.vm.MyListsViewModel
+import com.ulyup.tier_list.feature.shared.tier_list.vm.TierListOptionsViewModel
 import com.ulyup.tier_list.feature.tier_list_detail.vm.TierListDetailViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -49,4 +50,5 @@ val tierListModule = module {
     viewModelOf(::FeedViewModel)
     viewModelOf(::MyListsViewModel)
     viewModelOf(::TierListDetailViewModel)
+    viewModelOf(::TierListOptionsViewModel)
 }

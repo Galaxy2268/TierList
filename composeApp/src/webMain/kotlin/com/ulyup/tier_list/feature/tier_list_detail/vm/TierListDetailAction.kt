@@ -23,22 +23,7 @@ data class MoveItemAction(
     val position: Int,
 ) : TierListDetailAction
 
-data object ShowRenameDialogAction : TierListDetailAction
-data object DismissRenameDialogAction : TierListDetailAction
-value class ChangeRenameTitleAction(val value: String) : TierListDetailAction
-data object ConfirmRenameAction : TierListDetailAction
-
-data object ToggleVisibilityAction : TierListDetailAction
-
-data object ShowDeleteConfirmAction : TierListDetailAction
-data object DismissDeleteConfirmAction : TierListDetailAction
-data object ConfirmDeleteAction : TierListDetailAction
-
-data object ShowClearConfirmAction : TierListDetailAction
-data object DismissClearConfirmAction : TierListDetailAction
-data object ConfirmClearAction : TierListDetailAction
-
-data object ShareAction : TierListDetailAction
-data object DismissSharePrivateWarningAction : TierListDetailAction
-
-data object ToggleFavouriteAction : TierListDetailAction
+value class SetTitleAction(val title: String) : TierListDetailAction
+value class SetFavouriteAction(val isFavourite: Boolean) : TierListDetailAction
+value class SetVisibilityAction(val isPublic: Boolean) : TierListDetailAction
+data object ClearItemsAction : TierListDetailAction

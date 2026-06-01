@@ -1,4 +1,4 @@
-package com.ulyup.tier_list.core.ui.components.tier_list
+package com.ulyup.tier_list.feature.shared.tier_list.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

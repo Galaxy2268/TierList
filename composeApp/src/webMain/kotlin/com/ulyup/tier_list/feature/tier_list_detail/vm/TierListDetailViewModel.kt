@@ -6,22 +6,16 @@ import com.ulyup.tier_list.core.mvi.InteractiveStatefulViewModel
 import com.ulyup.tier_list.core.usecase.fold
 import com.ulyup.tier_list.domain.tier_list.model.ItemImage
 import com.ulyup.tier_list.domain.tier_list.model.TierListItem
-import com.ulyup.tier_list.domain.tier_list.usecase.ClearItemsUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.CreateItemsBatchUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.DeleteItemUseCase
-import com.ulyup.tier_list.domain.tier_list.usecase.DeleteTierListUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.GetTierListDetailUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.MoveItemUseCase
-import com.ulyup.tier_list.domain.tier_list.usecase.SetFavouriteUseCase
-import com.ulyup.tier_list.domain.tier_list.usecase.SetTierListVisibilityUseCase
-import com.ulyup.tier_list.domain.tier_list.usecase.UpdateTierListUseCase
 import com.ulyup.tier_list.domain.user.usecase.ObserveCurrentUserUseCase
 import com.ulyup.tier_list.feature.tier_list_detail.mapper.applyDetail
 import com.ulyup.tier_list.feature.tier_list_detail.util.findItem
 import com.ulyup.tier_list.model.Tier
 import com.ulyup.tier_list.resources.Res
 import com.ulyup.tier_list.resources.detail_add_error_no_image
-import com.ulyup.tier_list.resources.detail_rename_error_title_blank
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
@@ -31,12 +25,7 @@ class TierListDetailViewModel(
     private val getTierListDetailUseCase: GetTierListDetailUseCase,
     private val createItemsBatchUseCase: CreateItemsBatchUseCase,
     private val deleteItemUseCase: DeleteItemUseCase,
-    private val clearItemsUseCase: ClearItemsUseCase,
     private val moveItemUseCase: MoveItemUseCase,
-    private val updateTierListUseCase: UpdateTierListUseCase,
-    private val setTierListVisibilityUseCase: SetTierListVisibilityUseCase,
-    private val setFavouriteUseCase: SetFavouriteUseCase,
-    private val deleteTierListUseCase: DeleteTierListUseCase,
 ) : InteractiveStatefulViewModel<TierListDetailAction, TierListDetailState, TierListDetailEvent>(
     TierListDetailState()
 ) {
@@ -65,54 +54,10 @@ class TierListDetailViewModel(
             AddItemAction -> addItem()
             is DeleteItemAction -> deleteItem(action.itemId)
             is MoveItemAction -> moveItem(action.itemId, action.tier, action.position)
-            ShowRenameDialogAction -> updateState {
-                it.copy(renameDialog = RenameDialogState(title = it.title))
-            }
-            DismissRenameDialogAction -> updateState { it.copy(renameDialog = null) }
-            is ChangeRenameTitleAction -> updateRenameDialog {
-                it.copy(title = action.value).withInputChanged()
-            }
-            ConfirmRenameAction -> confirmRename()
-            ToggleVisibilityAction -> toggleVisibility()
-            ShowDeleteConfirmAction -> updateState {
-                it.copy(isDeleteConfirmVisible = true, deleteErrorMessage = null)
-            }
-            DismissDeleteConfirmAction -> updateState {
-                it.copy(isDeleteConfirmVisible = false, deleteErrorMessage = null)
-            }
-            ConfirmDeleteAction -> confirmDelete()
-            ShowClearConfirmAction -> updateState {
-                it.copy(isClearConfirmVisible = true, clearErrorMessage = null)
-            }
-            DismissClearConfirmAction -> updateState {
-                it.copy(isClearConfirmVisible = false, clearErrorMessage = null)
-            }
-            ConfirmClearAction -> confirmClear()
-            ShareAction -> share()
-            DismissSharePrivateWarningAction -> updateState {
-                it.copy(showSharePrivateWarning = false)
-            }
-            ToggleFavouriteAction -> toggleFavourite()
-        }
-    }
-
-    private suspend fun toggleFavourite() {
-        val target = !state.isFavourite
-        updateState { it.copy(isFavourite = target) }
-        setFavouriteUseCase(
-            SetFavouriteUseCase.Params(tierListId = tierListId, favourite = target)
-        ).fold(
-            onError = { exception ->
-                updateState { it.copy(isFavourite = !target) }
-                launchEvent(ShowErrorMessageEvent(exception.message))
-            },
-        )
-    }
-
-    private suspend fun share() {
-        sendEvent(ShareLinkCopiedEvent)
-        if (state.isOwner && !state.isPublic) {
-            updateState { it.copy(showSharePrivateWarning = true) }
+            is SetTitleAction -> updateState { it.copy(title = action.title) }
+            is SetFavouriteAction -> updateState { it.copy(isFavourite = action.isFavourite) }
+            is SetVisibilityAction -> updateState { it.copy(isPublic = action.isPublic) }
+            ClearItemsAction -> updateState { it.copy(itemsByTier = emptyMap(), unrankedItems = emptyList()) }
         }
     }
 
@@ -263,85 +208,6 @@ class TierListDetailViewModel(
                 launchEvent(ShowErrorMessageEvent(exception.message))
             },
         )
-    }
-
-    private suspend fun confirmRename() {
-        val dialog = state.renameDialog ?: return
-        if (dialog.isLoading) return
-        val newTitle = dialog.title.trim()
-        if (newTitle.isBlank()) {
-            updateRenameDialog { it.withValidationError(Res.string.detail_rename_error_title_blank) }
-            return
-        }
-        updateTierListUseCase(
-            UpdateTierListUseCase.Params(id = tierListId, title = newTitle)
-        ).fold(
-            onLoading = { updateRenameDialog { it.withLoading() } },
-            onSuccess = { updated ->
-                updateState { it.copy(title = updated.title, renameDialog = null) }
-            },
-            onError = { exception -> updateRenameDialog { it.withError(exception.message) } },
-        )
-    }
-
-    private suspend fun toggleVisibility() {
-        if (state.isUpdatingVisibility) return
-        val target = !state.isPublic
-        setTierListVisibilityUseCase(
-            SetTierListVisibilityUseCase.Params(id = tierListId, isPublic = target)
-        ).fold(
-            onLoading = { updateState { it.copy(isUpdatingVisibility = true) } },
-            onSuccess = { updated ->
-                updateState { it.copy(isUpdatingVisibility = false, isPublic = updated.isPublic) }
-            },
-            onError = { exception ->
-                updateState { it.copy(isUpdatingVisibility = false) }
-                launchEvent(ShowErrorMessageEvent(exception.message))
-            },
-        )
-    }
-
-    private suspend fun confirmDelete() {
-        if (state.isDeleting) return
-        updateState { it.copy(isDeleting = true, deleteErrorMessage = null) }
-        deleteTierListUseCase(tierListId).fold(
-            onSuccess = {
-                updateState { it.copy(isDeleteConfirmVisible = false, isDeleting = false) }
-                launchEvent(TierListDeletedEvent)
-            },
-            onError = { exception ->
-                updateState {
-                    it.copy(isDeleting = false, deleteErrorMessage = exception.message)
-                }
-            },
-        )
-    }
-
-    private suspend fun confirmClear() {
-        if (state.isClearing) return
-        updateState { it.copy(isClearing = true, clearErrorMessage = null) }
-        clearItemsUseCase(tierListId).fold(
-            onSuccess = {
-                updateState {
-                    it.copy(
-                        itemsByTier = emptyMap(),
-                        unrankedItems = emptyList(),
-                        isClearConfirmVisible = false,
-                        isClearing = false,
-                    )
-                }
-            },
-            onError = { exception ->
-                updateState { it.copy(isClearing = false, clearErrorMessage = exception.message) }
-            },
-        )
-    }
-
-    private fun updateRenameDialog(reducer: (RenameDialogState) -> RenameDialogState) {
-        updateState { state ->
-            val current = state.renameDialog ?: return@updateState state
-            state.copy(renameDialog = reducer(current))
-        }
     }
 
     private fun List<TierListItem>.insertAt(index: Int, item: TierListItem): List<TierListItem> {

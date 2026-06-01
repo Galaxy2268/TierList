@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import com.ulyup.tier_list.core.mvi.ObserveAsEvents
 import com.ulyup.tier_list.core.ui.components.scaffold.AppScaffold
 import com.ulyup.tier_list.core.ui.components.state.StatefulContent
-import com.ulyup.tier_list.core.ui.components.tier_list.DeleteTierListConfirmDialog
 import com.ulyup.tier_list.core.ui.components.tier_list.TierListCard
 import com.ulyup.tier_list.core.ui.snackbar.LocalTierListSnackbarHandler
 import com.ulyup.tier_list.core.ui.token.gap12
@@ -26,16 +25,25 @@ import com.ulyup.tier_list.feature.mylists.components.CreateTierListDialog
 import com.ulyup.tier_list.feature.mylists.components.PremiumUpsellCard
 import com.ulyup.tier_list.feature.mylists.vm.ChangeCreateTitleAction
 import com.ulyup.tier_list.feature.mylists.vm.ConfirmCreateAction
-import com.ulyup.tier_list.feature.mylists.vm.ConfirmDeleteTierListAction
 import com.ulyup.tier_list.feature.mylists.vm.DismissCreateDialogAction
-import com.ulyup.tier_list.feature.mylists.vm.DismissDeleteTierListConfirmAction
 import com.ulyup.tier_list.feature.mylists.vm.LoadMyListsAction
 import com.ulyup.tier_list.feature.mylists.vm.MyListsViewModel
+import com.ulyup.tier_list.feature.mylists.vm.RemoveTierListAction
+import com.ulyup.tier_list.feature.mylists.vm.SetFavouriteAction
+import com.ulyup.tier_list.feature.mylists.vm.SetTitleAction
+import com.ulyup.tier_list.feature.mylists.vm.SetVisibilityAction
 import com.ulyup.tier_list.feature.mylists.vm.ShowCreateDialogAction
-import com.ulyup.tier_list.feature.mylists.vm.ShowDeleteTierListConfirmAction
 import com.ulyup.tier_list.feature.mylists.vm.ShowErrorMessageEvent
 import com.ulyup.tier_list.feature.mylists.vm.ToggleCreatePublicAction
 import com.ulyup.tier_list.feature.mylists.vm.UpgradePremiumAction
+import com.ulyup.tier_list.feature.shared.tier_list.TierListOptionsHost
+import com.ulyup.tier_list.feature.shared.tier_list.rememberTierListOptionDispatch
+import com.ulyup.tier_list.feature.shared.tier_list.vm.FavouriteChangedEvent
+import com.ulyup.tier_list.feature.shared.tier_list.vm.TierListOptionsViewModel
+import com.ulyup.tier_list.feature.shared.tier_list.vm.TierListDeletedEvent
+import com.ulyup.tier_list.feature.shared.tier_list.vm.TitleChangedEvent
+import com.ulyup.tier_list.feature.shared.tier_list.vm.VisibilityChangedEvent
+import com.ulyup.tier_list.feature.shared.tier_list.vm.toOptionTarget
 import com.ulyup.tier_list.resources.Res
 import com.ulyup.tier_list.resources.error_action_retry
 import com.ulyup.tier_list.resources.ic_add
@@ -51,15 +59,29 @@ fun MyListsScreen(
     onOpenTierList: (Int) -> Unit,
 ) {
     val viewModel = koinViewModel<MyListsViewModel>()
+    val optionsViewModel = koinViewModel<TierListOptionsViewModel>()
     val state = viewModel.uiState
     val snackbarHandler = LocalTierListSnackbarHandler.current
     val scope = rememberCoroutineScope()
+    val dispatchOption = rememberTierListOptionDispatch(optionsViewModel)
 
     LaunchedEffect(Unit) { viewModel.onAction(LoadMyListsAction) }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is ShowErrorMessageEvent -> scope.launch { snackbarHandler.showError(event.text) }
+        }
+    }
+
+    TierListOptionsHost(optionsViewModel) { event ->
+        when (event) {
+            is TierListDeletedEvent -> viewModel.onAction(RemoveTierListAction(event.tierListId))
+            is FavouriteChangedEvent ->
+                viewModel.onAction(SetFavouriteAction(event.tierListId, event.isFavourite))
+            is TitleChangedEvent -> viewModel.onAction(SetTitleAction(event.tierListId, event.title))
+            is VisibilityChangedEvent ->
+                viewModel.onAction(SetVisibilityAction(event.tierListId, event.isPublic))
+            else -> Unit
         }
     }
 
@@ -94,8 +116,9 @@ fun MyListsScreen(
                 items(state.tierLists, key = { it.id }) { tierList ->
                     TierListCard(
                         tierList = tierList,
+                        isOwner = true,
                         onClick = { onOpenTierList(tierList.id) },
-                        onDelete = { viewModel.onAction(ShowDeleteTierListConfirmAction(tierList)) },
+                        onOption = { option -> dispatchOption(tierList.toOptionTarget(isOwner = true), option) },
                     )
                 }
                 if (state.isAtCap) {
@@ -117,16 +140,6 @@ fun MyListsScreen(
             onPublicChange = { viewModel.onAction(ToggleCreatePublicAction(it)) },
             onConfirm = { viewModel.onAction(ConfirmCreateAction) },
             onDismiss = { viewModel.onAction(DismissCreateDialogAction) },
-        )
-    }
-
-    state.deleteConfirm?.let { pending ->
-        DeleteTierListConfirmDialog(
-            tierListTitle = pending.title,
-            onConfirm = { viewModel.onAction(ConfirmDeleteTierListAction) },
-            onDismiss = { viewModel.onAction(DismissDeleteTierListConfirmAction) },
-            isLoading = pending.isLoading,
-            errorMessage = pending.errorMessage,
         )
     }
 }

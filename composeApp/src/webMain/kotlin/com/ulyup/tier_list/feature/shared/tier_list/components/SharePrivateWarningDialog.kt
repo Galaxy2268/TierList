@@ -1,4 +1,4 @@
-package com.ulyup.tier_list.feature.tier_list_detail.components
+package com.ulyup.tier_list.feature.shared.tier_list.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text

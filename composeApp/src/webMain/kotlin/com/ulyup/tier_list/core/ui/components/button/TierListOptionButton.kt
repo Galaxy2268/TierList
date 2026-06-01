@@ -3,15 +3,15 @@ package com.ulyup.tier_list.core.ui.components.button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import com.ulyup.tier_list.core.ui.components.button.model.TierListAction
+import com.ulyup.tier_list.core.ui.components.button.model.TierListOption
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun TierListActionButton(
+fun TierListOptionButton(
     onClick: () -> Unit,
     enabled: Boolean = true,
-    action: TierListAction,
+    option: TierListOption,
     selected: Boolean = true,
 ) {
     IconButton(
@@ -19,9 +19,9 @@ fun TierListActionButton(
         enabled = enabled,
     ) {
         Icon(
-            painter = painterResource(action.getIcon(selected)),
-            contentDescription = stringResource(action.getLabel(selected)),
-            tint = action.getColor(selected),
+            painter = painterResource(option.getIcon(selected)),
+            contentDescription = stringResource(option.getLabel(selected)),
+            tint = option.getColor(selected),
         )
     }
 }

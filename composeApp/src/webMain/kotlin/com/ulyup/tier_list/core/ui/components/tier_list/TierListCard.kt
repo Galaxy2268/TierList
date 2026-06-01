@@ -8,20 +8,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.ulyup.tier_list.core.ui.components.button.model.TierListOption
 import com.ulyup.tier_list.core.ui.token.VBox4
 import com.ulyup.tier_list.core.ui.token.aPadding16
 import com.ulyup.tier_list.core.ui.token.roundedShape12
 import com.ulyup.tier_list.core.ui.util.toIsoDate
 import com.ulyup.tier_list.domain.tier_list.model.TierList
 import com.ulyup.tier_list.resources.Res
-import com.ulyup.tier_list.resources.detail_action_delete
-import com.ulyup.tier_list.resources.ic_delete
+import com.ulyup.tier_list.resources.card_owner_indicator
+import com.ulyup.tier_list.resources.ic_profile
 import com.ulyup.tier_list.theme.appColors
 import com.ulyup.tier_list.theme.appTypography
 import org.jetbrains.compose.resources.painterResource
@@ -30,9 +30,10 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun TierListCard(
     tierList: TierList,
+    isOwner: Boolean,
     onClick: () -> Unit,
+    onOption: (TierListOption) -> Unit,
     modifier: Modifier = Modifier,
-    onDelete: (() -> Unit)? = null,
 ) {
     Card(
         onClick = onClick,
@@ -63,15 +64,19 @@ fun TierListCard(
                     color = appColors.onSurfaceVariant,
                 )
             }
-            if (onDelete != null) {
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_delete),
-                        contentDescription = stringResource(Res.string.detail_action_delete),
-                        tint = appColors.error,
-                    )
-                }
+            if (isOwner) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_profile),
+                    contentDescription = stringResource(Res.string.card_owner_indicator),
+                    tint = appColors.onSurfaceVariant,
+                )
             }
+            TierListOptionsMenu(
+                isOwner = isOwner,
+                isPublic = tierList.isPublic,
+                isFavourite = tierList.isFavourite,
+                onOption = onOption,
+            )
         }
     }
 }

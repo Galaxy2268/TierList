@@ -13,7 +13,6 @@ data class MyListsState(
     val userRole: UserRole? = null,
     override val errorMessage: String? = null,
     val createDialog: CreateDialogState? = null,
-    val deleteConfirm: DeleteConfirmState? = null,
     val isUpgrading: Boolean = false,
 ) : LoadableState<MyListsState> {
     val isAtCap: Boolean
@@ -45,14 +44,4 @@ data class CreateDialogState(
         validationErrorRes = validationErrorRes,
         errorMessage = errorMessage,
     )
-}
-
-data class DeleteConfirmState(
-    val tierListId: Int,
-    val title: String,
-    override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
-) : LoadableState<DeleteConfirmState> {
-    override fun copyLoadable(isLoading: Boolean, errorMessage: String?) =
-        copy(isLoading = isLoading, errorMessage = errorMessage)
 }
