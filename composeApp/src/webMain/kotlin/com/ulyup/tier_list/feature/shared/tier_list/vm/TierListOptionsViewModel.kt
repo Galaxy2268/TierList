@@ -2,6 +2,7 @@ package com.ulyup.tier_list.feature.shared.tier_list.vm
 
 import androidx.lifecycle.viewModelScope
 import com.ulyup.tier_list.FREE_TIER_LIMIT
+import com.ulyup.tier_list.TIER_LIST_TITLE_MAX_LENGTH
 import com.ulyup.tier_list.core.mvi.InteractiveStatefulViewModel
 import com.ulyup.tier_list.core.usecase.fold
 import com.ulyup.tier_list.domain.error.ApiException
@@ -60,7 +61,7 @@ class TierListOptionsViewModel(
             }
             DismissRenameAction -> updateState { it.copy(renameDialog = null) }
             is ChangeRenameTitleAction -> updateRenameDialog {
-                it.copy(title = action.value).withInputChanged()
+                it.copy(title = action.value.take(TIER_LIST_TITLE_MAX_LENGTH)).withInputChanged()
             }
             ConfirmRenameAction -> confirmRename()
 

@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import com.ulyup.tier_list.core.mvi.ObserveAsEvents
 import com.ulyup.tier_list.core.ui.components.button.ErrorButton
 import com.ulyup.tier_list.core.ui.components.button.PrimaryButton
@@ -73,6 +74,8 @@ fun ProfileScreen() {
                     text = user.username,
                     style = appTypography.titleMedium,
                     color = appColors.onBackground,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 VBox8
                 Text(

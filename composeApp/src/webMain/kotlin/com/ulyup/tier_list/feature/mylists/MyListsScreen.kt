@@ -147,6 +147,7 @@ fun MyListsScreen(
                                 isOwner = true,
                                 onClick = { onOpenTierList(tierList.id) },
                                 onOption = { option -> dispatchOption(tierList.toOptionTarget(isOwner = true), option) },
+                                showOwnerIndicator = false,
                             )
                         }
                         if (state.isAtCap) {

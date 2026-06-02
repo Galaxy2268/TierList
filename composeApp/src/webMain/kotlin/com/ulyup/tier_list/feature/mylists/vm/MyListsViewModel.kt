@@ -1,6 +1,7 @@
 package com.ulyup.tier_list.feature.mylists.vm
 
 import androidx.lifecycle.viewModelScope
+import com.ulyup.tier_list.TIER_LIST_TITLE_MAX_LENGTH
 import com.ulyup.tier_list.core.mvi.InteractiveStatefulViewModel
 import com.ulyup.tier_list.core.usecase.fold
 import com.ulyup.tier_list.domain.tier_list.util.favouritesFirst
@@ -38,7 +39,7 @@ class MyListsViewModel(
             ShowCreateDialogAction -> showCreateDialog()
             DismissCreateDialogAction -> updateState { it.copy(createDialog = null) }
             is ChangeCreateTitleAction -> updateCreateDialog {
-                it.copy(title = action.value).withInputChanged()
+                it.copy(title = action.value.take(TIER_LIST_TITLE_MAX_LENGTH)).withInputChanged()
             }
             is ToggleCreatePublicAction -> updateCreateDialog { it.copy(isPublic = action.value) }
             ConfirmCreateAction -> confirmCreate()

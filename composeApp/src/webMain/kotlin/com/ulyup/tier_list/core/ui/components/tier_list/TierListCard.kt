@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ulyup.tier_list.core.ui.components.button.model.TierListOption
 import com.ulyup.tier_list.core.ui.token.VBox4
@@ -33,6 +34,7 @@ fun TierListCard(
     isOwner: Boolean,
     onClick: () -> Unit,
     onOption: (TierListOption) -> Unit,
+    showOwnerIndicator: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -56,6 +58,8 @@ fun TierListCard(
                     text = tierList.title,
                     style = appTypography.titleMedium,
                     color = appColors.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 VBox4
                 Text(
@@ -64,7 +68,7 @@ fun TierListCard(
                     color = appColors.onSurfaceVariant,
                 )
             }
-            if (isOwner) {
+            if (isOwner && showOwnerIndicator) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_profile),
                     contentDescription = stringResource(Res.string.card_owner_indicator),

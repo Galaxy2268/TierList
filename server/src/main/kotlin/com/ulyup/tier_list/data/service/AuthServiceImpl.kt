@@ -1,5 +1,6 @@
 package com.ulyup.tier_list.data.service
 
+import com.ulyup.tier_list.USERNAME_MAX_LENGTH
 import com.ulyup.tier_list.auth.Passwords
 import com.ulyup.tier_list.data.mapper.toDto
 import com.ulyup.tier_list.domain.repository.UserRepository
@@ -8,14 +9,14 @@ import com.ulyup.tier_list.dto.UserDto
 import com.ulyup.tier_list.utils.BadRequestException
 import com.ulyup.tier_list.utils.UnauthorizedException
 
-private val usernamePattern = Regex("^[a-zA-Z0-9_]{3,32}$")
+private val usernamePattern = Regex("^[a-zA-Z0-9_]{3,$USERNAME_MAX_LENGTH}$")
 private val emailPattern = Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")
 
 class AuthServiceImpl(private val userRepo: UserRepository) : AuthService {
 
     override suspend fun register(username: String, email: String, password: String): UserDto {
         if (!usernamePattern.matches(username)) {
-            throw BadRequestException("Username must be 3-32 characters: letters, digits, underscore")
+            throw BadRequestException("Username must be 3-$USERNAME_MAX_LENGTH characters: letters, digits, underscore")
         }
         if (email.length > 255 || !emailPattern.matches(email)) {
             throw BadRequestException("Email must be a valid address up to 255 characters")

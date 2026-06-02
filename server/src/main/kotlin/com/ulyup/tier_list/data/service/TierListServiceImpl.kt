@@ -1,6 +1,7 @@
 package com.ulyup.tier_list.data.service
 
 import com.ulyup.tier_list.FREE_TIER_LIMIT
+import com.ulyup.tier_list.TIER_LIST_TITLE_MAX_LENGTH
 import com.ulyup.tier_list.data.mapper.toDetailDto
 import com.ulyup.tier_list.data.mapper.toDto
 import com.ulyup.tier_list.domain.model.Caller
@@ -16,6 +17,7 @@ import com.ulyup.tier_list.dto.TierListDto
 import com.ulyup.tier_list.dto.UpdateTierListRequest
 import com.ulyup.tier_list.dto.UpdateVisibilityRequest
 import com.ulyup.tier_list.model.UserRole
+import com.ulyup.tier_list.utils.BadRequestException
 import com.ulyup.tier_list.utils.CapReachedException
 import com.ulyup.tier_list.utils.NotFoundException
 import com.ulyup.tier_list.utils.findOrThrow
@@ -44,6 +46,7 @@ class TierListServiceImpl(
     }
 
     override suspend fun createTierList(caller: Caller, request: CreateTierListRequest): TierListDto {
+        requireValidTitle(request.title)
         requireUnderCap(caller)
         return tierListRepo.create(caller.userId, request.title, request.isPublic).toDto()
     }
@@ -71,6 +74,12 @@ class TierListServiceImpl(
         return copy.toDto()
     }
 
+    private fun requireValidTitle(title: String) {
+        if (title.length > TIER_LIST_TITLE_MAX_LENGTH) {
+            throw BadRequestException("Title must be at most $TIER_LIST_TITLE_MAX_LENGTH characters")
+        }
+    }
+
     private suspend fun requireUnderCap(caller: Caller) {
         if (caller.role == UserRole.USER && tierListRepo.countByUser(caller.userId) >= FREE_TIER_LIMIT) {
             throw CapReachedException("TierList limit of $FREE_TIER_LIMIT reached. Upgrade to Premium for unlimited lists.")
@@ -85,9 +94,11 @@ class TierListServiceImpl(
         return tierList
     }
 
-    override suspend fun updateTierList(caller: Caller, id: Int, request: UpdateTierListRequest): TierListDto =
-        tierListRepo.update(id, caller.userId, request.title)?.toDto()
+    override suspend fun updateTierList(caller: Caller, id: Int, request: UpdateTierListRequest): TierListDto {
+        requireValidTitle(request.title)
+        return tierListRepo.update(id, caller.userId, request.title)?.toDto()
             ?: throw NotFoundException("TierList not found")
+    }
 
     override suspend fun setVisibility(caller: Caller, id: Int, request: UpdateVisibilityRequest): TierListDto =
         tierListRepo.setVisibility(id, caller.userId, request.isPublic)?.toDto()
