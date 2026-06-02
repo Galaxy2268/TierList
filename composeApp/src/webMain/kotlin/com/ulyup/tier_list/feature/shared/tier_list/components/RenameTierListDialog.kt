@@ -13,10 +13,10 @@ import com.ulyup.tier_list.core.ui.components.text.ErrorText
 import com.ulyup.tier_list.core.ui.token.VBox8
 import com.ulyup.tier_list.feature.shared.tier_list.vm.RenameDialogState
 import com.ulyup.tier_list.resources.Res
-import com.ulyup.tier_list.resources.detail_rename_action_cancel
 import com.ulyup.tier_list.resources.detail_rename_action_confirm
-import com.ulyup.tier_list.resources.detail_rename_field_title
-import com.ulyup.tier_list.resources.detail_rename_title
+import com.ulyup.tier_list.resources.general_action_cancel
+import com.ulyup.tier_list.resources.general_action_rename_tier_list
+import com.ulyup.tier_list.resources.general_field_title
 import com.ulyup.tier_list.theme.appColors
 import com.ulyup.tier_list.theme.appTypography
 import org.jetbrains.compose.resources.stringResource
@@ -35,7 +35,7 @@ fun RenameTierListDialog(
         containerColor = appColors.surface,
         title = {
             Text(
-                text = stringResource(Res.string.detail_rename_title),
+                text = stringResource(Res.string.general_action_rename_tier_list),
                 style = appTypography.titleMedium,
                 color = appColors.onSurface,
             )
@@ -45,7 +45,7 @@ fun RenameTierListDialog(
                 AppTextField(
                     value = state.title,
                     onValueChange = onTitleChange,
-                    label = stringResource(Res.string.detail_rename_field_title),
+                    label = stringResource(Res.string.general_field_title),
                     enabled = !state.isLoading,
                 )
                 errorText?.let { message ->
@@ -64,7 +64,7 @@ fun RenameTierListDialog(
         },
         dismissButton = {
             LinkTextButton(
-                text = stringResource(Res.string.detail_rename_action_cancel),
+                text = stringResource(Res.string.general_action_cancel),
                 onClick = onDismiss,
                 enabled = !state.isLoading,
             )

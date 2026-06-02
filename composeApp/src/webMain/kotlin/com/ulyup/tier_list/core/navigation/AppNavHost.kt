@@ -37,7 +37,10 @@ import com.ulyup.tier_list.feature.splash.navigation.splashGraph
 import com.ulyup.tier_list.feature.tier_list_detail.navigation.TierListDetailRoute
 import com.ulyup.tier_list.feature.tier_list_detail.navigation.navigateToTierListDetail
 import com.ulyup.tier_list.feature.tier_list_detail.navigation.tierListDetailGraph
+import com.ulyup.tier_list.resources.Res
+import com.ulyup.tier_list.resources.error_message
 import com.ulyup.tier_list.theme.appColors
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AppNavHost(
@@ -52,7 +55,10 @@ fun AppNavHost(
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStackEntry?.destination
-    val snackbarHandler = remember { TierListSnackbarHandler(SnackbarHostState()) }
+    val genericErrorMessage = stringResource(Res.string.error_message)
+    val snackbarHandler = remember(genericErrorMessage) {
+        TierListSnackbarHandler(SnackbarHostState(), genericErrorMessage)
+    }
 
     val openTierList: (Int) -> Unit = { id ->
         onDetailEnter(id)

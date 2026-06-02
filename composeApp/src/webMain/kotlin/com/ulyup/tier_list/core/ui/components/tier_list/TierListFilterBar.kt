@@ -31,8 +31,10 @@ import com.ulyup.tier_list.resources.filter_search_placeholder
 import com.ulyup.tier_list.resources.filter_sort_label
 import com.ulyup.tier_list.resources.filter_sort_newest
 import com.ulyup.tier_list.resources.filter_sort_oldest
-import com.ulyup.tier_list.resources.filter_sort_title_az
+import com.ulyup.tier_list.resources.filter_sort_title_asc
+import com.ulyup.tier_list.resources.filter_sort_title_desc
 import com.ulyup.tier_list.resources.ic_arrow_drop_down
+import com.ulyup.tier_list.resources.ic_check
 import com.ulyup.tier_list.resources.ic_close
 import com.ulyup.tier_list.resources.ic_favourite
 import com.ulyup.tier_list.resources.ic_favourite_filled
@@ -53,6 +55,10 @@ fun TierListFilterBar(
     onToggleFavouritesOnly: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val favouriteIcon = painterResource(Res.drawable.ic_favourite)
+    val favouriteFilledIcon = painterResource(Res.drawable.ic_favourite_filled)
+    val clearIcon = painterResource(Res.drawable.ic_close)
+
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(gap12),
@@ -73,7 +79,7 @@ fun TierListFilterBar(
                 {
                     IconButton(onClick = { onSearchQueryChange("") }) {
                         Icon(
-                            painter = painterResource(Res.drawable.ic_close),
+                            painter = clearIcon,
                             contentDescription = stringResource(Res.string.filter_clear_search),
                         )
                     }
@@ -92,9 +98,7 @@ fun TierListFilterBar(
             label = { Text(stringResource(Res.string.filter_favourites_only)) },
             leadingIcon = {
                 Icon(
-                    painter = painterResource(
-                        if (favouritesOnly) Res.drawable.ic_favourite_filled else Res.drawable.ic_favourite,
-                    ),
+                    painter = if (favouritesOnly) favouriteFilledIcon else favouriteIcon,
                     contentDescription = null,
                     tint = if (favouritesOnly) appColors.premium else appColors.onSurfaceVariant,
                 )
@@ -134,6 +138,17 @@ private fun SortDropdown(
             TierListSort.entries.forEach { sort ->
                 DropdownMenuItem(
                     text = { Text(stringResource(sort.labelRes)) },
+                    trailingIcon = if (sort == sortOrder) {
+                        {
+                            Icon(
+                                painter = painterResource(Res.drawable.ic_check),
+                                contentDescription = null,
+                                modifier = Modifier.size(size20),
+                            )
+                        }
+                    } else {
+                        null
+                    },
                     onClick = {
                         expanded = false
                         onSortOrderChange(sort)
@@ -148,5 +163,6 @@ private val TierListSort.labelRes: StringResource
     get() = when (this) {
         TierListSort.NEWEST -> Res.string.filter_sort_newest
         TierListSort.OLDEST -> Res.string.filter_sort_oldest
-        TierListSort.TITLE_AZ -> Res.string.filter_sort_title_az
+        TierListSort.TITLE_ASC -> Res.string.filter_sort_title_asc
+        TierListSort.TITLE_DESC -> Res.string.filter_sort_title_desc
     }

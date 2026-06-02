@@ -15,9 +15,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -76,7 +78,6 @@ import com.ulyup.tier_list.resources.ic_arrow_back
 import com.ulyup.tier_list.theme.appColors
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -96,14 +97,24 @@ fun TierListDetailScreen(
     val scope = rememberCoroutineScope()
     val dispatchOption = rememberTierListOptionDispatch(optionsViewModel)
 
+    var uploadFailures by remember { mutableStateOf<List<String>?>(null) }
+
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is ShowErrorMessageEvent -> scope.launch { snackbarHandler.showError(event.text) }
-            is ShowUploadFailuresEvent -> scope.launch {
-                val joined = event.filenames.joinToString(", ")
-                val message = getString(Res.string.detail_add_error_some_failed, event.filenames.size, joined)
-                snackbarHandler.showError(message)
-            }
+            is ShowUploadFailuresEvent -> uploadFailures = event.filenames
+        }
+    }
+
+    uploadFailures?.let { failures ->
+        val message = stringResource(
+            Res.string.detail_add_error_some_failed,
+            failures.size,
+            failures.joinToString(", "),
+        )
+        LaunchedEffect(failures) {
+            snackbarHandler.showError(message)
+            uploadFailures = null
         }
     }
 

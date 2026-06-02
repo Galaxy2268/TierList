@@ -1,16 +1,20 @@
 package com.ulyup.tier_list.core.di
 
 import com.ulyup.tier_list.data.network.HttpClientFactory
+import com.ulyup.tier_list.data.preferences.LanguagePreferencesImpl
 import com.ulyup.tier_list.data.preferences.LastDetailPreferencesImpl
 import com.ulyup.tier_list.data.preferences.LastTabPreferencesImpl
 import com.ulyup.tier_list.data.session.SessionManager
 import com.ulyup.tier_list.data.session.SessionServiceImpl
+import com.ulyup.tier_list.domain.preferences.LanguagePreferences
 import com.ulyup.tier_list.domain.preferences.LastDetailPreferences
 import com.ulyup.tier_list.domain.preferences.LastTabPreferences
 import com.ulyup.tier_list.domain.preferences.usecase.ClearLastDetailUseCase
 import com.ulyup.tier_list.domain.preferences.usecase.ClearLastTabUseCase
+import com.ulyup.tier_list.domain.preferences.usecase.GetLanguageUseCase
 import com.ulyup.tier_list.domain.preferences.usecase.GetLastDetailUseCase
 import com.ulyup.tier_list.domain.preferences.usecase.GetLastTabUseCase
+import com.ulyup.tier_list.domain.preferences.usecase.SaveLanguageUseCase
 import com.ulyup.tier_list.domain.preferences.usecase.SaveLastDetailUseCase
 import com.ulyup.tier_list.domain.preferences.usecase.SaveLastTabUseCase
 import com.ulyup.tier_list.domain.session.SessionService
@@ -37,6 +41,7 @@ val coreModule = module {
     singleOf(::SessionServiceImpl) bind SessionService::class
     singleOf(::LastTabPreferencesImpl) bind LastTabPreferences::class
     singleOf(::LastDetailPreferencesImpl) bind LastDetailPreferences::class
+    singleOf(::LanguagePreferencesImpl) bind LanguagePreferences::class
     factoryOf(::BootstrapSessionUseCase)
     factoryOf(::ObserveSessionStateUseCase)
     factoryOf(::GetLastTabUseCase)
@@ -45,5 +50,7 @@ val coreModule = module {
     factoryOf(::GetLastDetailUseCase)
     factoryOf(::SaveLastDetailUseCase)
     factoryOf(::ClearLastDetailUseCase)
+    factoryOf(::GetLanguageUseCase)
+    factoryOf(::SaveLanguageUseCase)
     viewModelOf(::MainViewModel)
 }

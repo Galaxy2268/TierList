@@ -15,7 +15,7 @@ import com.ulyup.tier_list.resources.Res
 import com.ulyup.tier_list.resources.detail_clear_action_confirm
 import com.ulyup.tier_list.resources.detail_clear_body
 import com.ulyup.tier_list.resources.detail_clear_title
-import com.ulyup.tier_list.resources.detail_delete_action_cancel
+import com.ulyup.tier_list.resources.general_action_cancel
 import com.ulyup.tier_list.theme.appColors
 import com.ulyup.tier_list.theme.appTypography
 import org.jetbrains.compose.resources.stringResource
@@ -67,7 +67,7 @@ fun ClearItemsConfirmDialog(
         },
         dismissButton = {
             LinkTextButton(
-                text = stringResource(Res.string.detail_delete_action_cancel),
+                text = stringResource(Res.string.general_action_cancel),
                 onClick = onDismiss,
                 enabled = !isLoading,
             )

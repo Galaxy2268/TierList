@@ -114,7 +114,7 @@ fun AddItemDialog(
         },
         dismissButton = {
             LinkTextButton(
-                text = stringResource(Res.string.detail_action_cancel),
+                text = stringResource(Res.string.general_action_cancel),
                 onClick = onDismiss,
                 enabled = !state.isLoading,
             )

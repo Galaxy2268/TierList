@@ -14,9 +14,9 @@ import com.ulyup.tier_list.feature.auth.vm.login.ChangeUsernameOrEmailAction
 import com.ulyup.tier_list.feature.auth.vm.login.LoginViewModel
 import com.ulyup.tier_list.feature.auth.vm.login.SubmitAction
 import com.ulyup.tier_list.resources.Res
+import com.ulyup.tier_list.resources.general_field_password
 import com.ulyup.tier_list.resources.login_action_go_to_register
 import com.ulyup.tier_list.resources.login_action_submit
-import com.ulyup.tier_list.resources.login_field_password
 import com.ulyup.tier_list.resources.login_field_username_or_email
 import com.ulyup.tier_list.resources.login_title
 import com.ulyup.tier_list.theme.appColors
@@ -50,7 +50,7 @@ fun LoginScreen(
             AuthPasswordSection(
                 password = state.password,
                 onPasswordChange = { viewModel.onAction(ChangePasswordAction(it)) },
-                passwordLabel = stringResource(Res.string.login_field_password),
+                passwordLabel = stringResource(Res.string.general_field_password),
                 submitLabel = stringResource(Res.string.login_action_submit),
                 onSubmit = { viewModel.onAction(SubmitAction) },
                 secondaryLabel = stringResource(Res.string.login_action_go_to_register),

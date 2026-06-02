@@ -29,6 +29,7 @@ import com.ulyup.tier_list.feature.shared.tier_list.vm.VisibilityChangedEvent
 import com.ulyup.tier_list.resources.Res
 import com.ulyup.tier_list.resources.share_link_copied_toast
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TierListOptionsHost(
@@ -38,11 +39,12 @@ fun TierListOptionsHost(
     val state = viewModel.uiState
     val snackbarHandler = LocalTierListSnackbarHandler.current
     val scope = rememberCoroutineScope()
+    val linkCopiedMessage = stringResource(Res.string.share_link_copied_toast)
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             ShareLinkCopiedEvent -> scope.launch {
-                snackbarHandler.showMessage(Res.string.share_link_copied_toast)
+                snackbarHandler.showMessage(linkCopiedMessage)
             }
             is ShowErrorMessageEvent -> scope.launch { snackbarHandler.showError(event.text) }
             is TierListDeletedEvent,

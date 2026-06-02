@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import com.ulyup.tier_list.core.ui.components.button.LinkTextButton
 import com.ulyup.tier_list.core.ui.components.button.PrimaryButton
 import com.ulyup.tier_list.resources.Res
+import com.ulyup.tier_list.resources.general_action_make_public
 import com.ulyup.tier_list.resources.share_private_warning_action_cancel
-import com.ulyup.tier_list.resources.share_private_warning_action_confirm
 import com.ulyup.tier_list.resources.share_private_warning_body
 import com.ulyup.tier_list.resources.share_private_warning_title
 import com.ulyup.tier_list.theme.appColors
@@ -39,7 +39,7 @@ fun SharePrivateWarningDialog(
         },
         confirmButton = {
             PrimaryButton(
-                text = stringResource(Res.string.share_private_warning_action_confirm),
+                text = stringResource(Res.string.general_action_make_public),
                 onClick = onMakePublic,
                 isLoading = isLoading,
             )

@@ -18,10 +18,10 @@ import com.ulyup.tier_list.feature.auth.vm.register.ChangeUsernameAction
 import com.ulyup.tier_list.feature.auth.vm.register.RegisterViewModel
 import com.ulyup.tier_list.feature.auth.vm.register.SubmitAction
 import com.ulyup.tier_list.resources.Res
+import com.ulyup.tier_list.resources.general_field_password
 import com.ulyup.tier_list.resources.register_action_back
 import com.ulyup.tier_list.resources.register_action_submit
 import com.ulyup.tier_list.resources.register_field_email
-import com.ulyup.tier_list.resources.register_field_password
 import com.ulyup.tier_list.resources.register_field_username
 import com.ulyup.tier_list.resources.register_title
 import com.ulyup.tier_list.theme.appColors
@@ -64,7 +64,7 @@ fun RegisterScreen(
             AuthPasswordSection(
                 password = state.password,
                 onPasswordChange = { viewModel.onAction(ChangePasswordAction(it)) },
-                passwordLabel = stringResource(Res.string.register_field_password),
+                passwordLabel = stringResource(Res.string.general_field_password),
                 submitLabel = stringResource(Res.string.register_action_submit),
                 onSubmit = { viewModel.onAction(SubmitAction) },
                 secondaryLabel = stringResource(Res.string.register_action_back),

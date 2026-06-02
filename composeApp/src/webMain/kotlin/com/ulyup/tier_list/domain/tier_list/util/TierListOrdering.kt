@@ -18,7 +18,8 @@ fun List<TierList>.filteredAndSorted(
     val sorted = when (sortOrder) {
         TierListSort.NEWEST -> filtered.sortedByDescending { it.createdAt }
         TierListSort.OLDEST -> filtered.sortedBy { it.createdAt }
-        TierListSort.TITLE_AZ -> filtered.sortedBy { it.title.lowercase() }
+        TierListSort.TITLE_ASC -> filtered.sortedBy { it.title.lowercase() }
+        TierListSort.TITLE_DESC -> filtered.sortedByDescending { it.title.lowercase() }
     }
     return sorted.favouritesFirst()
 }

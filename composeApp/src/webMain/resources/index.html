@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>tier_list</title>
     <link type="text/css" rel="stylesheet" href="styles.css">
+    <script>
+        var base = Object.getOwnPropertyDescriptor(Navigator.prototype, "languages");
+        Object.defineProperty(Navigator.prototype, "languages", Object.assign({}, base, {
+            get: function () {
+                return window.__customLocale ? [window.__customLocale] : base.get.apply(this);
+            }
+        }));
+    </script>
 </head>
 <body style="text-align: center; align-content: center">
 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 50 50" role="presentation">

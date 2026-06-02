@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_message">Neizdevās sasniegt serveri. Pārbaudiet savienojumu un mēģiniet vēlreiz.</string>
+    <string name="error_action_retry">Mēģināt vēlreiz</string>
+
+    <string name="general_action_cancel">Atcelt</string>
+    <string name="general_action_logout">Iziet</string>
+    <string name="general_action_upgrade">Iegūt Premium</string>
+    <string name="general_action_make_public">Padarīt publisku</string>
+    <string name="general_action_rename_tier_list">Pārdēvēt līmeņu sarakstu</string>
+    <string name="general_field_title">Nosaukums</string>
+    <string name="general_field_password">Parole</string>
+    <string name="general_error_title_blank">Nosaukums nedrīkst būt tukšs</string>
+    <string name="general_profile">Profils</string>
+
+    <string name="login_title">Laipni lūdzam atpakaļ</string>
+    <string name="login_field_username_or_email">Lietotājvārds vai e-pasts</string>
+    <string name="login_action_submit">Pieteikties</string>
+    <string name="login_action_go_to_register">Izveidot kontu</string>
+
+    <string name="register_title">Izveidojiet savu kontu</string>
+    <string name="register_field_username">Lietotājvārds</string>
+    <string name="register_field_email">E-pasts</string>
+    <string name="register_action_submit">Reģistrēties</string>
+    <string name="register_action_back">Atpakaļ uz pieteikšanos</string>
+
+    <string name="top_nav_feed">Citu saraksti</string>
+    <string name="top_nav_mylists">Mani saraksti</string>
+
+    <string name="feed_empty">Vēl nav neviena publiska līmeņu saraksta.</string>
+
+    <string name="mylists_empty">Jūs vēl neesat izveidojis nevienu līmeņu sarakstu.</string>
+    <string name="mylists_action_create_label">Izveidot līmeņu sarakstu</string>
+    <string name="mylists_create_title">Jauns līmeņu saraksts</string>
+    <string name="mylists_create_field_visibility">Publisks</string>
+    <string name="mylists_create_action_confirm">Izveidot</string>
+    <string name="mylists_premium_body">Bezmaksas konti var izveidot līdz 5 līmeņu sarakstiem. Iegūstiet Premium, lai izveidotu tik daudz, cik vēlaties.</string>
+
+    <string name="profile_role_user">Bezmaksas</string>
+    <string name="profile_role_premium">Premium</string>
+    <string name="profile_logout_title">Iziet?</string>
+    <string name="profile_logout_body">Lai piekļūtu saviem līmeņu sarakstiem, būs jāpiesakās vēlreiz.</string>
+    <string name="profile_language_label">Valoda</string>
+
+    <string name="language_english">English</string>
+    <string name="language_latvian">Latviešu</string>
+
+    <string name="detail_action_back">Atpakaļ</string>
+    <string name="detail_unranked_label">Bez līmeņa</string>
+    <string name="detail_empty">Šajā līmeņu sarakstā vēl nav neviena elementa.</string>
+    <string name="detail_action_add_item">Pievienot</string>
+    <string name="detail_action_add_item_fab">Pievienot elementu</string>
+    <string name="detail_action_delete_item">Dzēst elementu</string>
+    <string name="detail_action_pick_image">Izvēlēties attēlus</string>
+    <string name="detail_add_dialog_title">Pievienot elementus</string>
+    <string name="detail_action_remove_picked_image">Noņemt attēlu</string>
+    <string name="detail_add_error_no_image">Vispirms izvēlieties attēlu</string>
+    <string name="detail_add_dialog_limit">Līdz 25 attēliem vienā augšupielādē.</string>
+    <string name="detail_add_error_some_failed">Neizdevās augšupielādēt %1$d attēlu(s): %2$s</string>
+    <string name="detail_action_make_private">Padarīt privātu</string>
+    <string name="detail_action_delete">Dzēst līmeņu sarakstu</string>
+    <string name="detail_action_clear">Notīrīt līmeņu sarakstu</string>
+    <string name="detail_action_favourite">Pievienot izlasei</string>
+    <string name="detail_action_unfavourite">Noņemt no izlases</string>
+    <string name="detail_rename_action_confirm">Saglabāt</string>
+    <string name="detail_delete_title">Dzēst līmeņu sarakstu?</string>
+    <string name="detail_delete_body">"%1$s" tiks neatgriezeniski dzēsts. To nevarēs atsaukt.</string>
+    <string name="detail_delete_action_confirm">Dzēst</string>
+    <string name="detail_clear_title">Notīrīt līmeņu sarakstu?</string>
+    <string name="detail_clear_body">Tādējādi no šī līmeņu saraksta tiks noņemti visi attēli. To nevar atsaukt.</string>
+    <string name="detail_clear_action_confirm">Notīrīt</string>
+    <string name="share_action_label">Kopīgot</string>
+    <string name="card_action_more">Vairāk opciju</string>
+    <string name="card_owner_indicator">Jūsu līmeņu saraksts</string>
+<string name="share_link_copied_toast">Saite nokopēta</string>
+    <string name="share_private_warning_title">Privāts saraksts</string>
+    <string name="share_private_warning_body">Citi nevarēs redzēt šo sarakstu, izmantojot saiti. Padarīt to publisku?</string>
+    <string name="share_private_warning_action_cancel">Saglabāt privātu</string>
+
+    <string name="filter_search_placeholder">Meklēt pēc nosaukuma</string>
+    <string name="filter_clear_search">Notīrīt meklēšanu</string>
+    <string name="filter_sort_label">Kārtot: %1$s</string>
+    <string name="filter_sort_newest">Jaunākie</string>
+    <string name="filter_sort_oldest">Vecākie</string>
+    <string name="filter_sort_title_asc">Nosaukums augošā secībā</string>
+    <string name="filter_sort_title_desc">Nosaukums dilstošā secībā</string>
+    <string name="filter_favourites_only">Izlase</string>
+    <string name="filter_no_matches">Neviens līmeņu saraksts neatbilst jūsu filtriem.</string>
+
+    <string name="tier_label_s">S</string>
+    <string name="tier_label_a">A</string>
+    <string name="tier_label_b">B</string>
+    <string name="tier_label_c">C</string>
+    <string name="tier_label_d">D</string>
+    <string name="tier_label_f">F</string>
+</resources>

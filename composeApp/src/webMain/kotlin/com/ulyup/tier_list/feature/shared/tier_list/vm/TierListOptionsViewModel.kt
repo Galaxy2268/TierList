@@ -8,7 +8,7 @@ import com.ulyup.tier_list.domain.tier_list.usecase.SetFavouriteUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.SetTierListVisibilityUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.UpdateTierListUseCase
 import com.ulyup.tier_list.resources.Res
-import com.ulyup.tier_list.resources.detail_rename_error_title_blank
+import com.ulyup.tier_list.resources.general_error_title_blank
 
 class TierListOptionsViewModel(
     private val deleteTierListUseCase: DeleteTierListUseCase,
@@ -88,7 +88,7 @@ class TierListOptionsViewModel(
         if (dialog.isLoading) return
         val newTitle = dialog.title.trim()
         if (newTitle.isBlank()) {
-            updateRenameDialog { it.withValidationError(Res.string.detail_rename_error_title_blank) }
+            updateRenameDialog { it.withValidationError(Res.string.general_error_title_blank) }
             return
         }
         updateTierListUseCase(

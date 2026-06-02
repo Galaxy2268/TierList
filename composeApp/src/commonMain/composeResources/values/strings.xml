@@ -3,46 +3,47 @@
     <string name="error_message">Couldn't reach the server. Check your connection and try again.</string>
     <string name="error_action_retry">Try again</string>
 
+    <string name="general_action_cancel">Cancel</string>
+    <string name="general_action_logout">Log out</string>
+    <string name="general_action_upgrade">Upgrade to Premium</string>
+    <string name="general_action_make_public">Make public</string>
+    <string name="general_action_rename_tier_list">Rename tier list</string>
+    <string name="general_field_title">Title</string>
+    <string name="general_field_password">Password</string>
+    <string name="general_error_title_blank">Title cannot be empty</string>
+    <string name="general_profile">Profile</string>
+
     <string name="login_title">Welcome back</string>
     <string name="login_field_username_or_email">Username or email</string>
-    <string name="login_field_password">Password</string>
     <string name="login_action_submit">Log in</string>
     <string name="login_action_go_to_register">Create an account</string>
 
     <string name="register_title">Create your account</string>
     <string name="register_field_username">Username</string>
     <string name="register_field_email">Email</string>
-    <string name="register_field_password">Password</string>
     <string name="register_action_submit">Sign up</string>
     <string name="register_action_back">Back to login</string>
 
     <string name="top_nav_feed">Feed</string>
     <string name="top_nav_mylists">My Lists</string>
-    <string name="top_nav_profile">Profile</string>
 
     <string name="feed_empty">No public tier lists yet.</string>
 
     <string name="mylists_empty">You haven't created any tier lists yet.</string>
     <string name="mylists_action_create_label">Create tier list</string>
     <string name="mylists_create_title">New tier list</string>
-    <string name="mylists_create_field_title">Title</string>
     <string name="mylists_create_field_visibility">Public</string>
     <string name="mylists_create_action_confirm">Create</string>
-    <string name="mylists_create_action_cancel">Cancel</string>
-    <string name="mylists_create_error_title_blank">Title cannot be empty</string>
-    <string name="mylists_premium_title">Unlock Premium</string>
     <string name="mylists_premium_body">Free accounts can create up to 5 tier lists. Upgrade to Premium to create as many as you want.</string>
-    <string name="mylists_premium_action_upgrade">Upgrade to Premium</string>
 
-    <string name="profile_title">Profile</string>
-    <string name="profile_action_logout">Log out</string>
-    <string name="profile_action_upgrade">Upgrade to Premium</string>
     <string name="profile_role_user">Free</string>
     <string name="profile_role_premium">Premium</string>
     <string name="profile_logout_title">Log out?</string>
     <string name="profile_logout_body">You'll need to sign in again to access your tier lists.</string>
-    <string name="profile_logout_action_confirm">Log out</string>
-    <string name="profile_logout_action_cancel">Cancel</string>
+    <string name="profile_language_label">Language</string>
+
+    <string name="language_english">English</string>
+    <string name="language_latvian">Latviešu</string>
 
     <string name="detail_action_back">Back</string>
     <string name="detail_unranked_label">Unranked</string>
@@ -50,29 +51,21 @@
     <string name="detail_action_add_item">Add</string>
     <string name="detail_action_add_item_fab">Add item</string>
     <string name="detail_action_delete_item">Delete item</string>
-    <string name="detail_action_cancel">Cancel</string>
     <string name="detail_action_pick_image">Choose images</string>
     <string name="detail_add_dialog_title">Add items</string>
     <string name="detail_action_remove_picked_image">Remove image</string>
     <string name="detail_add_error_no_image">Pick an image first</string>
     <string name="detail_add_dialog_limit">Up to 25 images per upload.</string>
     <string name="detail_add_error_some_failed">Failed to upload %1$d image(s): %2$s</string>
-    <string name="detail_action_rename">Rename tier list</string>
-    <string name="detail_action_make_public">Make public</string>
     <string name="detail_action_make_private">Make private</string>
     <string name="detail_action_delete">Delete tier list</string>
     <string name="detail_action_clear">Clear tier list</string>
     <string name="detail_action_favourite">Favourite</string>
     <string name="detail_action_unfavourite">Unfavourite</string>
-    <string name="detail_rename_title">Rename tier list</string>
-    <string name="detail_rename_field_title">Title</string>
     <string name="detail_rename_action_confirm">Save</string>
-    <string name="detail_rename_action_cancel">Cancel</string>
-    <string name="detail_rename_error_title_blank">Title cannot be empty</string>
     <string name="detail_delete_title">Delete tier list?</string>
     <string name="detail_delete_body">"%1$s" will be deleted permanently. This cannot be undone.</string>
     <string name="detail_delete_action_confirm">Delete</string>
-    <string name="detail_delete_action_cancel">Cancel</string>
     <string name="detail_clear_title">Clear tier list?</string>
     <string name="detail_clear_body">This removes all images from this tier list. This cannot be undone.</string>
     <string name="detail_clear_action_confirm">Clear</string>
@@ -82,7 +75,6 @@
     <string name="share_link_copied_toast">Link copied</string>
     <string name="share_private_warning_title">Private list</string>
     <string name="share_private_warning_body">Others won't be able to see this list through the link. Make it public?</string>
-    <string name="share_private_warning_action_confirm">Make public</string>
     <string name="share_private_warning_action_cancel">Keep private</string>
 
     <string name="filter_search_placeholder">Search by title</string>
@@ -90,7 +82,8 @@
     <string name="filter_sort_label">Sort: %1$s</string>
     <string name="filter_sort_newest">Newest</string>
     <string name="filter_sort_oldest">Oldest</string>
-    <string name="filter_sort_title_az">Title A-Z</string>
+    <string name="filter_sort_title_asc">Name ascending</string>
+    <string name="filter_sort_title_desc">Name descending</string>
     <string name="filter_favourites_only">Favourites</string>
     <string name="filter_no_matches">No tier lists match your filters.</string>
 

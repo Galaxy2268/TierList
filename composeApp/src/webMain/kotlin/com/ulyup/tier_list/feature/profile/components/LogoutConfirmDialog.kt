@@ -7,8 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.ulyup.tier_list.core.ui.components.button.LinkTextButton
 import com.ulyup.tier_list.resources.Res
-import com.ulyup.tier_list.resources.profile_logout_action_cancel
-import com.ulyup.tier_list.resources.profile_logout_action_confirm
+import com.ulyup.tier_list.resources.general_action_cancel
+import com.ulyup.tier_list.resources.general_action_logout
 import com.ulyup.tier_list.resources.profile_logout_body
 import com.ulyup.tier_list.resources.profile_logout_title
 import com.ulyup.tier_list.theme.appColors
@@ -48,14 +48,14 @@ fun LogoutConfirmDialog(
                 ),
             ) {
                 Text(
-                    text = stringResource(Res.string.profile_logout_action_confirm),
+                    text = stringResource(Res.string.general_action_logout),
                     style = appTypography.labelLarge,
                 )
             }
         },
         dismissButton = {
             LinkTextButton(
-                text = stringResource(Res.string.profile_logout_action_cancel),
+                text = stringResource(Res.string.general_action_cancel),
                 onClick = onDismiss,
                 enabled = !isLoading,
             )

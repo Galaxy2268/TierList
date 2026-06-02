@@ -14,12 +14,14 @@ fun TierListOptionButton(
     option: TierListOption,
     selected: Boolean = true,
 ) {
+    val iconPainter = painterResource(option.iconRes)
+    val trailingIconPainter = painterResource(option.trailingIconRes ?: option.iconRes)
     IconButton(
         onClick = onClick,
         enabled = enabled,
     ) {
         Icon(
-            painter = painterResource(option.getIcon(selected)),
+            painter = if (selected) iconPainter else trailingIconPainter,
             contentDescription = stringResource(option.getLabel(selected)),
             tint = option.getColor(selected),
         )

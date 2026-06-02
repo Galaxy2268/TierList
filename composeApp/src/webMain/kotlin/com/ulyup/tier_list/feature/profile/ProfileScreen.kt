@@ -22,7 +22,9 @@ import com.ulyup.tier_list.core.ui.token.VBox24
 import com.ulyup.tier_list.core.ui.token.paddingV12H16
 import com.ulyup.tier_list.core.ui.token.roundedShape8
 import com.ulyup.tier_list.core.ui.token.size128
+import com.ulyup.tier_list.feature.profile.components.LanguageSelector
 import com.ulyup.tier_list.feature.profile.components.LogoutConfirmDialog
+import com.ulyup.tier_list.feature.profile.vm.ChangeLanguageAction
 import com.ulyup.tier_list.feature.profile.vm.ConfirmLogoutAction
 import com.ulyup.tier_list.feature.profile.vm.DismissLogoutConfirmAction
 import com.ulyup.tier_list.feature.profile.vm.ProfileViewModel
@@ -31,12 +33,12 @@ import com.ulyup.tier_list.feature.profile.vm.ShowLogoutConfirmAction
 import com.ulyup.tier_list.feature.profile.vm.UpgradePremiumAction
 import com.ulyup.tier_list.model.UserRole
 import com.ulyup.tier_list.resources.Res
+import com.ulyup.tier_list.resources.general_action_logout
+import com.ulyup.tier_list.resources.general_action_upgrade
+import com.ulyup.tier_list.resources.general_profile
 import com.ulyup.tier_list.resources.ic_profile
-import com.ulyup.tier_list.resources.profile_action_logout
-import com.ulyup.tier_list.resources.profile_action_upgrade
 import com.ulyup.tier_list.resources.profile_role_premium
 import com.ulyup.tier_list.resources.profile_role_user
-import com.ulyup.tier_list.resources.profile_title
 import com.ulyup.tier_list.theme.appColors
 import com.ulyup.tier_list.theme.appTypography
 import kotlinx.coroutines.launch
@@ -61,7 +63,7 @@ fun ProfileScreen() {
         CenteredColumn(modifier = Modifier.padding(padding)) {
             Icon(
                 painter = painterResource(Res.drawable.ic_profile),
-                contentDescription = stringResource(Res.string.profile_title),
+                contentDescription = stringResource(Res.string.general_profile),
                 tint = appColors.onBackground,
                 modifier = Modifier.size(size128),
             )
@@ -81,10 +83,15 @@ fun ProfileScreen() {
                 VBox16
                 RoleBadge(role = user.role)
             }
+            VBox24
+            LanguageSelector(
+                currentLanguage = state.currentLanguage,
+                onLanguageChange = { viewModel.onAction(ChangeLanguageAction(it)) },
+            )
             if (state.showUpgradeButton) {
                 VBox24
                 PrimaryButton(
-                    text = stringResource(Res.string.profile_action_upgrade),
+                    text = stringResource(Res.string.general_action_upgrade),
                     onClick = { viewModel.onAction(UpgradePremiumAction) },
                     isLoading = state.isUpgrading,
                     modifier = Modifier.fillMaxWidth(),
@@ -92,7 +99,7 @@ fun ProfileScreen() {
             }
             VBox24
             ErrorButton(
-                text = stringResource(Res.string.profile_action_logout),
+                text = stringResource(Res.string.general_action_logout),
                 onClick = { viewModel.onAction(ShowLogoutConfirmAction) },
                 isLoading = state.isLoggingOut,
                 modifier = Modifier.fillMaxWidth(),

@@ -30,13 +30,13 @@ enum class TierListOption(
     ),
     VISIBILITY(
         labelRes = Res.string.detail_action_make_private,
-        trailingLabelRes = Res.string.detail_action_make_public,
+        trailingLabelRes = Res.string.general_action_make_public,
         iconRes = Res.drawable.ic_visible,
         trailingIconRes = Res.drawable.ic_unvisible,
         visibility = OptionVisibility.OWNER_ONLY,
     ),
     EDIT(
-        labelRes = Res.string.detail_action_rename,
+        labelRes = Res.string.general_action_rename_tier_list,
         iconRes = Res.drawable.ic_edit,
         visibility = OptionVisibility.OWNER_ONLY,
     ),

@@ -17,9 +17,9 @@ import com.ulyup.tier_list.main.vm.RetryBootstrapAction
 import com.ulyup.tier_list.main.vm.SaveLastDetailAction
 import com.ulyup.tier_list.main.vm.SaveLastTabAction
 import com.ulyup.tier_list.resources.Res
+import com.ulyup.tier_list.resources.general_profile
 import com.ulyup.tier_list.resources.top_nav_feed
 import com.ulyup.tier_list.resources.top_nav_mylists
-import com.ulyup.tier_list.resources.top_nav_profile
 import com.ulyup.tier_list.theme.appColors
 import com.ulyup.tier_list.theme.appTypography
 import org.jetbrains.compose.resources.StringResource
@@ -59,7 +59,7 @@ private enum class AppTab(
 ) {
     Feed(FeedGraph::class, FeedGraph, Res.string.top_nav_feed),
     MyLists(MyListsGraph::class, MyListsGraph, Res.string.top_nav_mylists),
-    Profile(ProfileGraph::class, ProfileGraph, Res.string.top_nav_profile),
+    Profile(ProfileGraph::class, ProfileGraph, Res.string.general_profile),
 }
 
 private fun NavDestination?.isInTabbedArea(): Boolean =

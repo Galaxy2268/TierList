@@ -13,7 +13,7 @@ import com.ulyup.tier_list.domain.tier_list.usecase.GetMyTierListsUseCase
 import com.ulyup.tier_list.domain.user.usecase.ObserveCurrentUserUseCase
 import com.ulyup.tier_list.domain.user.usecase.UpgradePremiumUseCase
 import com.ulyup.tier_list.resources.Res
-import com.ulyup.tier_list.resources.mylists_create_error_title_blank
+import com.ulyup.tier_list.resources.general_error_title_blank
 import kotlinx.coroutines.launch
 
 class MyListsViewModel(
@@ -85,7 +85,7 @@ class MyListsViewModel(
         val dialog = state.createDialog ?: return
         if (dialog.isLoading) return
         if (dialog.title.isBlank()) {
-            updateCreateDialog { it.withValidationError(Res.string.mylists_create_error_title_blank) }
+            updateCreateDialog { it.withValidationError(Res.string.general_error_title_blank) }
             return
         }
         createTierListUseCase(

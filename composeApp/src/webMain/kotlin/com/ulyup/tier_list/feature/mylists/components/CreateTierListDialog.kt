@@ -18,9 +18,9 @@ import com.ulyup.tier_list.core.ui.token.VBox8
 import com.ulyup.tier_list.core.ui.token.VBox16
 import com.ulyup.tier_list.feature.mylists.vm.CreateDialogState
 import com.ulyup.tier_list.resources.Res
-import com.ulyup.tier_list.resources.mylists_create_action_cancel
+import com.ulyup.tier_list.resources.general_action_cancel
+import com.ulyup.tier_list.resources.general_field_title
 import com.ulyup.tier_list.resources.mylists_create_action_confirm
-import com.ulyup.tier_list.resources.mylists_create_field_title
 import com.ulyup.tier_list.resources.mylists_create_field_visibility
 import com.ulyup.tier_list.resources.mylists_create_title
 import com.ulyup.tier_list.theme.appColors
@@ -52,7 +52,7 @@ fun CreateTierListDialog(
                 AppTextField(
                     value = state.title,
                     onValueChange = onTitleChange,
-                    label = stringResource(Res.string.mylists_create_field_title),
+                    label = stringResource(Res.string.general_field_title),
                     enabled = !state.isLoading,
                 )
                 VBox16
@@ -88,7 +88,7 @@ fun CreateTierListDialog(
         },
         dismissButton = {
             LinkTextButton(
-                text = stringResource(Res.string.mylists_create_action_cancel),
+                text = stringResource(Res.string.general_action_cancel),
                 onClick = onDismiss,
                 enabled = !state.isLoading,
             )

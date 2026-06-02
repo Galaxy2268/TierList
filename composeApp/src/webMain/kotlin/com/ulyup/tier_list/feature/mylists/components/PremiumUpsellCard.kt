@@ -14,9 +14,8 @@ import com.ulyup.tier_list.core.ui.token.VBox16
 import com.ulyup.tier_list.core.ui.token.aPadding16
 import com.ulyup.tier_list.core.ui.token.roundedShape12
 import com.ulyup.tier_list.resources.Res
-import com.ulyup.tier_list.resources.mylists_premium_action_upgrade
+import com.ulyup.tier_list.resources.general_action_upgrade
 import com.ulyup.tier_list.resources.mylists_premium_body
-import com.ulyup.tier_list.resources.mylists_premium_title
 import com.ulyup.tier_list.theme.appColors
 import com.ulyup.tier_list.theme.appTypography
 import org.jetbrains.compose.resources.stringResource
@@ -41,7 +40,7 @@ fun PremiumUpsellCard(
                 .padding(aPadding16),
         ) {
             Text(
-                text = stringResource(Res.string.mylists_premium_title),
+                text = stringResource(Res.string.general_action_upgrade),
                 style = appTypography.titleMedium,
                 color = appColors.primary,
             )
@@ -53,7 +52,7 @@ fun PremiumUpsellCard(
             )
             VBox16
             PrimaryButton(
-                text = stringResource(Res.string.mylists_premium_action_upgrade),
+                text = stringResource(Res.string.general_action_upgrade),
                 onClick = onUpgrade,
                 isLoading = isUpgrading,
                 modifier = Modifier.fillMaxWidth(),

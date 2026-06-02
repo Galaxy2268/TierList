@@ -12,10 +12,10 @@ import com.ulyup.tier_list.core.ui.components.button.LinkTextButton
 import com.ulyup.tier_list.core.ui.components.text.ErrorText
 import com.ulyup.tier_list.core.ui.token.VBox8
 import com.ulyup.tier_list.resources.Res
-import com.ulyup.tier_list.resources.detail_delete_action_cancel
 import com.ulyup.tier_list.resources.detail_delete_action_confirm
 import com.ulyup.tier_list.resources.detail_delete_body
 import com.ulyup.tier_list.resources.detail_delete_title
+import com.ulyup.tier_list.resources.general_action_cancel
 import com.ulyup.tier_list.theme.appColors
 import com.ulyup.tier_list.theme.appTypography
 import org.jetbrains.compose.resources.stringResource
@@ -68,7 +68,7 @@ fun DeleteTierListConfirmDialog(
         },
         dismissButton = {
             LinkTextButton(
-                text = stringResource(Res.string.detail_delete_action_cancel),
+                text = stringResource(Res.string.general_action_cancel),
                 onClick = onDismiss,
                 enabled = !isLoading,
             )
