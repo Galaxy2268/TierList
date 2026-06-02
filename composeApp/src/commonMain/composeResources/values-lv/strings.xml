@@ -4,6 +4,8 @@
     <string name="error_action_retry">Mēģināt vēlreiz</string>
 
     <string name="general_action_cancel">Atcelt</string>
+    <string name="general_action_close">Aizvērt</string>
+    <string name="general_action_copy">Kopēt</string>
     <string name="general_action_logout">Iziet</string>
     <string name="general_action_upgrade">Iegūt Premium</string>
     <string name="general_action_make_public">Padarīt publisku</string>
@@ -76,6 +78,11 @@
     <string name="share_private_warning_title">Privāts saraksts</string>
     <string name="share_private_warning_body">Citi nevarēs redzēt šo sarakstu, izmantojot saiti. Padarīt to publisku?</string>
     <string name="share_private_warning_action_cancel">Saglabāt privātu</string>
+
+    <string name="copy_confirm_title">Kopēt līmeņu sarakstu?</string>
+    <string name="copy_confirm_body">Šī līmeņu saraksta kopija tiks pievienota jūsu sarakstiem.</string>
+    <string name="copy_success_toast">Līmeņu saraksts nokopēts</string>
+    <string name="premium_limit_title">Sasniegts bezmaksas plāna limits</string>
 
     <string name="filter_search_placeholder">Meklēt pēc nosaukuma</string>
     <string name="filter_clear_search">Notīrīt meklēšanu</string>

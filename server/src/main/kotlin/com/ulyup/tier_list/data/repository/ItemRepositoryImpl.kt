@@ -30,6 +30,16 @@ class ItemRepositoryImpl : ItemRepository {
         TierListItem(newId, tierListId, imageUrl, tier = null, position = position)
     }
 
+    override suspend fun insertCopy(tierListId: Int, imageUrl: String, tier: Tier?, position: Int): TierListItem = dbQuery {
+        val newId = TierListItemsTable.insert {
+            it[TierListItemsTable.tierListId] = tierListId
+            it[TierListItemsTable.imageUrl] = imageUrl
+            it[TierListItemsTable.tier] = tier
+            it[TierListItemsTable.position] = position
+        } get TierListItemsTable.id
+        TierListItem(newId, tierListId, imageUrl, tier, position)
+    }
+
     override suspend fun findById(id: Int): TierListItem? = dbQuery { fetchById(id) }
 
     override suspend fun findByTierListId(tierListId: Int): List<TierListItem> = dbQuery {

@@ -30,6 +30,7 @@ import com.ulyup.tier_list.feature.mylists.components.PremiumUpsellCard
 import com.ulyup.tier_list.feature.mylists.vm.ChangeCreateTitleAction
 import com.ulyup.tier_list.feature.mylists.vm.ChangeSearchQueryAction
 import com.ulyup.tier_list.feature.mylists.vm.ChangeSortOrderAction
+import com.ulyup.tier_list.feature.mylists.vm.AddTierListAction
 import com.ulyup.tier_list.feature.mylists.vm.ConfirmCreateAction
 import com.ulyup.tier_list.feature.mylists.vm.DismissCreateDialogAction
 import com.ulyup.tier_list.feature.mylists.vm.LoadMyListsAction
@@ -46,6 +47,7 @@ import com.ulyup.tier_list.feature.mylists.vm.UpgradePremiumAction
 import com.ulyup.tier_list.feature.shared.tier_list.TierListOptionsHost
 import com.ulyup.tier_list.feature.shared.tier_list.rememberTierListOptionDispatch
 import com.ulyup.tier_list.feature.shared.tier_list.vm.FavouriteChangedEvent
+import com.ulyup.tier_list.feature.shared.tier_list.vm.TierListCopiedEvent
 import com.ulyup.tier_list.feature.shared.tier_list.vm.TierListOptionsViewModel
 import com.ulyup.tier_list.feature.shared.tier_list.vm.TierListDeletedEvent
 import com.ulyup.tier_list.feature.shared.tier_list.vm.TitleChangedEvent
@@ -83,6 +85,7 @@ fun MyListsScreen(
 
     TierListOptionsHost(optionsViewModel) { event ->
         when (event) {
+            is TierListCopiedEvent -> viewModel.onAction(AddTierListAction(event.tierList))
             is TierListDeletedEvent -> viewModel.onAction(RemoveTierListAction(event.tierListId))
             is FavouriteChangedEvent ->
                 viewModel.onAction(SetFavouriteAction(event.tierListId, event.isFavourite))

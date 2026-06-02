@@ -10,6 +10,7 @@ interface TierListApi {
     suspend fun getPublicTierLists(): List<TierListDto>
     suspend fun getUserTierLists(): List<TierListDto>
     suspend fun create(request: CreateTierListRequest): TierListDto
+    suspend fun copy(id: Int): TierListDto
     suspend fun getDetail(id: Int): TierListDetailDto
     suspend fun update(id: Int, request: UpdateTierListRequest): TierListDto
     suspend fun setVisibility(id: Int, request: UpdateVisibilityRequest): TierListDto

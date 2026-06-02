@@ -43,6 +43,9 @@ class MyListsViewModel(
             is ToggleCreatePublicAction -> updateCreateDialog { it.copy(isPublic = action.value) }
             ConfirmCreateAction -> confirmCreate()
             UpgradePremiumAction -> upgrade()
+            is AddTierListAction -> updateState {
+                it.copy(tierLists = (listOf(action.tierList) + it.tierLists).favouritesFirst())
+            }
             is RemoveTierListAction -> updateState {
                 it.copy(tierLists = it.tierLists.removeById(action.tierListId))
             }

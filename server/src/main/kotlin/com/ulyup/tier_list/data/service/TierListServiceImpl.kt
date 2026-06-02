@@ -4,6 +4,7 @@ import com.ulyup.tier_list.FREE_TIER_LIMIT
 import com.ulyup.tier_list.data.mapper.toDetailDto
 import com.ulyup.tier_list.data.mapper.toDto
 import com.ulyup.tier_list.domain.model.Caller
+import com.ulyup.tier_list.domain.model.TierList
 import com.ulyup.tier_list.domain.repository.FavouriteRepository
 import com.ulyup.tier_list.domain.repository.ItemRepository
 import com.ulyup.tier_list.domain.repository.TierListRepository
@@ -32,10 +33,7 @@ class TierListServiceImpl(
     }
 
     override suspend fun getTierList(caller: Caller?, id: Int): TierListDetailDto {
-        val tierList = findOrThrow("TierList") { tierListRepo.findById(id) }
-        if (!tierList.isPublic && (caller == null || caller.userId != tierList.userId)) {
-            throw NotFoundException("TierList not found")
-        }
+        val tierList = requireVisibleTierList(caller, id)
         val isFavourite = caller != null && favouriteRepo.isFavourite(caller.userId, id)
         return tierList.toDetailDto(itemRepo.findByTierListId(id), isFavourite)
     }
@@ -46,10 +44,45 @@ class TierListServiceImpl(
     }
 
     override suspend fun createTierList(caller: Caller, request: CreateTierListRequest): TierListDto {
+        requireUnderCap(caller)
+        return tierListRepo.create(caller.userId, request.title, request.isPublic).toDto()
+    }
+
+    override suspend fun copyTierList(caller: Caller, sourceId: Int): TierListDto {
+        val source = requireVisibleTierList(caller, sourceId)
+        requireUnderCap(caller)
+
+        val sourceItems = itemRepo.findByTierListId(sourceId)
+        val copy = tierListRepo.create(caller.userId, source.title, isPublic = false)
+        val copiedUrls = mutableListOf<String>()
+        try {
+            sourceItems.forEach { item ->
+                val newUrl = imageStorage.copy(item.imageUrl)
+                copiedUrls += newUrl
+                itemRepo.insertCopy(copy.id, newUrl, item.tier, item.position)
+            }
+        } catch (exception: Exception) {
+            // Items are copied across multiple transactions + file ops, so a mid-way
+            // failure would leave a partial list. Roll it back best-effort.
+            tierListRepo.delete(copy.id, caller.userId)
+            copiedUrls.forEach { imageStorage.delete(it) }
+            throw exception
+        }
+        return copy.toDto()
+    }
+
+    private suspend fun requireUnderCap(caller: Caller) {
         if (caller.role == UserRole.USER && tierListRepo.countByUser(caller.userId) >= FREE_TIER_LIMIT) {
             throw CapReachedException("TierList limit of $FREE_TIER_LIMIT reached. Upgrade to Premium for unlimited lists.")
         }
-        return tierListRepo.create(caller.userId, request.title, request.isPublic).toDto()
+    }
+
+    private suspend fun requireVisibleTierList(caller: Caller?, id: Int): TierList {
+        val tierList = findOrThrow("TierList") { tierListRepo.findById(id) }
+        if (!tierList.isPublic && caller?.userId != tierList.userId) {
+            throw NotFoundException("TierList not found")
+        }
+        return tierList
     }
 
     override suspend fun updateTierList(caller: Caller, id: Int, request: UpdateTierListRequest): TierListDto =
@@ -67,10 +100,7 @@ class TierListServiceImpl(
     }
 
     override suspend fun setFavourite(caller: Caller, id: Int, favourite: Boolean) {
-        val tierList = findOrThrow("TierList") { tierListRepo.findById(id) }
-        if (!tierList.isPublic && caller.userId != tierList.userId) {
-            throw NotFoundException("TierList not found")
-        }
+        requireVisibleTierList(caller, id)
         if (favourite) favouriteRepo.add(caller.userId, id) else favouriteRepo.remove(caller.userId, id)
     }
 }

@@ -1,14 +1,23 @@
 package com.ulyup.tier_list.feature.shared.tier_list.vm
 
+import androidx.lifecycle.viewModelScope
+import com.ulyup.tier_list.FREE_TIER_LIMIT
 import com.ulyup.tier_list.core.mvi.InteractiveStatefulViewModel
 import com.ulyup.tier_list.core.usecase.fold
+import com.ulyup.tier_list.domain.error.ApiException
 import com.ulyup.tier_list.domain.tier_list.usecase.ClearItemsUseCase
+import com.ulyup.tier_list.domain.tier_list.usecase.CopyTierListUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.DeleteTierListUseCase
+import com.ulyup.tier_list.domain.tier_list.usecase.GetMyTierListsUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.SetFavouriteUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.SetTierListVisibilityUseCase
 import com.ulyup.tier_list.domain.tier_list.usecase.UpdateTierListUseCase
+import com.ulyup.tier_list.domain.user.usecase.ObserveCurrentUserUseCase
+import com.ulyup.tier_list.domain.user.usecase.UpgradePremiumUseCase
+import com.ulyup.tier_list.model.UserRole
 import com.ulyup.tier_list.resources.Res
 import com.ulyup.tier_list.resources.general_error_title_blank
+import kotlinx.coroutines.launch
 
 class TierListOptionsViewModel(
     private val deleteTierListUseCase: DeleteTierListUseCase,
@@ -16,9 +25,21 @@ class TierListOptionsViewModel(
     private val updateTierListUseCase: UpdateTierListUseCase,
     private val setTierListVisibilityUseCase: SetTierListVisibilityUseCase,
     private val setFavouriteUseCase: SetFavouriteUseCase,
+    private val copyTierListUseCase: CopyTierListUseCase,
+    private val upgradePremiumUseCase: UpgradePremiumUseCase,
+    private val observeCurrentUserUseCase: ObserveCurrentUserUseCase,
+    private val getMyTierListsUseCase: GetMyTierListsUseCase,
 ) : InteractiveStatefulViewModel<TierListOptionsAction, TierListOptionsState, TierListOptionsEvent>(
     TierListOptionsState()
 ) {
+
+    private var currentRole: UserRole? = null
+
+    init {
+        viewModelScope.launch {
+            observeCurrentUserUseCase(Unit).collect { currentRole = it?.role }
+        }
+    }
 
     override suspend fun handleAction(action: TierListOptionsAction) {
         when (action) {
@@ -50,6 +71,12 @@ class TierListOptionsViewModel(
             is ToggleFavouriteAction -> toggleFavourite(action.target)
 
             is ShareAction -> share(action.target)
+
+            is ShowCopyAction -> showCopy(action.target)
+            DismissCopyAction -> updateState { it.copy(copyConfirm = null) }
+            ConfirmCopyAction -> confirmCopy()
+            DismissPremiumLimitAction -> updateState { it.copy(premiumLimit = null) }
+            UpgradeAndCopyAction -> upgradeAndCopy()
         }
     }
 
@@ -151,6 +178,71 @@ class TierListOptionsViewModel(
         if (target.isOwner && !target.isPublic) {
             updateState { it.copy(sharePrivateWarning = SharePrivateWarningState(target.id)) }
         }
+    }
+
+    private suspend fun showCopy(target: TierListOptionTarget) {
+        if (canCreateAnotherList()) {
+            updateState { it.copy(copyConfirm = CopyConfirmState(target)) }
+        } else {
+            updateState { it.copy(premiumLimit = PremiumLimitState(target)) }
+        }
+    }
+
+    private suspend fun canCreateAnotherList(): Boolean {
+        if (currentRole == UserRole.PREMIUM) return true
+        var ownedCount: Int? = null
+        getMyTierListsUseCase(Unit).fold(
+            onSuccess = { ownedCount = it.size },
+        )
+        // If the count couldn't be loaded, let the copy proceed; the server cap check is authoritative.
+        return ownedCount?.let { it < FREE_TIER_LIMIT } ?: true
+    }
+
+    private suspend fun confirmCopy() {
+        val pending = state.copyConfirm ?: return
+        if (pending.isLoading) return
+        updateState { it.copy(copyConfirm = pending.withLoading()) }
+        performCopy(pending.target) { exception ->
+            if (exception is ApiException.Forbidden) {
+                // Client cap check was stale; the server rejected. Surface the upsell instead.
+                updateState { it.copy(copyConfirm = null, premiumLimit = PremiumLimitState(pending.target)) }
+            } else {
+                updateState { it.copy(copyConfirm = it.copyConfirm?.withError(exception.message)) }
+            }
+        }
+    }
+
+    private suspend fun upgradeAndCopy() {
+        val pending = state.premiumLimit ?: return
+        if (pending.isUpgrading) return
+        updateState { it.copy(premiumLimit = pending.copy(isUpgrading = true)) }
+        var upgraded = false
+        upgradePremiumUseCase(Unit).fold(
+            onSuccess = { upgraded = true },
+            onError = { exception ->
+                updateState { it.copy(premiumLimit = null) }
+                launchEvent(ShowErrorMessageEvent(exception.message))
+            },
+        )
+        if (upgraded) {
+            performCopy(pending.target) { exception ->
+                updateState { it.copy(premiumLimit = null) }
+                launchEvent(ShowErrorMessageEvent(exception.message))
+            }
+        }
+    }
+
+    private suspend fun performCopy(
+        target: TierListOptionTarget,
+        onError: (ApiException) -> Unit,
+    ) {
+        copyTierListUseCase(target.id).fold(
+            onSuccess = { created ->
+                updateState { it.copy(copyConfirm = null, premiumLimit = null) }
+                launchEvent(TierListCopiedEvent(created))
+            },
+            onError = onError,
+        )
     }
 
     private fun updateRenameDialog(reducer: (RenameDialogState) -> RenameDialogState) {

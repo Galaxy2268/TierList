@@ -38,6 +38,11 @@ fun Route.tierListRoutes(tierListService: TierListService) {
             call.respond(HttpStatusCode.Created, tierListService.createTierList(call.caller, request))
         }
 
+        post(Routes.TierLists.COPY) {
+            val tierListId = call.parameters.requireInt(Routes.TierLists.ID_PARAM)
+            call.respond(HttpStatusCode.Created, tierListService.copyTierList(call.caller, tierListId))
+        }
+
         put(Routes.TierLists.BY_ID) {
             val tierListId = call.parameters.requireInt(Routes.TierLists.ID_PARAM)
             val request = call.receive<UpdateTierListRequest>()

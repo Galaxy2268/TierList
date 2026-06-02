@@ -5,28 +5,36 @@ import androidx.compose.runtime.rememberCoroutineScope
 import com.ulyup.tier_list.core.mvi.ObserveAsEvents
 import com.ulyup.tier_list.core.ui.snackbar.LocalTierListSnackbarHandler
 import com.ulyup.tier_list.feature.shared.tier_list.components.ClearItemsConfirmDialog
+import com.ulyup.tier_list.feature.shared.tier_list.components.CopyTierListConfirmDialog
 import com.ulyup.tier_list.feature.shared.tier_list.components.DeleteTierListConfirmDialog
+import com.ulyup.tier_list.feature.shared.tier_list.components.PremiumLimitDialog
 import com.ulyup.tier_list.feature.shared.tier_list.components.RenameTierListDialog
 import com.ulyup.tier_list.feature.shared.tier_list.components.SharePrivateWarningDialog
 import com.ulyup.tier_list.feature.shared.tier_list.vm.ChangeRenameTitleAction
 import com.ulyup.tier_list.feature.shared.tier_list.vm.ConfirmClearAction
+import com.ulyup.tier_list.feature.shared.tier_list.vm.ConfirmCopyAction
 import com.ulyup.tier_list.feature.shared.tier_list.vm.ConfirmDeleteAction
 import com.ulyup.tier_list.feature.shared.tier_list.vm.ConfirmMakePublicAction
 import com.ulyup.tier_list.feature.shared.tier_list.vm.ConfirmRenameAction
 import com.ulyup.tier_list.feature.shared.tier_list.vm.DismissClearAction
+import com.ulyup.tier_list.feature.shared.tier_list.vm.DismissCopyAction
 import com.ulyup.tier_list.feature.shared.tier_list.vm.DismissDeleteAction
+import com.ulyup.tier_list.feature.shared.tier_list.vm.DismissPremiumLimitAction
 import com.ulyup.tier_list.feature.shared.tier_list.vm.DismissRenameAction
 import com.ulyup.tier_list.feature.shared.tier_list.vm.DismissSharePrivateWarningAction
 import com.ulyup.tier_list.feature.shared.tier_list.vm.FavouriteChangedEvent
 import com.ulyup.tier_list.feature.shared.tier_list.vm.ItemsClearedEvent
 import com.ulyup.tier_list.feature.shared.tier_list.vm.ShareLinkCopiedEvent
 import com.ulyup.tier_list.feature.shared.tier_list.vm.ShowErrorMessageEvent
+import com.ulyup.tier_list.feature.shared.tier_list.vm.TierListCopiedEvent
 import com.ulyup.tier_list.feature.shared.tier_list.vm.TierListOptionsEvent
 import com.ulyup.tier_list.feature.shared.tier_list.vm.TierListOptionsViewModel
 import com.ulyup.tier_list.feature.shared.tier_list.vm.TierListDeletedEvent
 import com.ulyup.tier_list.feature.shared.tier_list.vm.TitleChangedEvent
+import com.ulyup.tier_list.feature.shared.tier_list.vm.UpgradeAndCopyAction
 import com.ulyup.tier_list.feature.shared.tier_list.vm.VisibilityChangedEvent
 import com.ulyup.tier_list.resources.Res
+import com.ulyup.tier_list.resources.copy_success_toast
 import com.ulyup.tier_list.resources.share_link_copied_toast
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -40,11 +48,16 @@ fun TierListOptionsHost(
     val snackbarHandler = LocalTierListSnackbarHandler.current
     val scope = rememberCoroutineScope()
     val linkCopiedMessage = stringResource(Res.string.share_link_copied_toast)
+    val tierListCopiedMessage = stringResource(Res.string.copy_success_toast)
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             ShareLinkCopiedEvent -> scope.launch {
                 snackbarHandler.showMessage(linkCopiedMessage)
+            }
+            is TierListCopiedEvent -> {
+                scope.launch { snackbarHandler.showMessage(tierListCopiedMessage) }
+                onEvent(event)
             }
             is ShowErrorMessageEvent -> scope.launch { snackbarHandler.showError(event.text) }
             is TierListDeletedEvent,
@@ -87,6 +100,23 @@ fun TierListOptionsHost(
         SharePrivateWarningDialog(
             onMakePublic = { viewModel.onAction(ConfirmMakePublicAction) },
             onDismiss = { viewModel.onAction(DismissSharePrivateWarningAction) },
+        )
+    }
+
+    state.copyConfirm?.let { pending ->
+        CopyTierListConfirmDialog(
+            onConfirm = { viewModel.onAction(ConfirmCopyAction) },
+            onDismiss = { viewModel.onAction(DismissCopyAction) },
+            isLoading = pending.isLoading,
+            errorMessage = pending.errorMessage,
+        )
+    }
+
+    state.premiumLimit?.let { pending ->
+        PremiumLimitDialog(
+            onUpgrade = { viewModel.onAction(UpgradeAndCopyAction) },
+            onDismiss = { viewModel.onAction(DismissPremiumLimitAction) },
+            isUpgrading = pending.isUpgrading,
         )
     }
 }

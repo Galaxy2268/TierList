@@ -12,6 +12,7 @@ interface TierListService {
     suspend fun getTierList(caller: Caller?, id: Int): TierListDetailDto
     suspend fun getUserTierLists(caller: Caller): List<TierListDto>
     suspend fun createTierList(caller: Caller, request: CreateTierListRequest): TierListDto
+    suspend fun copyTierList(caller: Caller, sourceId: Int): TierListDto
     suspend fun updateTierList(caller: Caller, id: Int, request: UpdateTierListRequest): TierListDto
     suspend fun setVisibility(caller: Caller, id: Int, request: UpdateVisibilityRequest): TierListDto
     suspend fun deleteTierList(caller: Caller, id: Int)

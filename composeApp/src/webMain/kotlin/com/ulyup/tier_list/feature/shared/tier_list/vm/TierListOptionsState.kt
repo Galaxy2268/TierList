@@ -9,6 +9,8 @@ data class TierListOptionsState(
     val clearConfirm: ClearConfirmState? = null,
     val renameDialog: RenameDialogState? = null,
     val sharePrivateWarning: SharePrivateWarningState? = null,
+    val copyConfirm: CopyConfirmState? = null,
+    val premiumLimit: PremiumLimitState? = null,
     val updatingVisibilityIds: Set<Int> = emptySet(),
 ) {
     fun isUpdatingVisibility(tierListId: Int): Boolean = tierListId in updatingVisibilityIds
@@ -56,4 +58,18 @@ data class RenameDialogState(
 
 data class SharePrivateWarningState(
     val tierListId: Int,
+)
+
+data class CopyConfirmState(
+    val target: TierListOptionTarget,
+    override val isLoading: Boolean = false,
+    override val errorMessage: String? = null,
+) : LoadableState<CopyConfirmState> {
+    override fun copyLoadable(isLoading: Boolean, errorMessage: String?) =
+        copy(isLoading = isLoading, errorMessage = errorMessage)
+}
+
+data class PremiumLimitState(
+    val target: TierListOptionTarget,
+    val isUpgrading: Boolean = false,
 )

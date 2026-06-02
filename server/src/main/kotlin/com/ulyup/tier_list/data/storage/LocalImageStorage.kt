@@ -21,11 +21,34 @@ class LocalImageStorage(
     }
 
     override suspend fun delete(url: String): Unit = withContext(Dispatchers.IO) {
-        val prefix = "$urlPrefix/"
-        if (!url.startsWith(prefix)) return@withContext
-        val filename = url.removePrefix(prefix)
-        if (filename.contains('/') || filename.contains('\\') || filename.contains("..")) return@withContext
+        val filename = filenameOrNull(url) ?: return@withContext
         File(baseDir, filename).delete()
+    }
+
+    override suspend fun copy(sourceUrl: String): String = withContext(Dispatchers.IO) {
+        val filename = filenameOrNull(sourceUrl)
+            ?: throw IllegalArgumentException("Cannot copy image with url: $sourceUrl")
+        baseDir.mkdirs()
+        val extension = filename.substringAfterLast('.', "bin")
+        val newFilename = "${UUID.randomUUID()}.$extension"
+        val destination = File(baseDir, newFilename)
+        try {
+            File(baseDir, filename).copyTo(destination)
+        } catch (exception: Exception) {
+            // copyTo can leave a half-written file if it fails mid-stream; the caller's
+            // rollback can't see this URL yet, so clean it up here before rethrowing.
+            destination.delete()
+            throw exception
+        }
+        "$urlPrefix/$newFilename"
+    }
+
+    private fun filenameOrNull(url: String): String? {
+        val prefix = "$urlPrefix/"
+        if (!url.startsWith(prefix)) return null
+        val filename = url.removePrefix(prefix)
+        if (filename.contains('/') || filename.contains('\\') || filename.contains("..")) return null
+        return filename
     }
 
     // Inverse of ItemApiImpl.filenameToContentType on the client — keep tables in sync.

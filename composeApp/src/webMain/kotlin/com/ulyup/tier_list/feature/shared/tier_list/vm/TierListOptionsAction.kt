@@ -22,3 +22,9 @@ data object ConfirmMakePublicAction : TierListOptionsAction
 data class ToggleFavouriteAction(val target: TierListOptionTarget) : TierListOptionsAction
 
 data class ShareAction(val target: TierListOptionTarget) : TierListOptionsAction
+
+data class ShowCopyAction(val target: TierListOptionTarget) : TierListOptionsAction
+data object DismissCopyAction : TierListOptionsAction
+data object ConfirmCopyAction : TierListOptionsAction
+data object DismissPremiumLimitAction : TierListOptionsAction
+data object UpgradeAndCopyAction : TierListOptionsAction

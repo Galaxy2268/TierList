@@ -28,6 +28,11 @@ enum class TierListOption(
         iconRes = Res.drawable.ic_share,
         visibility = OptionVisibility.EVERYONE,
     ),
+    COPY(
+        labelRes = Res.string.general_action_copy,
+        iconRes = Res.drawable.ic_copy,
+        visibility = OptionVisibility.EVERYONE,
+    ),
     VISIBILITY(
         labelRes = Res.string.detail_action_make_private,
         trailingLabelRes = Res.string.general_action_make_public,

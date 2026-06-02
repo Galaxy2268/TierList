@@ -8,6 +8,7 @@ import com.ulyup.tier_list.core.browser.ShareDetailLink
 import com.ulyup.tier_list.core.ui.components.button.model.TierListOption
 import com.ulyup.tier_list.feature.shared.tier_list.vm.ShareAction
 import com.ulyup.tier_list.feature.shared.tier_list.vm.ShowClearAction
+import com.ulyup.tier_list.feature.shared.tier_list.vm.ShowCopyAction
 import com.ulyup.tier_list.feature.shared.tier_list.vm.ShowDeleteAction
 import com.ulyup.tier_list.feature.shared.tier_list.vm.ShowRenameAction
 import com.ulyup.tier_list.feature.shared.tier_list.vm.TierListOptionTarget
@@ -28,6 +29,7 @@ fun rememberTierListOptionDispatch(
                     clipboard.setText(AnnotatedString(ShareDetailLink.shareUrlFor(target.id)))
                     viewModel.onAction(ShareAction(target))
                 }
+                TierListOption.COPY -> viewModel.onAction(ShowCopyAction(target))
                 TierListOption.FAVOURITE -> viewModel.onAction(ToggleFavouriteAction(target))
                 TierListOption.VISIBILITY -> viewModel.onAction(ToggleVisibilityAction(target))
                 TierListOption.EDIT -> viewModel.onAction(ShowRenameAction(target))

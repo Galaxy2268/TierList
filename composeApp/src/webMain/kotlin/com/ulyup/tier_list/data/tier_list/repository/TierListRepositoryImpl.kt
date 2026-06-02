@@ -22,6 +22,9 @@ class TierListRepositoryImpl(
     override suspend fun create(title: String, isPublic: Boolean): TierList =
         tierListApi.create(CreateTierListRequest(title = title, isPublic = isPublic)).toDomain()
 
+    override suspend fun copy(id: Int): TierList =
+        tierListApi.copy(id).toDomain()
+
     override suspend fun getDetail(id: Int): TierListDetail =
         tierListApi.getDetail(id).toDomain()
 

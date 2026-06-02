@@ -30,6 +30,10 @@ class TierListApiImpl(private val httpClient: HttpClient) : TierListApi {
         httpClient.post(Routes.TierLists.ROOT) { setBody(request) }.body()
     }
 
+    override suspend fun copy(id: Int): TierListDto = apiCall {
+        httpClient.post(Routes.TierLists.copy(id)).body()
+    }
+
     override suspend fun getDetail(id: Int): TierListDetailDto = apiCall {
         httpClient.get(Routes.TierLists.detail(id)).body()
     }
