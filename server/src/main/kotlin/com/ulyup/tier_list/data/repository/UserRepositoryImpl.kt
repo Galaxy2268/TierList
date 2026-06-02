@@ -36,14 +36,6 @@ class UserRepositoryImpl : UserRepository {
         User(newId, username, email, passwordHash, UserRole.USER, now)
     }
 
-    override suspend fun findByUsername(username: String): User? = dbQuery {
-        UsersTable.selectAll().where { UsersTable.username eq username }.singleOrNull()?.toUser()
-    }
-
-    override suspend fun findByEmail(email: String): User? = dbQuery {
-        UsersTable.selectAll().where { UsersTable.email eq email }.singleOrNull()?.toUser()
-    }
-
     override suspend fun findByUsernameOrEmail(value: String): User? = dbQuery {
         UsersTable.selectAll()
             .where { (UsersTable.username eq value) or (UsersTable.email eq value) }

@@ -3,6 +3,7 @@ package com.ulyup.tier_list.feature.shared.tier_list.components
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import com.ulyup.tier_list.FREE_TIER_LIMIT
 import com.ulyup.tier_list.core.ui.components.button.LinkTextButton
 import com.ulyup.tier_list.core.ui.components.button.PrimaryButton
 import com.ulyup.tier_list.resources.Res
@@ -32,7 +33,7 @@ fun PremiumLimitDialog(
         },
         text = {
             Text(
-                text = stringResource(Res.string.mylists_premium_body),
+                text = stringResource(Res.string.mylists_premium_body, FREE_TIER_LIMIT),
                 style = appTypography.bodyMedium,
                 color = appColors.onSurfaceVariant,
             )

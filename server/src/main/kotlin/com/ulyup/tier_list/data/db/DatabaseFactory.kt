@@ -13,7 +13,7 @@ import java.io.File
 object DatabaseFactory {
     fun init() {
         File("./data").mkdirs()
-        Database.connect("jdbc:sqlite:./data/tierrank.db", "org.sqlite.JDBC")
+        Database.connect("jdbc:sqlite:./data/tierrank.db?foreign_keys=on", "org.sqlite.JDBC")
         transaction {
             SchemaUtils.create(UsersTable, TierListsTable, TierListItemsTable, FavouritesTable)
         }

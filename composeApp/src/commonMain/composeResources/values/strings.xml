@@ -36,7 +36,7 @@
     <string name="mylists_create_title">New tier list</string>
     <string name="mylists_create_field_visibility">Public</string>
     <string name="mylists_create_action_confirm">Create</string>
-    <string name="mylists_premium_body">Free accounts can create up to 5 tier lists. Upgrade to Premium to create as many as you want.</string>
+    <string name="mylists_premium_body">Free accounts can create up to %1$d tier lists. Upgrade to Premium to create as many as you want.</string>
 
     <string name="profile_role_user">Free</string>
     <string name="profile_role_premium">Premium</string>
@@ -57,7 +57,7 @@
     <string name="detail_add_dialog_title">Add items</string>
     <string name="detail_action_remove_picked_image">Remove image</string>
     <string name="detail_add_error_no_image">Pick an image first</string>
-    <string name="detail_add_dialog_limit">Up to 25 images per upload.</string>
+    <string name="detail_add_dialog_limit">Up to %1$d images per upload.</string>
     <string name="detail_add_error_some_failed">Failed to upload %1$d image(s): %2$s</string>
     <string name="detail_action_make_private">Make private</string>
     <string name="detail_action_delete">Delete tier list</string>

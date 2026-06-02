@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.unit.dp
+import com.ulyup.tier_list.MAX_BATCH_IMAGES
 import com.ulyup.tier_list.core.ui.components.button.DeleteButton
 import com.ulyup.tier_list.core.ui.components.button.LinkTextButton
 import com.ulyup.tier_list.core.ui.components.button.PrimaryButton
@@ -86,7 +87,7 @@ fun AddItemDialog(
                     contentPadding = PaddingValues(horizontal = 0.dp, vertical = gap8),
                 )
                 Text(
-                    text = stringResource(Res.string.detail_add_dialog_limit),
+                    text = stringResource(Res.string.detail_add_dialog_limit, MAX_BATCH_IMAGES),
                     style = appTypography.bodySmall,
                     color = appColors.onSurfaceVariant,
                 )

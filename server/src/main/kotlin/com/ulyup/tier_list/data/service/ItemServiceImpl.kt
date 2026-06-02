@@ -38,19 +38,26 @@ class ItemServiceImpl(
     ): CreateItemsBatchResponse {
         val created = mutableListOf<ItemDto>()
         val failedFilenames = mutableListOf<String>()
-        for (image in images) {
-            val upload = image.toValidUploadOrNull()
-            if (upload == null) {
-                failedFilenames += image.filename
-                continue
-            }
-            val url = imageStorage.save(upload)
-            val item = itemRepo.create(tierListId, caller.userId, url)
-                ?: run {
-                    imageStorage.delete(url)
-                    throw NotFoundException("TierList not found")
+        val savedUrls = mutableListOf<String>()
+        try {
+            for (image in images) {
+                val upload = image.toValidUploadOrNull()
+                if (upload == null) {
+                    failedFilenames += image.filename
+                    continue
                 }
-            created += item.toDto()
+                val url = imageStorage.save(upload)
+                savedUrls += url
+                val item = itemRepo.create(tierListId, caller.userId, url)
+                    ?: throw NotFoundException("TierList not found")
+                created += item.toDto()
+            }
+        } catch (exception: Exception) {
+            // Files + rows are written across separate transactions, so a mid-batch
+            // failure would leave a partial list. Roll it back best-effort.
+            created.forEach { itemRepo.delete(it.id, tierListId, caller.userId) }
+            savedUrls.forEach { imageStorage.delete(it) }
+            throw exception
         }
         return CreateItemsBatchResponse(created, failedFilenames)
     }

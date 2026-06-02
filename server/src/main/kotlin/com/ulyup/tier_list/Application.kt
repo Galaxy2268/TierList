@@ -68,7 +68,8 @@ fun Application.module() {
             call.respond(HttpStatusCode.Conflict, ErrorResponse(cause.message ?: "Conflict"))
         }
         exception<Throwable> { call, cause ->
-            call.respond(HttpStatusCode.InternalServerError, ErrorResponse(cause.message ?: "Internal server error"))
+            call.application.log.error("Unhandled exception", cause)
+            call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Internal server error"))
         }
     }
 

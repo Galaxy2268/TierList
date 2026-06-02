@@ -8,6 +8,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.ulyup.tier_list.FREE_TIER_LIMIT
 import com.ulyup.tier_list.core.ui.components.button.PrimaryButton
 import com.ulyup.tier_list.core.ui.token.VBox8
 import com.ulyup.tier_list.core.ui.token.VBox16
@@ -46,7 +47,7 @@ fun PremiumUpsellCard(
             )
             VBox8
             Text(
-                text = stringResource(Res.string.mylists_premium_body),
+                text = stringResource(Res.string.mylists_premium_body, FREE_TIER_LIMIT),
                 style = appTypography.bodyMedium,
                 color = appColors.onSurfaceVariant,
             )

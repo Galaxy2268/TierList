@@ -36,7 +36,7 @@
     <string name="mylists_create_title">Jauns līmeņu saraksts</string>
     <string name="mylists_create_field_visibility">Publisks</string>
     <string name="mylists_create_action_confirm">Izveidot</string>
-    <string name="mylists_premium_body">Bezmaksas konti var izveidot līdz 5 līmeņu sarakstiem. Iegūstiet Premium, lai izveidotu tik daudz, cik vēlaties.</string>
+    <string name="mylists_premium_body">Bezmaksas konti var izveidot līdz %1$d līmeņu sarakstiem. Iegūstiet Premium, lai izveidotu tik daudz, cik vēlaties.</string>
 
     <string name="profile_role_user">Bezmaksas</string>
     <string name="profile_role_premium">Premium</string>
@@ -57,7 +57,7 @@
     <string name="detail_add_dialog_title">Pievienot elementus</string>
     <string name="detail_action_remove_picked_image">Noņemt attēlu</string>
     <string name="detail_add_error_no_image">Vispirms izvēlieties attēlu</string>
-    <string name="detail_add_dialog_limit">Līdz 25 attēliem vienā augšupielādē.</string>
+    <string name="detail_add_dialog_limit">Līdz %1$d attēliem vienā augšupielādē.</string>
     <string name="detail_add_error_some_failed">Neizdevās augšupielādēt %1$d attēlu(s): %2$s</string>
     <string name="detail_action_make_private">Padarīt privātu</string>
     <string name="detail_action_delete">Dzēst līmeņu sarakstu</string>
